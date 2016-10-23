@@ -1,5 +1,5 @@
 ;;;; Copyright(c) 2016 Joseph Donaldson(donaldsonjw@yahoo.com) 
-;;;; This file is part of btest.
+;;;; This file is part of hoard.
 ;;;;
 ;;;;     hoard is free software: you can redistribute it and/or modify
 ;;;;     it under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,14 @@
            hoard/indexable
            hoard/enumerable
            hoard/enumerator
+           hoard/dictionary
            hoard/dictionary-enumerator
-           hoard/stretchy-vector)
+           hoard/stretchy-vector
+           hoard/range
+           hoard/queue
+           hoard/linked-queue
+           hoard/stack
+           hoard/linked-stack
+           hoard/hashtable-ext
+           hoard/red-black-tree)
    (eval (export-all)))

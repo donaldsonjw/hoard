@@ -21,13 +21,13 @@ INSTBIGLOOLIBDIR = $(INSTLIBDIR)/bigloo/$(BIGLOO_VERSION)
 
 
 #Bigloo Flags
-BHEAPFLAGS = -I src/Llib -unsafe -q -mkaddheap -mkaddlib -v2 \
+BHEAPFLAGS = -I src/Llib -unsafe -q -mkaddheap -mkaddlib \
 	     -heap-library $(LIBNAME)
 
 BCOMMONFLAGS = -mkaddlib -fsharing -q \
                -copt '$(CCOMMONFLAGS)' -I src/Llib
 
-BSAFEFLAGS = $(BCOMMONFLAGS) -cg -O3 -g 
+BSAFEFLAGS = $(BCOMMONFLAGS) -cg -O3 
 
 BUNSAFEFLAGS = $(BCOMMONFLAGS) -O4 -unsafe
 
@@ -70,19 +70,21 @@ $(OBJDIR)/%_s.o:src/Llib/%.scm
 $(OBJDIR)/%_u.o:src/Llib/%.scm
 	$(BIGLOO) -c $(BUNSAFEFLAGS) -o $@ $^
 
-recette/%.o:recette/%.scm
-	$(BIGLOO) -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $^
+recette/%.o:recette/%.scm heap
+	$(BIGLOO) -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $<
 
 
 #targets
 
-all: .afile .etags lib recette/test$(LIBNAME)
+all: .afile .etags lib 
 
+test: recette/test$(LIBNAME)
+	./recette/test$(LIBNAME)
 
-.afile: $(BIGLOOSRCS) $(TESTSRCS)
+.afile: $(BIGLOOSRCS)  $(TESTSRCS)
 	$(BGLAFILE) -o $@  $^
 
-.etags: $(BIGLOOSRCS)
+.etags: $(BIGLOOSRCS) src/Llib/*.sch $(TESTSRCS)
 	$(BGLTAGS) -o $@ $^
 
 heap: $(DISTDIR)/$(LIBNAME).heap
@@ -97,7 +99,12 @@ $(OBJDIR)/make_lib_u.o:src/Misc/make_lib.scm
 	$(BIGLOO) -c $(BUNSAFEFLAGS) -o $@ $^
 
 
-lib: init heap lib_s lib_u lib_s.a lib_u.a lib_es lib_eu
+lib: init heap $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so  \
+	       $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a   \
+               $(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so \
+	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).so  \
+	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a   \
+	       $(DISTDIR)/lib$(LIBNAME)_eu-$(VERSION).so
 
 init: $(DISTDIR)/$(LIBNAME).init
 
@@ -105,24 +112,24 @@ $(DISTDIR)/$(LIBNAME).init : $(DISTDIR) src/Llib/*.sch src/Misc/$(LIBNAME).init.
 	cat src/Misc/$(LIBNAME).init.in src/Llib/*.sch  > $@
 
 
-lib_s: $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so: $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
 	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so $(SAFEOBJECTS) -lc -lm
 
-lib_s.a : $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a : $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
 	$(AR) qcv $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a $(SAFEOBJECTS);\
 	$(RANLIB) $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a
 
-lib_es : $(OBJDIR) $(DISTDIR) $(ESAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so : $(OBJDIR) $(DISTDIR) $(ESAFEOBJECTS)
 	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so $(ESAFEOBJECTS) -lc -lm
 
-lib_u : $(OBJDIR) $(DISTDIR) $(UNSAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).so : $(OBJDIR) $(DISTDIR) $(UNSAFEOBJECTS)
 	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).so $(UNSAFEOBJECTS) -lc -lm
 
-lib_u.a : $(OBJDIR) $(DISTDIR) $(UNSAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a : $(OBJDIR) $(DISTDIR) $(UNSAFEOBJECTS)
 	$(AR) qcv $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a $(SAFEOBJECTS);\
 	$(RANLIB) $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a
 
-lib_eu : $(OBJDIR) $(DISTDIR) $(EUNSAFEOBJECTS)
+$(DISTDIR)/lib$(LIBNAME)_eu-$(VERSION).so : $(OBJDIR) $(DISTDIR) $(EUNSAFEOBJECTS)
 	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_eu-$(VERSION).so $(EUNSAFEOBJECTS) -lc -lm
 
 

@@ -141,9 +141,54 @@
    (test "enumerable-skip-while char-upper-case? \"ABCdefg\" yields an enumerator with the first element #\d"
       (let ((enum (enumerable-skip-while char-upper-case? "ABCdefg")))
          (assert-equal? (enumerator-current enum) #\d)))
+
+   (test "enumerable-append works on lists"
+      (let ((enumer (enumerable-append (list 1 2 3) (list 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
    
-   
-   
+   (test "enumerable-append works on vectors"
+      (let ((enumer (enumerable-append (vector 1 2 3) (vector 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
+
+   (test "enumerable-append works on lists"
+      (let ((enumer (enumerable-append (list 1 2 3) (list 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
+
+   (test "enumerable-append works on strings"
+      (let ((enumer (enumerable-append "dog" "food")))
+         (assert-equal? (enumerator->list enumer) '(#\d #\o #\g #\f #\o #\o #\d))))
+
+   (test "enumerable-append works on a mixture of lists and vectors"
+      (let ((enumer (enumerable-append (list 1 2 3) (vector 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
+
+   (test "enumerable-take works on lists"
+      (assert-equal? (enumerator->list (enumerable-take 2 '(1 2 3 4 5)))
+         '(1 2)))
+
+   (test "enumerable-take works on vectors"
+      (assert-equal? (enumerator->list (enumerable-take 2 '#(1 2 3 4 5)))
+         '(1 2)))
+
+   (test "enumerable-take works on strings"
+      (assert-equal? (enumerator->list (enumerable-take 2 "abcde"))
+         '(#\a  #\b)))
+
+   (test "enumerable-take-while works on lists"
+      (assert-equal? (enumerator->list (enumerable-take-while odd? '(1 3 4 5)))
+         '(1 3)))
+
+   (test "enumerable-take-while works on vectors"
+      (assert-equal? (enumerator->list (enumerable-take-while odd? '#(1 3 4 5)))
+         '(1 3)))
+
+   (test "enumerable-take-while works on strings"
+      (assert-equal? (enumerator->list (enumerable-take-while char-lower-case?  "abCDE"))
+         '(#\a  #\b)))
+
+
    )
+
+
 
 

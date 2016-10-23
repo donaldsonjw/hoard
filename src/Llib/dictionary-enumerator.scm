@@ -1,6 +1,7 @@
 (module hoard/dictionary-enumerator
-   (import hoard/enumerator)
-   (export (class hashtable-dictionary-enumerator::hashtable-enumerator)
+   (import hoard/enumerator
+           hoard/exceptions)
+   (export (class hashtable-dictionary-enumerator::%hashtable-enumerator)
            (generic dictionary-enumerator-move-next! obj)
            (generic dictionary-enumerator-current obj)
            (generic dictionary-enumerator-key obj)
@@ -32,8 +33,9 @@
 
 (define-method (dictionary-enumerator-key enumerator::hashtable-dictionary-enumerator)
    (if (not (-> enumerator started))
-       (error "enumerator-current" "invalid state; enumerator-move-next must be called before dictionary-enumerator-key"
-          enumerator)
+       (raise-invalid-state-exception proc: "enumerator-current"
+          msg: "enumerator-move-next! must be called before dictionary-enumerator-key"
+          obj: enumerator)
        (car (-> enumerator curr-key))))
 
 (define-method (dictionary-enumerator-value enumerator::hashtable-dictionary-enumerator)

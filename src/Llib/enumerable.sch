@@ -9,7 +9,8 @@
                  (when cont
                     (proc (enumerator-current enumer))
                     (loop (enumerator-move-next! enumer)))))
-           (error "enumerable-for-each" "not all arguments are enumerables" obj)))
+           (raise-invalid-argument-exception proc: "enumerable-for-each" args: obj
+              msg: "not all arguments are enumerators or enumerables")))
       ((_ proc obj rest ...)
        (let ((enums (list obj rest ...)))
           (if (every enum-or-enumer? enums)
@@ -19,7 +20,8 @@
                         (let ((vals (map enumerator-current enumers)))
                            (apply proc vals)
                            (loop (every enumerator-move-next! enumers))))))
-              (error "enumerable-for-each" "not all arguments are enumerables" enums))))))
+              (raise-invalid-argument-exception proc: "enumerable-for-each" args: enums
+                 msg: "not all arguments are enumerators or enumerables"))))))
        
 
 (define-syntax enumerable-map
@@ -27,20 +29,45 @@
       ((_ proc1 obj ...)
        (let ((enums (list obj ...)))
           (if (every enum-or-enumer? enums)
-              (instantiate::map-enumerator (enumers
+              (instantiate::%map-enumerator (enumers
                                               (map get-enumer
                                                  enums))
-                                           (proc proc1))
-              (error "enumerable-map" "not all arguments are enumerables or enumerators" enums))))))
+                                            (proc proc1))
+              (raise-invalid-argument-exception proc: "enumerable-map" args: (list obj ...)
+                 msg: "not all arguments are enumerators or enumerables"))))))
 
            
 (define-syntax enumerable-filter
    (syntax-rules ()
       ((_ predicate obj)
        (if (enum-or-enumer? obj)
-           (instantiate::filter-enumerator (pred predicate)
-                                           (enumer (get-enumer obj)))
-           (error "enumerable-filter" "arguments must be an enumerable or an enumerator" obj)))))
+           (instantiate::%filter-enumerator (pred predicate)
+                                            (enumer (get-enumer obj)))
+           (raise-invalid-argument-exception proc: "enumerable-filter" args: obj
+              msg: "not all arguments are enumerators or enumerables")))))
+
+(define-syntax enumerable-take-while
+   (syntax-rules ()
+      ((_ predicate obj)
+       (if (enum-or-enumer? obj)
+           (instantiate::%take-enumerator (pred predicate)
+                                          (enumer (get-enumer obj)))
+           (raise-invalid-argument-exception proc: "enumerable-take-while" args: obj
+              msg: "not all arguments are enumerators or enumerables")))))
+
+(define-syntax enumerable-take
+   (syntax-rules ()
+      ((_ n obj)
+       (if (enum-or-enumer? obj)
+           (instantiate::%take-enumerator (pred (let ((count 0))
+                                                   (lambda (v)
+                                                      (set! count (+ count 1))
+                                                      (<= count n))))
+                                          (enumer (get-enumer obj)))
+           (raise-invalid-argument-exception proc: "enumerable-take" args: obj
+              msg: "not all arguments are enumerators or enumerables")))))
+
+
 
 
 (define-syntax enumerable-fold
@@ -55,7 +82,8 @@
                         (loop (enumerator-move-next! enumer)
                            ns))
                      s)))
-           (error "enumerable-fold" "not all arguments are enumerators or enumerables" obj)))
+           (raise-invalid-argument-exception proc: "enumerable-fold" args: obj
+              msg: "not all arguments are enumerators or enumerables")))
       ((_ proc seed obj rest ...)
        (let ((enums (list obj rest ...)))
           (if (every enum-or-enumer? enums)
@@ -68,7 +96,8 @@
                               (loop (every enumerator-move-next! enumers)
                                  ns)))
                         s)))
-              (error "enumerable-fold" "not all arguments are enumerators or enumerables" enums))))))
+              (raise-invalid-argument-exception proc: "enumerable-fold" args: enums
+                 msg: "not all arguments are enumerators or enumerables"))))))
        
 
 
@@ -85,7 +114,8 @@
                                (loop (enumerator-move-next! enumer))
                                (return res)))
                         #f)))
-              (error "enumerable-any" "not all arguments are enumerators or enumerables" obj))))
+              (raise-invalid-argument-exception proc: "enumerable-any" args: obj
+                 msg: "not all arguments are enumerators or enumerables"))))
       ((_ pred obj rest ...)
        (bind-exit (return)
           (let ((enums (list obj rest ...)))
@@ -99,7 +129,8 @@
                                      (loop (every enumerator-move-next! enumers))
                                      (return res))))
                            #f))))
-              (error "enumerable-any" "not all arguments are enumerators or enumerables" enums))))))
+             (raise-invalid-argument-exception proc: "enumerable-any" args: enums
+                msg: "not all arguments are enumerators or enumerables"))))))
 
 
 (define-syntax enumerable-every?
@@ -115,7 +146,8 @@
                                (loop (enumerator-move-next! enumer))
                                (return res)))
                         #t)))
-              (error "enumerable-every?" "not all arguments are enumerators or enumerables" obj))))
+              (raise-invalid-argument-exception proc: "enumerable-every" args: obj
+                 msg: "not all arguments are enumerators or enumerables"))))
        ((_ pred obj rest ...)
         (bind-exit (return)
            (let ((enums (list obj rest ...)))
@@ -129,7 +161,8 @@
                                       (loop (every enumerator-move-next! enumers))
                                       (return res)))
                                #t))))
-                  (error "enumerable-every?" "not all arguments are enumerators or enumerables" enums)))))))
+                  (raise-invalid-argument-exception proc: "enumerable-every" args: enums
+                     msg: "not all arguments are enumerators or enumerables")))))))
 
 
 
@@ -144,7 +177,8 @@
                      (loop (enumerator-move-next! enumer)
                            (+ count 1))
                      enumer)))
-           (error "enumerable-skip" "not all arguments are enumerators or enumerables" obj)))
+           (raise-invalid-argument-exception proc: "enumerable-skip" args: obj
+              msg: "not all arguments are enumerators or enumerables")))
       ((_ n obj rest ...)
        (let ((enms (list obj rest ...)))
           (if (every enum-or-enumer? enms)
@@ -154,8 +188,9 @@
                     (if (and cont (< count n))
                         (loop (every enumerator-move-next! enumers)
                            (+ count 1))
-                        (instantiate::aggregate-enumerator (enums enumers)))))
-              (error "enumerable-skip" "not all arguments are enumerators or enumerables" enms))))))
+                        (instantiate::%aggregate-enumerator (enums enumers)))))
+              (raise-invalid-argument-exception proc: "enumerable-skip" args: enms
+                 msg: "not all arguments are enumerators or enumerables"))))))
 
 
 
@@ -168,7 +203,8 @@
                  (if (and cont (pred (enumerator-current enumer)))
                      (loop (enumerator-move-next! enumer))
                      enumer)))
-           (error "enumerable-skip-while" "not all arguments are enumerators or enumerables" obj)))
+           (raise-invalid-argument-exception proc: "enumerable-skip-while" args: obj
+              msg: "not all arguments are enumerators or enumerables")))
       ((_ n obj rest ...)
        (let ((enms (list obj rest ...)))
           (if (every enum-or-enumer? enms)
@@ -176,10 +212,20 @@
                  (let loop ((cont (every enumerator-move-next! enumers)))
                     (if (and cont (apply pred (map enumerator-current enumers)))
                         (loop (every enumerator-move-next! enumers))
-                        (instantiate::aggregate-enumerator (enums enumers)))))
-              (error "enumerable-skip-while" "not all arguments are enumerators or enumerables" enms))))))
+                        (instantiate::%aggregate-enumerator (enums enumers)))))
+              (raise-invalid-argument-exception proc: "enumerable-skip-while" args: enms
+                 msg: "not all arguments are enumerators or enumerables"))))))
 
 
-
+(define-syntax enumerable-append
+   (syntax-rules ()
+      ((_ obj ...)
+       (let ((enums (list obj ...)))
+          (if (every enum-or-enumer? enums)
+              (instantiate::%append-enumerator (enumers
+                                                  (map get-enumer
+                                                     enums)))
+              (raise-invalid-argument-exception proc: "enumerable-append" args: enums
+                 msg: "not all arguments are enumerators or enumerables"))))))
 
 

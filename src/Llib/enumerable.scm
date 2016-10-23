@@ -1,6 +1,7 @@
 (module hoard/enumerable
    (include "enumerable.sch")
    (import hoard/enumerator
+           hoard/exceptions
            hoard/dictionary-enumerator)
    (export
       (generic enumerable? obj)
@@ -20,15 +21,16 @@
 
 (define-generic (enumerable-enumerator obj)
    (cond ((list? obj)
-          (instantiate::list-enumerator (curr obj)))
+          (instantiate::%list-enumerator (curr obj)))
          ((vector? obj)
-          (instantiate::vector-enumerator (vec obj)))
+          (instantiate::%vector-enumerator (vec obj)))
          ((string? obj)
-          (instantiate::string-enumerator (str obj)))
+          (instantiate::%string-enumerator (str obj)))
          ((hashtable? obj)
           (instantiate::hashtable-dictionary-enumerator (hash obj)))
          (else
-          (error "enumerable-enumerator" "invalid argument" obj))))
+          (raise-invalid-argument-exception proc: "enumerable-enumerator"
+             args: obj))))
 
 
 (define-inline (enum-or-enumer? obj)

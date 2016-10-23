@@ -1,4 +1,5 @@
 (module hoard/extendable
+   (import hoard/exceptions)
    (export (generic collection-extendable? obj)
            (generic collection-extend! obj item)))
 
@@ -17,5 +18,5 @@
    (cond ((list? obj)
           (list-extend! obj item))
          (else
-          (error "collection-extend!" "non-extendable obj" obj))))
+          (raise-unsupported-operation-exception proc: "collection-extend!" obj: obj))))
          

@@ -51,59 +51,6 @@
          (hashtable-put! hash 'c 3)
          (assert-true (collection-contains? hash 1))))
 
-   (test "collection-element for list works"
-      (assert-equal? (collection-element (list 1 2 3 4) 1)
-         2))
-
-   (test "collection-element for vector works"
-      (assert-equal? (collection-element (vector 1 2 3 4) 1)
-         2))
-   
-   (test "collection-element for strings work"
-      (assert-equal? (collection-element "abcdedf" 1)
-         #\b))
-
-   (test "collection-element for hashtable works"
-      (let ((table (create-hashtable)))
-         (hashtable-put! table "k1" 1)
-         (hashtable-put! table "k2" 2)
-         (assert-equal? (collection-element table "k2")
-            2)))
-
-   (test "collection-element for list with default works"
-      (assert-equal? (collection-element (list 1 2 3) 4 5)
-         5))
-
-   (test "collection-element for vector with default works"
-      (assert-equal? (collection-element (vector 1 2 3) 4 5)
-         5))
-
-   (test "collection-element for string with default works"
-      (assert-equal? (collection-element "abc" 4 #\d)
-         #\d))
-
-   (test "collection-element for hashtable with default works"
-      (let ((table (create-hashtable)))
-         (hashtable-put! table "k1" 1)
-         (hashtable-put! table "k2" 2)
-         (assert-equal? (collection-element table "k3" 4)
-            4)))
-
-   (test "collection-element throws exception for invalid index on list"
-      (assert-exception-thrown
-         (collection-element (list 1 2 3) 4) &invalid-index-exception))
-
-   (test "collection-element throws exception for invalid index on vector"
-      (assert-exception-thrown
-         (collection-element (vector 1 2 3) 4) &invalid-index-exception))
-
-   (test "collection-element throws exception for invalid index on string"
-      (assert-exception-thrown
-         (collection-element "abc" 4) &invalid-index-exception))
-
-   (test "collection-element throws exception for invalid index on hashtable"
-      (assert-exception-thrown
-         (collection-element (create-hashtable) 4) &invalid-index-exception))
 
 
    (test "collection-empty? works on empty list"
@@ -131,8 +78,39 @@
       (let ((t (create-hashtable)))
          (hashtable-put! t "a" 1)
          (assert-false (collection-empty? t))))
+
+     (test "collection-first on '(1 2 3 4) is 1"
+      (assert-equal? (collection-first '(1 2 3 4))
+         1))
+
+   (test "collection-first on '#(1 2 3 4) is 1"
+      (assert-equal? (collection-first '(1 2 3 4))
+         1))
+
+   (test "collection-first on \"abcde\" is a"
+      (assert-equal? (collection-first "abcde")
+         #\a))
+
+   (test "collection-rest on '(1 2 3 4) works"
+      (assert-equal? (enumerator->list (collection-rest '(1 2 3 4)))
+      '(2 3 4))) 
+
+   (test "collection-rest on '#(1 2 3 4) works"
+      (assert-equal? (enumerator->list (collection-rest '#(1 2 3 4)))
+         '(2 3 4)))
    
+   (test "collection-rest on \"abcd\" works"
+      (assert-equal? (enumerator->list (collection-rest "abcd"))
+         '(#\b #\c #\d)))
+
+   (test "collection-first on an existing enumerator works"
+      (let ((enumer (collection-enumerator '(1 2 3 4))))
+         (enumerator-move-next! enumer)
+         (enumerator-move-next! enumer)
+         (assert-equal? (collection-first enumer)
+            2)))
    
+ 
    )
 
 

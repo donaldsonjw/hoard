@@ -7,8 +7,9 @@
       (generic collection-length obj)
       (generic collection-enumerator obj)
       (generic collection-contains? obj itm)
-      (generic collection-element obj index #!optional (default #unspecified))
-      (generic collection-empty? obj)))
+      (generic collection-empty? obj)
+      (generic collection-first  obj)
+      (generic collection-rest obj)))
 
 
 ;;;; collections protocol
@@ -19,39 +20,6 @@
        (vector? obj)
        (hashtable? obj)
        (string? obj)))
-
-(define-inline (specified? v)
-   (not (eq? v #unspecified)))
-
-(define-inline (make-element-procedure ref len)
-   (lambda (obj index #!key default)
-      (if (and (integer? index) (<= index (len obj)))
-          (ref obj index)
-          (if (specified? default)  
-              default
-              (raise-invalid-index-exception proc: "collection-element"
-                 index: index)))))
-
-(define-generic (collection-element obj index #!optional (default #unspecified))
-   (cond ((list? obj)
-          ((make-element-procedure list-ref length)
-           obj index :default default))
-         ((vector? obj)
-          ((make-element-procedure vector-ref vector-length)
-           obj index :default default))
-         ((string? obj)
-          ((make-element-procedure string-ref string-length)
-           obj index :default default))
-         ((hashtable? obj)
-          (if (hashtable-contains? obj index)
-              (hashtable-get obj index)
-              (if (specified? default)
-                  default
-                  (raise-invalid-index-exception proc: "collection-element"
-                                                 index: index))))
-         (else
-          (raise-unsupported-operation-exception proc: "collection-element"
-             obj: obj))))
 
 (define-generic (collection-empty? obj)
    (cond ((list? obj)
@@ -68,14 +36,13 @@
                       
                  
 
-
 (define-generic (collection-enumerator obj)
    (cond ((list? obj)
-          (instantiate::list-enumerator (curr obj)))
+          (instantiate::%list-enumerator (curr obj)))
          ((vector? obj)
-          (instantiate::vector-enumerator (vec obj)))
+          (instantiate::%vector-enumerator (vec obj)))
          ((string? obj)
-          (instantiate::string-enumerator (str obj)))
+          (instantiate::%string-enumerator (str obj)))
          ((hashtable? obj)
           (instantiate::hashtable-dictionary-enumerator (hash obj)))
          (else
@@ -122,6 +89,26 @@
           (coll-string-contains? obj itm))
          (else (raise-invalid-argument-exception proc: "collection-contains?"
                   args: (list obj)))))
+
+
+(define-generic (collection-first  obj)
+   (if (enumerator? obj)
+       (enumerator-current obj)
+       (let ((enumer (collection-enumerator obj)))
+          (enumerator-move-next! enumer)
+          (enumerator-current enumer))))
+
+
+(define-generic (collection-rest obj)
+   (if (enumerator? obj)
+       (let ((cln (enumerator-clone obj)))
+          (enumerator-move-next! cln)
+          cln)
+       (let ((enumer (collection-enumerator obj)))
+          ;; throw away first item
+          (enumerator-move-next! enumer)
+          enumer)))
+ 
 
 
 (define-generic (collection->list obj)

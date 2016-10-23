@@ -2,7 +2,9 @@
    (import  hoard/exceptions
             hoard/enumerator
             hoard/enumerable
-            hoard/collection)
+            hoard/indexable
+            hoard/collection
+            hoard/mutable-collection)
    
    (export
       (class %stretchy-vector
@@ -29,9 +31,11 @@
       (inline stretchy-vector->list svec::%stretchy-vector)
       (inline stretchy-vector-map! proc::procedure svec::%stretchy-vector)
       (inline stretchy-vector-map proc::procedure svec::%stretchy-vector)
-      (inline stretchy-vector-copy svec::%stretchy-vector #!key (start 0)  (end (stretchy-vector-length svec)))
+      (inline stretchy-vector-copy svec::%stretchy-vector #!key (start 0)  (length #unspecified))
       (inline stretchy-vector-extend! svec::%stretchy-vector item)
-      (inline stretchy-vector-remove! svec::%stretchy-vector)))
+      (inline stretchy-vector-remove! svec::%stretchy-vector)
+      (inline stretchy-vector-append! sv1::%stretchy-vector sv2::%stretchy-vector)
+      (inline stretchy-vector-append sv1::%stretchy-vector sv2::%stretchy-vector)))
 
 
 
@@ -141,12 +145,13 @@
    (vector-copy (-> svec vec) 0 (-> svec length)))
 
 
-(define-inline (stretchy-vector-copy svec::%stretchy-vector #!key (start 0)  (end (stretchy-vector-length svec)))
-   (if (or (< start 0)
-           (> end (stretchy-vector-length svec)))
-       (raise-invalid-argument-exception :proc "stretchy-vector-copy" args: (list svec start end))
-       (instantiate::%stretchy-vector (vec (vector-copy (-> svec vec) start end))
-                                      (length (- end start)))))
+(define-inline (stretchy-vector-copy svec::%stretchy-vector #!key (start 0)  (length #unspecified))
+   (let ((len (if (not (eq? length #unspecified)) length (- (stretchy-vector-length svec) start))))
+      (if (or (< start 0)
+              (> (+ start len) (stretchy-vector-length svec)))
+          (raise-invalid-argument-exception :proc "stretchy-vector-copy" args: (list svec start length))
+          (instantiate::%stretchy-vector (vec (vector-copy (-> svec vec) start (+ start len)))
+                                         (length len)))))
 
 ;; map a function over a stretchy-vector and modify in place
 (define-inline (stretchy-vector-map! proc::procedure svec::%stretchy-vector)
@@ -158,6 +163,15 @@
 (define-inline (stretchy-vector-map proc::procedure svec::%stretchy-vector)
    (let ((new-svec (stretchy-vector-copy svec)))
       (stretchy-vector-map! proc new-svec)))
+
+(define-inline (stretchy-vector-append! sv1::%stretchy-vector sv2::%stretchy-vector)
+   (do ((i 0 (+ i 1)))
+       ((= i (stretchy-vector-length sv2)) sv1)
+       (stretchy-vector-extend! sv1 (stretchy-vector-ref sv2 i))))
+
+(define-inline (stretchy-vector-append sv1::%stretchy-vector sv2::%stretchy-vector)
+   (let ((new-svec (stretchy-vector-copy sv1)))
+      (stretchy-vector-append! new-svec sv2)))
 
 
 (define-inline (stretchy-vector-extend! svec::%stretchy-vector item)
@@ -192,19 +206,33 @@
    (= (stretchy-vector-length obj) 0))
 
 
-(define-method (collection-element obj::%stretchy-vector index #!optional (default #unspecified))
+(define-method (collection-enumerator obj::%stretchy-vector)
+   (enumerable-enumerator obj))
+
+;;; mutable protocol
+(define-method (collection-mutable? obj::%stretchy-vector)
+   #t)
+
+;;; indexable protocol
+(define-method (collection-indexable? obj::%stretchy-vector)
+   #t)
+
+(define-method (collection-ref obj::%stretchy-vector index #!optional (default +collection-unspecified+))
    (if (and (>= index 0)
             (< index (stretchy-vector-length obj)))
        (stretchy-vector-ref obj index)
        default))
 
-(define-method (collection-enumerator obj::%stretchy-vector)
-   (enumerable-enumerator obj))
+(define-method (collection-set! obj::%stretchy-vector index val)
+   (stretchy-vector-set! obj index val))
 
 
 ;;; stretchy-vector enumerator
 (define-method (enumerator? enumerator::%stretchy-vector-enumerator)
    #t)
+
+(define-method (enumerator-clone enumerator::%stretchy-vector-enumerator)
+   (duplicate::%stretchy-vector-enumerator enumerator))
 
 (define-method (enumerator-move-next! enumerator::%stretchy-vector-enumerator)
    (cond ((eq? #f (-> enumerator started))
@@ -226,6 +254,7 @@
 ;;;; stretchy-vector enumerable
 (define-method (enumerable? obj::%stretchy-vector)
    #t)
+
 
 (define-method (enumerable-enumerator obj::%stretchy-vector)
    (instantiate::%stretchy-vector-enumerator (svec obj)))

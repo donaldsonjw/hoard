@@ -8,7 +8,8 @@
            (generic dictionary-length obj)
            (generic dictionary-remove! obj key)
            (generic dictionary-empty? obj)
-           (generic dictionary-enumerator obj)))
+           (generic dictionary-enumerator obj)
+           (generic dictionary-contains? obj key)))
 
 (define-generic (dictionary? obj)
    (hashtable? obj))
@@ -59,7 +60,12 @@
 (define-generic (dictionary-enumerator obj)
    (cond ((hashtable? obj)
           (instantiate::%hashtable-enumerator (hash obj)))
+         ((vector? obj)
+          (instantiate::%vector-enumerator (vec obj)))
+         ((string? obj)
+          (instantiate::%string-enumerator (str obj)))
          (else
           (raise-unsupported-operation-exception :proc "dictionary-enumerator"
              :obj obj))))
+
 

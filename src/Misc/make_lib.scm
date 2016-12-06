@@ -25,12 +25,17 @@
            hoard/enumerator
            hoard/dictionary
            hoard/dictionary-enumerator
+           hoard/dictionary-enumerable
            hoard/stretchy-vector
            hoard/range
            hoard/queue
            hoard/linked-queue
+           hoard/contiguous-queue
            hoard/stack
            hoard/linked-stack
+           hoard/contiguous-stack
            hoard/hashtable-ext
-           hoard/red-black-tree)
+           hoard/red-black-tree
+           hoard/priority-queue
+           hoard/binary-heap)
    (eval (export-all)))

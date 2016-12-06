@@ -4,7 +4,6 @@
    (export linked-queue-tests))
 
 
-
 (define-test-suite linked-queue-tests
 
    (test "linked-queue? works"
@@ -106,6 +105,14 @@
          (queue-enqueue! q 3)
          (assert-equal? (queue-length q) 3)
          (assert-equal? (queue-first q) 1)))
+
+   (test "a linked-queue does not have fixed capacity"
+      (let ((q (make-linked-queue)))
+         (assert-false (queue-fixed-capacity? q))))
+
+   (test "a linked-queue returns #unspecified for capacity"
+      (let ((q (make-linked-queue)))
+         (assert-equal? (queue-capacity q) #unspecified)))
 
    ;;;; collection tests
 

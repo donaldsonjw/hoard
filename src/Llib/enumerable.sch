@@ -1,4 +1,4 @@
-;;;; varius utility macros built on top of the enumerator protocol
+;;;; varius utility macros built on top of enumerables and the enumerator protocol
 
 (define-syntax enumerable-for-each
    (syntax-rules ()
@@ -29,9 +29,7 @@
       ((_ proc1 obj ...)
        (let ((enums (list obj ...)))
           (if (every enum-or-enumer? enums)
-              (instantiate::%map-enumerator (enumers
-                                              (map get-enumer
-                                                 enums))
+              (instantiate::%map-enumerator (enumers (map get-enumer enums))
                                             (proc proc1))
               (raise-invalid-argument-exception proc: "enumerable-map" args: (list obj ...)
                  msg: "not all arguments are enumerators or enumerables"))))))

@@ -11,7 +11,7 @@
             &error)))
    
    (test "list-enumerator for immediately returns false on empty lst"
-      (let ((lst-enum (collection-enumerator (list))))
+       (let ((lst-enum (collection-enumerator (list))))
          (assert-false (enumerator-move-next! lst-enum))))
 
    (test "list-enumerator for '#(1 2 3) return 3 items"

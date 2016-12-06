@@ -35,5 +35,15 @@
          (assert-false (hashtable-weak-data? t2))
          (assert-false (hashtable-weak-keys? t2))))
 
+   (test "(hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) '(\"a\" 1) '(\"b\" 2) '(\"c\" 3)) works"
+      (let ((t1 (hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) '("a" 1) '("b" 2) '("c" 3))))
+         (assert-true (hashtable-contains? t1 "a"))
+         (assert-true (hashtable-contains? t1 "A"))
+         (assert-true (hashtable-contains? t1 "b"))
+         (assert-true (hashtable-contains? t1 "B"))
+         (assert-true (hashtable-contains? t1 "C"))
+         (assert-true (hashtable-contains? t1 "c"))
+         ))
+
    
    )

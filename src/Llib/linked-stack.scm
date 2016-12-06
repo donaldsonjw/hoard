@@ -73,6 +73,16 @@
 (define-method (stack-length obj::%linked-stack)
    (linked-stack-length obj))
 
+(define-method (stack-empty? obj::%linked-stack)
+   (linked-stack-empty? obj))
+
+(define-method (stack-fixed-capacity? obj::%linked-stack)
+   #f)
+
+(define-method (stack-capacity obj::%linked-stack)
+   #unspecified)
+
+
 ;;;; collection protocol
 
 (define-method (collection? obj::%linked-stack)

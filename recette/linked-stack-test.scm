@@ -68,7 +68,55 @@
          (assert-equal? (linked-stack-top stack) 2)
          (assert-equal? (linked-stack-pop! stack) 2)
          (assert-equal? (linked-stack-top stack) 3)))
+
+
+   ;;;; generic stack protocol tests
+   (test "a linked-stack is a stack"
+      (assert-true (stack? (linked-stack))))
+
+   (test "stack-push! and stack-pop! work on linked-stacks"
+      (let ((stk (linked-stack)))
+         (stack-push! stk 1)
+         (stack-push! stk 2)
+         (assert-equal? (stack-pop! stk) 2)
+         (assert-equal? (stack-pop! stk) 1)))
+
+   (test "stack-length works on linked stacks"
+      (let ((stk (linked-stack 1 2 3)))
+         (assert-equal? (stack-length stk) 3)
+         (stack-pop! stk)
+         (assert-equal? (stack-length stk) 2)
+         (stack-pop! stk)
+         (assert-equal? (stack-length stk) 1)
+         (stack-pop! stk)
+         (assert-equal? (stack-length stk) 0)))
    
+   (test "stack-empty works on linked stacks"
+      (let ((stk (linked-stack)))
+         (assert-true (stack-empty? stk))
+         (stack-push! stk 1)
+         (assert-false (stack-empty? stk))
+         (stack-pop! stk)
+         (assert-true (stack-empty? stk))))
+
+   (test "stack-top works on linked stacks"
+      (let ((stk (linked-stack 1 2 3)))
+         (assert-equal? (stack-top stk) 1)
+         (stack-pop! stk)
+         (assert-equal? (stack-top stk) 2)
+         (stack-pop! stk)
+         (assert-equal? (stack-top stk) 3)
+         (stack-pop! stk)
+         (assert-true (stack-empty? stk))))
+
+   (test "stack-fixed-capacity? returns false for a linked-stack"
+      (assert-false (stack-fixed-capacity? (linked-stack))))
+
+   (test "stack-capacity return #unspecified for a linked-stack"
+      (assert-equal? (stack-capacity (linked-stack)) #unspecified))
+   
+   
+
    ;;;; collection tests
    
    (test "a linked-stack is a collection"

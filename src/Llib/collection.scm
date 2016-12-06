@@ -44,7 +44,7 @@
          ((string? obj)
           (instantiate::%string-enumerator (str obj)))
          ((hashtable? obj)
-          (instantiate::hashtable-dictionary-enumerator (hash obj)))
+          (instantiate::%hashtable-enumerator (hash obj)))
          (else
           (raise-invalid-argument-exception proc: "collection-enumerator"
              args:(list obj)))))

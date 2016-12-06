@@ -4,7 +4,9 @@
            (generic queue-enqueue! queue item)
            (generic queue-dequeue! queue)
            (generic queue-length queue)
-           (generic queue-empty? obj)))
+           (generic queue-empty? obj)
+           (generic queue-fixed-capacity? queue)
+           (generic queue-capacity queue)))
 
 
 
@@ -24,3 +26,6 @@
 
 (define-generic (queue-length queue))
 
+(define-generic (queue-fixed-capacity? queue))
+
+(define-generic (queue-capacity queue))

@@ -89,6 +89,11 @@
 (define-method (queue-empty? obj::%linked-queue)
    (linked-queue-empty? obj))
 
+(define-method (queue-fixed-capacity? obj::%linked-queue)
+   #f)
+
+(define-method (queue-capacity obj::%linked-queue)
+   #unspecified)
 
 ;;;; collection protocol
 

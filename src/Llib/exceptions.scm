@@ -26,7 +26,6 @@
                                                  (obj index)
                                                  (msg "invalid index"))))
 
-
 (define (raise-unsupported-operation-exception #!key proc obj)
    (raise (instantiate::&unsupported-operation-exception (proc proc)
                                                          (obj obj)

@@ -110,6 +110,23 @@
          (stretchy-vector-remove! svec)
          (assert-equal? (stretchy-vector-capacity svec) 2)))
 
+   (test "stretchy-vector-append! works"
+      (let* ((sv1 (stretchy-vector 1 2 3))
+             (sv2 (stretchy-vector 4 5 6))
+             (app (stretchy-vector-append! sv1 sv2)))
+         (assert-equal? app
+            (stretchy-vector 1 2 3 4 5 6))
+         (assert-eq? sv1 app)))
+
+   (test "stretchy-vector-append works"
+      (let* ((sv1 (stretchy-vector 1 2 3))
+             (sv2 (stretchy-vector 4 5 6))
+             (app (stretchy-vector-append sv1 sv2)))
+         (assert-equal? app
+            (stretchy-vector 1 2 3 4 5 6))
+         (assert-false (eq? sv1 app))))
+
+
    (test "a stretchy-vector is mutable"
       (assert-true (collection-mutable? (stretchy-vector 1 2 3))))
    
@@ -134,6 +151,10 @@
       (let ((t (stretchy-vector 1 2 3)))
          (collection-set! t 5 5)
          (assert-equal? (stretchy-vector-length t) 6)))
+
+   (test "collection-slice works on stretchy-vectors"
+      (assert-equal? (enumerator->list (collection-slice (stretchy-vector 1 2 3 4) (range :start 1 :end 3)))
+         '(2 3)))
 
    
    ;;;; enumerable tests
@@ -187,25 +208,18 @@
       (assert-equal? (enumerator->list (enumerable-take-while odd? (stretchy-vector 1 3 6 5)))
          '(1 3)))
 
-   (test "stretchy-vector-append! works"
-      (let* ((sv1 (stretchy-vector 1 2 3))
-             (sv2 (stretchy-vector 4 5 6))
-             (app (stretchy-vector-append! sv1 sv2)))
-         (assert-equal? app
-            (stretchy-vector 1 2 3 4 5 6))
-         (assert-eq? sv1 app)))
+   
+   ;;;; dictionary enumerable tests
 
-   (test "stretchy-vector-append works"
-      (let* ((sv1 (stretchy-vector 1 2 3))
-             (sv2 (stretchy-vector 4 5 6))
-             (app (stretchy-vector-append sv1 sv2)))
-         (assert-equal? app
-            (stretchy-vector 1 2 3 4 5 6))
-         (assert-false (eq? sv1 app))))
+   (test "dictionary-enumerable-for-each works on stretchy vectors"
+      (let ((vec (stretchy-vector 1 2 3)))
+         (let ((res '()))
+            (dictionary-enumerable-for-each (lambda (k v)
+                                               (set! res (cons (list k v) res))) vec)
+            (assert-equal? res '((2 3) (1 2) (0 1))))))
 
-   (test "collection-slice works on stretchy-vectors"
-      (assert-equal? (enumerator->list (collection-slice (stretchy-vector 1 2 3 4) (range :start 1 :end 3)))
-         '(2 3)))
+
+   
    
    )
 

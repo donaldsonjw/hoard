@@ -4,7 +4,10 @@
            (generic stack-push! stk val)
            (generic stack-pop! stk)
            (generic stack-top stk)
-           (generic stack-length stk)))
+           (generic stack-length stk)
+           (generic stack-fixed-capacity? queue)
+           (generic stack-capacity queue)
+           (generic stack-empty? stk)))
 
 (define-generic (stack? stk)
    #f)
@@ -15,5 +18,11 @@
 
 (define-generic (stack-top stk))
 
-(define-generic (stack-length stk)) 
+(define-generic (stack-empty? stk))
+
+(define-generic (stack-length stk))
+
+(define-generic (stack-fixed-capacity? queue))
+
+(define-generic (stack-capacity queue))
  

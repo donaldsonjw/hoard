@@ -1,7 +1,9 @@
 (module hoard/stretchy-vector
    (import  hoard/exceptions
             hoard/enumerator
+            hoard/dictionary-enumerator
             hoard/enumerable
+            hoard/dictionary-enumerable
             hoard/indexable
             hoard/collection
             hoard/mutable-collection)
@@ -246,15 +248,61 @@
 
 (define-method (enumerator-current enumerator::%stretchy-vector-enumerator)
    (if (not (-> enumerator started))
-       (error "enumerator-current" "invalid state; enumerator-move-next must be called before enumerator-current"
-          enumerator)
+       (raise-invalid-state-exception :proc "enumerator-current"
+          :msg "invalid state; enumerator-move-next must be called before enumerator-current"
+          :obj enumerator)
        (stretchy-vector-ref (-> enumerator svec) (-> enumerator curr-index))))
-   
+
 
 ;;;; stretchy-vector enumerable
 (define-method (enumerable? obj::%stretchy-vector)
    #t)
 
-
 (define-method (enumerable-enumerator obj::%stretchy-vector)
+   (instantiate::%stretchy-vector-enumerator (svec obj)))
+
+;;;; stretchy-vector dictionary enumerator  protocol
+(define-method (dictionary-enumerator? enumerator::%stretchy-vector-enumerator)
+   #t)
+
+(define-method (dictionary-enumerator-clone enumerator::%stretchy-vector-enumerator)
+   (duplicate::%stretchy-vector-enumerator enumerator))
+
+(define-method (dictionary-enumerator-move-next! enumerator::%stretchy-vector-enumerator)
+   (cond ((eq? #f (-> enumerator started))
+          (set! (-> enumerator started) #t)
+          (not (= (stretchy-vector-length (-> enumerator svec)) 0)))
+         ((< (+ (-> enumerator curr-index) 1) (stretchy-vector-length (-> enumerator svec)))
+          (set! (-> enumerator curr-index) (+ (-> enumerator curr-index) 1))
+          #t)
+         (else
+          #f)))
+
+(define-method (dictionary-enumerator-current enumerator::%stretchy-vector-enumerator)
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception :proc "dictionary-enumerator-current"
+          :msg "invalid state; dictionary-enumerator-move-next must be called before enumerator-current"
+          :obj enumerator)
+       (stretchy-vector-ref (-> enumerator svec) (-> enumerator curr-index))))
+
+(define-method (dictionary-enumerator-value enumerator::%stretchy-vector-enumerator)
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception :proc "dictionary-enumerator-value"
+          :msg "invalid state; dictionary-enumerator-move-next must be called before enumerator-current"
+          :obj enumerator)
+       (stretchy-vector-ref (-> enumerator svec) (-> enumerator curr-index))))
+
+(define-method (dictionary-enumerator-key enumerator::%stretchy-vector-enumerator)
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception :proc "dictionary-enumerator-key"
+          :msg "invalid state; dictionary-enumerator-move-next must be called before enumerator-current"
+          :obj enumerator)
+       (-> enumerator curr-index)))
+
+
+;;;; stretchy-vector dictionary-enumerable
+(define-method (dictionary-enumerable? obj::%stretchy-vector)
+   #t)
+
+(define-method (dictionary-enumerable-enumerator obj::%stretchy-vector)
    (instantiate::%stretchy-vector-enumerator (svec obj)))

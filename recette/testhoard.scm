@@ -7,14 +7,18 @@
            indexable-test
            dictionary-test
            dictionary-enumerator-test
+           dictionary-enumerable-test
            stretchy-vector-test
            qsort-test
            range-test
            longest-alphabetically-ordered-substring
            red-black-tree-test
            linked-queue-test
+           contiguous-queue-test
            linked-stack-test
-           hashtable-ext-test)
+           contiguous-stack-test
+           hashtable-ext-test
+           binary-heap-test)
    (main main)
    (library btest hoard))
 
@@ -36,11 +40,15 @@
    (suite-add-subsuite! hoard-tests range-tests)
    (suite-add-subsuite! hoard-tests longest-alphabetically-ordered-substring-tests)
    (suite-add-subsuite! hoard-tests linked-queue-tests)
+   (suite-add-subsuite! hoard-tests contiguous-queue-tests)
    (suite-add-subsuite! hoard-tests linked-stack-tests)
+   (suite-add-subsuite! hoard-tests contiguous-stack-tests)
    (suite-add-subsuite! hoard-tests red-black-tree-tests)
    (suite-add-subsuite! hoard-tests hashtable-ext-tests)
+   (suite-add-subsuite! hoard-tests dictionary-enumerable-tests)
+   (suite-add-subsuite! hoard-tests binary-heap-tests)
    (let ((tr (instantiate::terminal-test-runner (suite hoard-tests))))
-      (test-runner-execute tr #t)))
+      (if (test-runner-execute tr #t) 0 -1)))
 
 
   

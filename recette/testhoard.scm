@@ -18,7 +18,8 @@
            linked-stack-test
            contiguous-stack-test
            hashtable-ext-test
-           binary-heap-test)
+           binary-heap-test
+           pairing-heap-test)
    (main main)
    (library btest hoard))
 
@@ -47,6 +48,7 @@
    (suite-add-subsuite! hoard-tests hashtable-ext-tests)
    (suite-add-subsuite! hoard-tests dictionary-enumerable-tests)
    (suite-add-subsuite! hoard-tests binary-heap-tests)
+   (suite-add-subsuite! hoard-tests pairing-heap-tests)
    (let ((tr (instantiate::terminal-test-runner (suite hoard-tests))))
       (if (test-runner-execute tr #t) 0 -1)))
 

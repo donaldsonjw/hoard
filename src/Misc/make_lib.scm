@@ -37,5 +37,6 @@
            hoard/hashtable-ext
            hoard/red-black-tree
            hoard/priority-queue
-           hoard/binary-heap)
+           hoard/binary-heap
+           hoard/pairing-heap)
    (eval (export-all)))

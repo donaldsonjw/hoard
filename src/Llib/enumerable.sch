@@ -3,22 +3,25 @@
 (define-syntax enumerable-for-each
    (syntax-rules ()
       ((_ proc obj)
-       (if (enum-or-enumer? obj)
-           (let ((enumer (get-enumer obj)))
-              (let loop ((cont (enumerator-move-next! enumer)))
-                 (when cont
-                    (proc (enumerator-current enumer))
-                    (loop (enumerator-move-next! enumer)))))
-           (raise-invalid-argument-exception proc: "enumerable-for-each" args: obj
-              msg: "not all arguments are enumerators or enumerables")))
+       (let ((t obj)
+             (p proc))
+          (if (enum-or-enumer? t)
+              (let ((| enumer | (get-enumer t)))
+                 (let loop ((cont (enumerator-move-next! | enumer |)))
+                    (when cont
+                       (p (enumerator-current | enumer |))
+                       (loop (enumerator-move-next! | enumer |)))))
+              (raise-invalid-argument-exception proc: "enumerable-for-each" args: obj
+                 msg: "not all arguments are enumerators or enumerables"))))
       ((_ proc obj rest ...)
-       (let ((enums (list obj rest ...)))
+       (let ((enums (list obj rest ...))
+             (p proc))
           (if (every enum-or-enumer? enums)
               (let ((enumers (map get-enumer enums)))
                  (let loop ((cont (every enumerator-move-next! enumers)))
                     (if cont
                         (let ((vals (map enumerator-current enumers)))
-                           (apply proc vals)
+                           (apply p vals)
                            (loop (every enumerator-move-next! enumers))))))
               (raise-invalid-argument-exception proc: "enumerable-for-each" args: enums
                  msg: "not all arguments are enumerators or enumerables"))))))

@@ -129,7 +129,7 @@
          (assert-false (priority-queue-empty? heap))
          (priority-queue-dequeue! heap)
          (assert-true (priority-queue-empty? heap))))
-
+ 
    ;;;; binary-heap-enumerator tests
    (test "binary-heap-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
       (let ((enumer (collection-enumerator (binary-heap :capacity 3 :lessthan <))))

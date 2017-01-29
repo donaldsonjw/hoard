@@ -153,5 +153,52 @@
 
    (test "a pairing-heap is a mutable-collection"
       (assert-true (collection-mutable? (pairing-heap :lessthan <))))
+
+   ;;;; enumerable tests
+   (test "enumerable-for-each on pairing-heaps work"
+      (let ((count 0))
+         (enumerable-for-each  (lambda (e) (set! count (+ count 1))) (pairing-heap :lessthan < 1 2 3))
+         (assert= count 3)))
+
+   (test "enumerable-map on pairing-heaps work"
+      (assert-equal? (enumerator->list (enumerable-map (lambda (e) e) (pairing-heap :lessthan < 1 2 3 4 5)))
+         '(1 5 4 3 2)))
+
+    (test "enumerable-filter on pairing-heaps work"
+      (assert-equal? (enumerator->list (enumerable-filter (lambda (e) (not (=  e 1))) (pairing-heap :lessthan < 1 2 3)))
+         '(3 2)))
+
+    (test "enumerable-fold on pairing-heaps work"
+      (assert= (enumerable-fold + 0 (pairing-heap :lessthan < 1 2 3) ) 6))
+
+    (test "enumerable-any? odd? on (pairing-heap :lessthan < 1 2 3 4 5) returns #t"
+       (assert-equal?  (enumerable-any? odd? (pairing-heap :lessthan < 1 2 3 4 5)) #t))
+    
+    (test "enumerable-every? odd? on (pairing-heap :lessthan < 1 2 3 4 5) returns #f"
+       (assert-equal?  (enumerable-every? odd? (pairing-heap :lessthan < 1 2 3 4 5)) #f))
+
+    (test "enumerable-every? odd? on (pairing-heap :lessthan <  1  3  5) returns #t"
+       (assert-equal?  (enumerable-every? odd? (pairing-heap :lessthan < 1  3  5)) #t))
+
+    (test "enumerable-skip 2 (pairing-heap :lessthan < 1 2 3 4 5) yields an enumerator with the first element 3"
+       (let ((enum (enumerable-skip 2 (pairing-heap :lessthan < 1 2 3 4 5))))
+          (assert-equal? (enumerator-current enum) 4)))
+
+    (test "enumerable-skip-while odd? (pairing-heap :lessthan < 1 3 5 6 7) yields an enumerator with the first element 6"
+       (let ((enum (enumerable-skip-while odd? (pairing-heap :lessthan < 1 3 5 6 7))))
+          (assert-equal? (enumerator-current enum) 6)))
+    
+    (test "enumerable-append works on pairing-heap"
+      (let ((enumer (enumerable-append (pairing-heap :lessthan < 1 2 3) (pairing-heap :lessthan < 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 3 2 4 6 5))))
+
+    (test "enumerable-take works on pairing-heaps"
+      (assert-equal? (enumerator->list (enumerable-take 2 (pairing-heap :lessthan < 1 2 3 4 5)))
+         '(1 5)))
+
+    (test "enumerable-take-while works on pairing-heap"
+       (assert-equal? (enumerator->list (enumerable-take-while odd? (pairing-heap :lessthan < 1 3 4 5)))
+          '(1 5)))
+   
    
    )

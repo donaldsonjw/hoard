@@ -171,5 +171,50 @@
    (test "a binary-heap is a mutable-collection"
       (assert-true (collection-mutable? (binary-heap :capacity 3 :lessthan <))))
 
+   ;;;; enumerable tests
+   (test "enumerable-for-each on binary-heaps work"
+      (let ((count 0))
+         (enumerable-for-each  (lambda (e) (set! count (+ count 1))) (binary-heap :capacity 5 :lessthan < 1 2 3))
+         (assert= count 3)))
+
+   (test "enumerable-map on binary-heaps work"
+      (assert-equal? (enumerator->list (enumerable-map (lambda (e) e) (binary-heap :capacity 5 :lessthan < 1 2 3 4 5)))
+         '(1 2 3 4 5)))
+
+    (test "enumerable-filter on binary-heaps work"
+      (assert-equal? (enumerator->list (enumerable-filter (lambda (e) (not (=  e 1))) (binary-heap :capacity 5 :lessthan < 1 2 3)))
+         '(2 3)))
+
+    (test "enumerable-fold on binary-heaps work"
+      (assert= (enumerable-fold + 0 (binary-heap :capacity 5 :lessthan < 1 2 3) ) 6))
+
+    (test "enumerable-any? odd? on (binary-heap :capacity 5 :lessthan < 1 2 3 4 5) returns #t"
+       (assert-equal?  (enumerable-any? odd? (binary-heap :capacity 5 :lessthan < 1 2 3 4 5)) #t))
+    
+    (test "enumerable-every? odd? on (binary-heap :capacity 5 :lessthan < 1 2 3 4 5) returns #f"
+       (assert-equal?  (enumerable-every? odd? (binary-heap :capacity 5 :lessthan < 1 2 3 4 5)) #f))
+
+    (test "enumerable-every? odd? on (binary-heap :capacity 5 :lessthan <  1  3  5) returns #t"
+       (assert-equal?  (enumerable-every? odd? (binary-heap :capacity 5 :lessthan < 1  3  5)) #t))
+
+    (test "enumerable-skip 2 (binary-heap :capacity 5 :lessthan < 1 2 3 4 5) yields an enumerator with the first element 3"
+       (let ((enum (enumerable-skip 2 (binary-heap :capacity 5 :lessthan < 1 2 3 4 5))))
+          (assert-equal? (enumerator-current enum) 3)))
+
+    (test "enumerable-skip-while odd? (binary-heap :capacity 5 :lessthan < 1 3 5 6 7) yields an enumerator with the first element 6"
+       (let ((enum (enumerable-skip-while odd? (binary-heap :capacity 5 :lessthan < 1 3 5 6 7))))
+          (assert-equal? (enumerator-current enum) 6)))
+    
+    (test "enumerable-append works on binary-heap"
+      (let ((enumer (enumerable-append (binary-heap :capacity 5 :lessthan < 1 2 3) (binary-heap :capacity 5 :lessthan < 4 5 6))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
+
+    (test "enumerable-take works on binary-heaps"
+      (assert-equal? (enumerator->list (enumerable-take 2 (binary-heap :capacity 5 :lessthan < 1 2 3 4 5)))
+         '(1 2)))
+
+    (test "enumerable-take-while works on binary-heap"
+       (assert-equal? (enumerator->list (enumerable-take-while odd? (binary-heap :capacity 5 :lessthan < 1 3 4 5)))
+          '(1 3)))
 
    )

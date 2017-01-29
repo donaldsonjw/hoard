@@ -179,7 +179,7 @@
           (set! (-> enumerator curr-idx) 0)
           (not (binary-heap-empty? (-> enumerator heap))))
          ((not (= (+ (-> enumerator curr-idx) 1)
-                  (binary-heap-capacity (-> enumerator heap))))
+                  (binary-heap-length (-> enumerator heap))))
           (set! (-> enumerator curr-idx) (+ (-> enumerator curr-idx) 1))
           #t)
          (else 

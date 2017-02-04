@@ -2,61 +2,62 @@
    (import hoard/priority-queue
            hoard/collection
            hoard/mutable-collection
+           hoard/comparator
            hoard/enumerator
            hoard/enumerable
            hoard/exceptions)
    (export (class %binary-heap
               store
               (idx (default 0))
-              lessthan)
+              comparator)
            (class %binary-heap-enumerator
               heap::%binary-heap
               (curr-idx (default #unspecified)))
            (inline binary-heap? obj)
-           (inline make-binary-heap #!key capacity lessthan)
-           (inline binary-heap #!key capacity lessthan #!rest vals)
+           (inline make-binary-heap #!key capacity comparator)
+           (inline binary-heap #!key capacity comparator #!rest vals)
            (inline binary-heap-enqueue! heap::%binary-heap itm)
            (inline binary-heap-dequeue! heap::%binary-heap)
            (inline binary-heap-length heap::%binary-heap)
            (inline binary-heap-first heap::%binary-heap)
            (inline binary-heap-capacity heap::%binary-heap)
            (inline binary-heap-empty? heap::%binary-heap)
-           (inline binary-heap-bubble-down! vec start fin lt)
-           (inline binary-heap-heapify! vec len lt)))
+           (inline binary-heap-bubble-down! vec start fin comparator)
+           (inline binary-heap-heapify! vec len comparator)))
 
 
 (define-inline (binary-heap? obj)
    (isa? obj %binary-heap))
 
-(define-inline (make-binary-heap #!key capacity lessthan)
+(define-inline (make-binary-heap #!key capacity comparator)
    (when (or (not (integer? capacity))
-             (not (procedure? lessthan)))
+             (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "make-binary-heap"
-         :msg "capacity must be an integer and lessthan a binary predicate"
-         :args (list :capacity capacity :lessthan lessthan)))
+         :msg "capacity must be an integer and comparator a comparator object"
+         :args (list :capacity capacity :comparator comparator)))
    (instantiate::%binary-heap (store (make-vector capacity))
-                              (lessthan lessthan)))
+                              (comparator comparator)))
 
-(define-inline (binary-heap #!key capacity lessthan #!rest vals)
+(define-inline (binary-heap #!key capacity comparator #!rest vals)
    (when (or (not (integer? capacity))
-             (not (procedure? lessthan)))
+             (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "binary-heap"
-         :msg "capacity must be an integer and lessthan a binary predicate"
-         :args (list :capacity capacity :lessthan lessthan)))   
+         :msg "capacity must be an integer and comparator a comparator object"
+         :args (list :capacity capacity :comparator comparator)))   
    (let ((res::%binary-heap (instantiate::%binary-heap (store (make-vector capacity))
-                                                       (lessthan lessthan))))
+                                                       (comparator comparator))))
       (do ((i 0 (+ i 1))
            (lst vals (cdr lst)))
           ((null? lst))
           (vector-set! (-> res store) i (car lst)))
       (set! (-> res idx) (length vals))
-      (binary-heap-heapify! (-> res store) (length vals) lessthan)
+      (binary-heap-heapify! (-> res store) (length vals) comparator)
       res))
 
-(define-inline (binary-heap-heapify! vec len lessthan)
+(define-inline (binary-heap-heapify! vec len comparator)
    (do ((i (/fx len 2) (- i 1)))
        ((< i 0))
-       (binary-heap-bubble-down! vec i len lessthan))) 
+       (binary-heap-bubble-down! vec i len comparator))) 
    
 (define-inline (binary-heap-empty? heap::%binary-heap)
    (= 0 (-> heap idx)))
@@ -67,11 +68,11 @@
 (define-inline (binary-heap-enqueue! heap::%binary-heap itm)
    (define (parent-idx idx)
       (/fx (- idx 1) 2))
-   (define (bubble-up! vec idx lt)
+   (define (bubble-up! vec idx comparator)
       (let loop ((i idx)
                  (p (parent-idx idx)))
          (if (or (= i 0)
-                 (lt (vector-ref vec p)
+                 (comparator<? comparator (vector-ref vec p)
                     (vector-ref vec i)))
              #unspecified
              (begin
@@ -85,11 +86,11 @@
           :obj heap)
        (begin
           (vector-set! (-> heap store) (-> heap idx) itm)
-          (bubble-up! (-> heap store) (-> heap idx) (-> heap lessthan))
+          (bubble-up! (-> heap store) (-> heap idx) (-> heap comparator))
           (set! (-> heap idx) (+ (-> heap idx) 1)))))
 
 
-(define-inline (binary-heap-bubble-down! vec start fin lt)
+(define-inline (binary-heap-bubble-down! vec start fin comparator)
    (define (left-child-idx idx)
       (+ (* 2 idx) 1))
    (define (right-child-idx idx)
@@ -98,10 +99,10 @@
               (l (left-child-idx 0))
               (r (right-child-idx 0)))
       (let ((gtl  (and (< l fin)
-                       (lt (vector-ref vec l)
+                       (comparator<? comparator (vector-ref vec l)
                           (vector-ref vec i))))
             (gtr  (and (< r fin)
-                       (lt (vector-ref vec r)
+                       (comparator<? comparator (vector-ref vec r)
                           (vector-ref vec i)))))
          (if (or (>=  i fin)
                  (not (or gtl
@@ -113,7 +114,7 @@
                              ((and gtr (not gtl))
                               r)
                              (else
-                              (if (lt (vector-ref vec l)
+                              (if (comparator<? comparator (vector-ref vec l)
                                      (vector-ref vec r))
                                   l r)))))
                 (vector-set! vec i (vector-ref vec ci))
@@ -131,7 +132,7 @@
           (vector-set! (-> heap store) 0
              (vector-ref (-> heap store) (- (-> heap idx) 1)))
           (set! (-> heap idx) (- (-> heap idx) 1))
-          (binary-heap-bubble-down! (-> heap store) 0 (-> heap idx) (-> heap lessthan))
+          (binary-heap-bubble-down! (-> heap store) 0 (-> heap idx) (-> heap comparator))
           res)))
 
 (define-inline (binary-heap-first heap::%binary-heap)

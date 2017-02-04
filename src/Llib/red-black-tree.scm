@@ -5,6 +5,7 @@
 
 (module hoard/red-black-tree
    (import hoard/exceptions
+           hoard/comparator
            hoard/queue
            hoard/linked-queue)
    
@@ -16,15 +17,15 @@
               (right::%red-black-node (default +red-black-node-nil+)))
            
            (class %red-black-tree
-              less-than?::procedure
+              comparator
               (root::%red-black-node (default +red-black-node-nil+)))
            (inline red-black-tree? obj)
            +red-black-node-nil+
-           (make-red-black-tree #!key less-than?)
+           (make-red-black-tree #!key comparator)
            (red-black-tree-size tree::%red-black-tree)
            (red-black-tree-insert! tree::%red-black-tree item)
            (red-black-tree-contains? tree::%red-black-tree item)
-           (red-black-tree #!key less-than? #!rest objs)
+           (red-black-tree #!key comparator #!rest objs)
            (red-black-tree-empty? tree::%red-black-tree)
            (red-black-tree-visualize tree::%red-black-tree)
            (red-black-tree-delete! tree::%red-black-tree item)
@@ -36,14 +37,14 @@
 
 (define +red-black-node-nil+ (class-nil %red-black-node))
 
-(define (make-red-black-tree #!key less-than?)
-   (if (not (procedure? less-than?))
+(define (make-red-black-tree #!key comparator)
+   (if (not (comparator? comparator))
        (raise-invalid-argument-exception :proc "make-red-black-tree"
-          :args less-than?)
-       (instantiate::%red-black-tree (less-than? less-than?))))
+          :args comparator)
+       (instantiate::%red-black-tree (comparator comparator))))
 
-(define (red-black-tree #!key less-than? #!rest objs)
-   (let ((tree (make-red-black-tree :less-than? less-than?)))
+(define (red-black-tree #!key comparator #!rest objs)
+   (let ((tree (make-red-black-tree :comparator comparator)))
       (for-each (lambda (i) (red-black-tree-insert! tree i)) objs)
       tree))
 
@@ -57,11 +58,11 @@
    (= (node-size (-> tree root)) 0))
 
 (define (red-black-tree-insert! tree::%red-black-tree item)
-   (set! (-> tree root) (node-insert! (-> tree root) item (-> tree less-than?)))
+   (set! (-> tree root) (node-insert! (-> tree root) item (-> tree comparator)))
    (node-red?-set! (-> tree root) #f))
 
 (define (red-black-tree-contains? tree::%red-black-tree item)
-   (node-contains? (-> tree root) item (-> tree less-than?)))
+   (node-contains? (-> tree root) item (-> tree comparator)))
 
 (define (red-black-tree-find-min tree::%red-black-tree)
    (if (not (red-black-tree-empty? tree))
@@ -83,7 +84,7 @@
        (when (and (-> tree root left red?)
                   (-> tree root right red?))
           (set! (-> tree root red?) #t))
-      (set! (-> tree root) (node-delete! (-> tree root) item (-> tree less-than?)))
+      (set! (-> tree root) (node-delete! (-> tree root) item (-> tree comparator)))
       (when (not (red-black-tree-empty? tree))
          (set! (-> tree root red?) #f))))
 
@@ -155,13 +156,13 @@
        0
        (-> node size)))
 
-(define-inline (node-contains? node::%red-black-node item less-than?)
+(define-inline (node-contains? node::%red-black-node item comparator)
    (if (eq? node +red-black-node-nil+)
        #f
-       (cond ((less-than?  item (-> node item))
-              (node-contains? (-> node left) item less-than?))
-             ((less-than? (-> node item) item)
-              (node-contains? (-> node right) item less-than?))
+       (cond ((comparator<? comparator  item (-> node item))
+              (node-contains? (-> node left) item comparator))
+             ((comparator<? comparator (-> node item) item)
+              (node-contains? (-> node right) item comparator))
              (else
               #t))))
 
@@ -176,30 +177,29 @@
        (-> node item)))
 
 
-(define-inline (node-delete! node::%red-black-node item less-than?)
-   (define (node=? a b less-than?)
-      (not (or (less-than? a b)
-               (less-than? b a))))
+(define-inline (node-delete! node::%red-black-node item comparator)
+   (define (node=? a b)
+      (comparator=? comparator a b))
    (bind-exit (return)
-      (cond ((less-than? item (-> node item))
+      (cond ((comparator<? comparator item (-> node item))
              (when (and (not (-> node left red?))
                         (not (-> node left left red?)))
                 (set! node (node-move-red-left! node)))
-             (set! (-> node left) (node-delete! (-> node left) item less-than?)))
+             (set! (-> node left) (node-delete! (-> node left) item comparator)))
             (else
              (when (-> node left red?)
                 (set! node (node-rotate-right! node)))
-             (when (and (node=? item (-> node item) less-than?)
+             (when (and (node=? item (-> node item))
                         (eq? (-> node right) +red-black-node-nil+))
                 (return +red-black-node-nil+))
              (when (and (not (-> node right red?))
                         (not (-> node right left red?)))
                 (set! node (node-move-red-right! node)))
-             (if (node=? item (-> node item) less-than?)
+             (if (node=? item (-> node item))
                  (let ((m::%red-black-node (node-min (-> node right))))
                     (set! (-> node item) (-> m item))
                     (set! (-> node right) (node-delete-min! (-> node right))))
-                 (set! (-> node right) (node-delete! (-> node right) item less-than?)))))
+                 (set! (-> node right) (node-delete! (-> node right) item comparator)))))
       (node-balance! node)))
              
 (define-inline (node-delete-min! node::%red-black-node)
@@ -299,17 +299,17 @@
    (set! (-> node left red?) (not (-> node left red?)))
    (set! (-> node right red?) (not (-> node right red?))))
           
-(define-inline (node-insert! node::%red-black-node item less-than?)
+(define-inline (node-insert! node::%red-black-node item comparator)
    (if (eq? node +red-black-node-nil+)
        (instantiate::%red-black-node 
           (item item)
           (size 1)
           (red? #t))
        (begin
-          (cond ((less-than? item (-> node item))
-                 (set! (-> node left) (node-insert! (-> node left) item less-than?)))
-                ((less-than? (-> node item) item)
-                 (set! (-> node right) (node-insert! (-> node right) item less-than?)))
+          (cond ((comparator<? comparator item (-> node item))
+                 (set! (-> node left) (node-insert! (-> node left) item comparator)))
+                ((comparator<? comparator (-> node item) item)
+                 (set! (-> node right) (node-insert! (-> node right) item comparator)))
                 (else (set! (-> node item) item)))
           (node-balance! node))))
 

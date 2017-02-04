@@ -22,6 +22,7 @@
            hoard/extendable
            hoard/indexable
            hoard/enumerable
+           hoard/comparator
            hoard/enumerator
            hoard/dictionary
            hoard/dictionary-enumerator

@@ -2,6 +2,7 @@
    (import collection-test
            mutable-collection-test
            enumerator-test
+           comparator-test
            enumerable-test
            extendable-test
            indexable-test
@@ -31,6 +32,7 @@
    (suite-add-subsuite! hoard-tests collection-tests)
    (suite-add-subsuite! hoard-tests mutable-collection-tests)
    (suite-add-subsuite! hoard-tests enumerator-tests)
+    (suite-add-subsuite! hoard-tests comparator-tests)
    (suite-add-subsuite! hoard-tests dictionary-tests)
    (suite-add-subsuite! hoard-tests dictionary-enumerator-tests)
    (suite-add-subsuite! hoard-tests enumerable-tests)

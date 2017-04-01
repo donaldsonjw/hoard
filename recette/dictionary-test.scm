@@ -30,7 +30,7 @@
          (assert-false (dictionary-get dict #\b))))
 
    (test "dictionary-contains? works"
-      (let ((dict (hashtable '(#\a 1) '(#\b 2) '(#\c 3))))
+      (let ((dict (hashtable (=> #\a 1) (=> #\b 2) (=> #\c 3))))
          (assert-true (dictionary-contains? dict #\a))
          (assert-false (dictionary-contains? dict #\d))
          (assert-true (dictionary-contains? dict #\c))))
@@ -47,7 +47,5 @@
          (dictionary-put! dict #\a 1)
          (assert-equal? (dictionary-length dict) 1)
          (dictionary-remove! dict #\a)
-         (assert-equal? (dictionary-length dict) 0)))
-   
-   
+         (assert-equal? (dictionary-length dict) 0)))   
    )

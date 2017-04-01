@@ -1,5 +1,6 @@
 (module hoard/pairing-heap
    (import hoard/priority-queue
+           hoard/extendable
            hoard/enumerable
            hoard/comparator
            hoard/collection
@@ -197,6 +198,14 @@
 
 (define-method (collection-mutable? obj::%pairing-heap)
    #t)
+
+
+;;; extendable protocol implementation
+(define-method (collection-extendable? obj::%pairing-heap)
+   #t)
+
+(define-method (collection-extend! obj::%pairing-heap itm)
+   (pairing-heap-enqueue! obj itm))
 
 ;;;; enumerable protocol implementation
 

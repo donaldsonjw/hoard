@@ -1,6 +1,7 @@
 (module hoard/dictionary-enumerator
    (import hoard/enumerator
            hoard/exceptions
+           hoard/association
            hoard/hashtable-ext)
    (export (class %dictionary-map-enumerator
               enumer
@@ -127,13 +128,13 @@
           #f)))
 
 (define-method (dictionary-enumerator-current enumerator::%dictionary-map-enumerator)
-   (cdr (-> enumerator curr-kv)))
+   (=>value (-> enumerator curr-kv)))
 
 (define-method (dictionary-enumerator-key enumerator::%dictionary-map-enumerator)
-   (car (-> enumerator curr-kv)))
+   (=>key (-> enumerator curr-kv)))
 
 (define-method (dictionary-enumerator-value enumerator::%dictionary-map-enumerator)
-   (cdr (-> enumerator curr-kv)))
+   (=>value (-> enumerator curr-kv)))
 
 
 ;;;; dictionary-filter-enumerator implementation
@@ -173,7 +174,7 @@
        (let loop ((cont (dictionary-enumerator-move-next! enumer))
                   (res '()))
           (if cont
-              (let ((val (cons (dictionary-enumerator-key enumer)
+              (let ((val (=> (dictionary-enumerator-key enumer)
                             (dictionary-enumerator-value enumer))))
                  (loop (dictionary-enumerator-move-next! enumer)
                     (cons val res)))

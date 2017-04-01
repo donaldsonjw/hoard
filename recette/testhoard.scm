@@ -7,6 +7,7 @@
            extendable-test
            indexable-test
            dictionary-test
+           ordered-dictionary-test
            dictionary-enumerator-test
            dictionary-enumerable-test
            stretchy-vector-test
@@ -20,7 +21,8 @@
            contiguous-stack-test
            hashtable-ext-test
            binary-heap-test
-           pairing-heap-test)
+           pairing-heap-test
+           association-test)
    (main main)
    (library btest hoard))
 
@@ -32,8 +34,9 @@
    (suite-add-subsuite! hoard-tests collection-tests)
    (suite-add-subsuite! hoard-tests mutable-collection-tests)
    (suite-add-subsuite! hoard-tests enumerator-tests)
-    (suite-add-subsuite! hoard-tests comparator-tests)
+   (suite-add-subsuite! hoard-tests comparator-tests)
    (suite-add-subsuite! hoard-tests dictionary-tests)
+   (suite-add-subsuite! hoard-tests ordered-dictionary-tests) 
    (suite-add-subsuite! hoard-tests dictionary-enumerator-tests)
    (suite-add-subsuite! hoard-tests enumerable-tests)
    (suite-add-subsuite! hoard-tests extendable-tests)
@@ -51,6 +54,7 @@
    (suite-add-subsuite! hoard-tests dictionary-enumerable-tests)
    (suite-add-subsuite! hoard-tests binary-heap-tests)
    (suite-add-subsuite! hoard-tests pairing-heap-tests)
+   (suite-add-subsuite! hoard-tests association-tests)
    (let ((tr (instantiate::terminal-test-runner (suite hoard-tests))))
       (if (test-runner-execute tr #t) 0 -1)))
 

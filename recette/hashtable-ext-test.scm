@@ -6,8 +6,8 @@
 
 (define-test-suite hashtable-ext-tests
 
-   (test "(hashtable '(a  1) '(b 2) '(c 3)))"
-      (let ((res (hashtable '(a  1) '(b  2) '(c 3))))
+   (test "(hashtable (=> 'a  1) (=> 'b 2) (=> 'c 3)))"
+      (let ((res (hashtable (=> 'a  1) (=> 'b  2) (=> 'c 3))))
          (assert-equal? (hashtable-get res 'a) 1)
          (assert-equal? (hashtable-get res 'b) 2)
          (assert-equal? (hashtable-get res 'c) 3)))
@@ -35,8 +35,8 @@
          (assert-false (hashtable-weak-data? t2))
          (assert-false (hashtable-weak-keys? t2))))
 
-   (test "(hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) '(\"a\" 1) '(\"b\" 2) '(\"c\" 3)) works"
-      (let ((t1 (hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) '("a" 1) '("b" 2) '("c" 3))))
+   (test "(hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) (=> \"a\" 1) (=> \"b\" 2) (=> \"c\" 3)) works"
+      (let ((t1 (hashtable :eqtest string-ci=? :hash (lambda (s) (get-hashnumber (string-upcase s))) (=> "a" 1) (=> "b" 2) (=> "c" 3))))
          (assert-true (hashtable-contains? t1 "a"))
          (assert-true (hashtable-contains? t1 "A"))
          (assert-true (hashtable-contains? t1 "b"))

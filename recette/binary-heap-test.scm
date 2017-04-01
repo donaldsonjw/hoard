@@ -171,6 +171,16 @@
    (test "a binary-heap is a mutable-collection"
       (assert-true (collection-mutable? (binary-heap :capacity 3 :comparator +number-comparator+))))
 
+
+   (test "a binary-heap is extendable"
+      (assert-true (collection-extendable? (binary-heap :capacity 4 :comparator +number-comparator+))))
+
+   (test "extending a binary heap works"
+      (let ((heap (binary-heap :capacity 5 :comparator +number-comparator+)))
+         (collection-extend! heap 5)
+         (assert-equal? (binary-heap-dequeue! heap) 5)))
+
+
    ;;;; enumerable tests
    (test "enumerable-for-each on binary-heaps work"
       (let ((count 0))

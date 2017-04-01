@@ -17,6 +17,7 @@
  
 (module hoard_make_lib
    (import hoard/collection
+           hoard/comparable
            hoard/mutable-collection
            hoard/exceptions
            hoard/extendable
@@ -37,7 +38,9 @@
            hoard/contiguous-stack
            hoard/hashtable-ext
            hoard/red-black-tree
+           hoard/ordered-dictionary
            hoard/priority-queue
            hoard/binary-heap
-           hoard/pairing-heap)
+           hoard/pairing-heap
+           hoard/association)
    (eval (export-all)))

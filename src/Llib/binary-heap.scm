@@ -1,5 +1,6 @@
 (module hoard/binary-heap
    (import hoard/priority-queue
+           hoard/extendable
            hoard/collection
            hoard/mutable-collection
            hoard/comparator
@@ -223,6 +224,13 @@
 
 (define-method (collection-mutable? obj::%binary-heap)
    #t)
+
+;;; extendable protocol
+(define-method (collection-extendable? obj::%binary-heap)
+   #t)
+
+(define-method (collection-extend! obj::%binary-heap itm)
+   (binary-heap-enqueue! obj itm))
 
 ;;;; enumerable protocol implementation
 (define-method (enumerable? obj::%binary-heap)

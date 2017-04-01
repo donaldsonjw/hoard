@@ -5,9 +5,13 @@
 
 (module hoard/red-black-tree
    (import hoard/exceptions
+           hoard/enumerator
+           hoard/dictionary-enumerator
            hoard/comparator
            hoard/queue
-           hoard/linked-queue)
+           hoard/linked-queue
+           hoard/stack
+           hoard/linked-stack)
    
    (export (class %red-black-node
               item
@@ -15,10 +19,13 @@
               (red? (default #f))
               (left::%red-black-node (default +red-black-node-nil+))
               (right::%red-black-node (default +red-black-node-nil+)))
-           
            (class %red-black-tree
               comparator
               (root::%red-black-node (default +red-black-node-nil+)))
+           (class %red-black-tree-enumerator
+              (started (default #f))
+              curr::%red-black-node
+              nodes)
            (inline red-black-tree? obj)
            +red-black-node-nil+
            (make-red-black-tree #!key comparator)
@@ -33,7 +40,8 @@
            (red-black-tree-delete-min! tree::%red-black-tree)
            (red-black-tree-find-min tree::%red-black-tree)
            (red-black-tree-find-max tree::%red-black-tree)
-           (red-black-tree-delete-max! tree::%red-black-tree)))
+           (red-black-tree-delete-max! tree::%red-black-tree)
+           (make-red-black-tree-in-order-enumerator tree::%red-black-tree)))
 
 (define +red-black-node-nil+ (class-nil %red-black-node))
 
@@ -110,17 +118,32 @@
 
 
 (define (red-black-tree-bread-first-traversal tree::%red-black-tree proc)
-   (let ((q (make-linked-queue)))
-      (queue-enqueue! q (-> tree root))
-      (let loop ()
-         (when (not (queue-empty? q))
-            (let ((curr::%red-black-node (queue-dequeue! q)))
-               (when (not (eq? (-> curr left) +red-black-node-nil+))
-                  (queue-enqueue! q (-> curr left)))
-               (when (not (eq? (-> curr right) +red-black-node-nil+))
-                  (queue-enqueue! q (-> curr right)))
-               (proc curr)
-               (loop))))))
+   (when (not (red-black-tree-empty? tree))
+      (let ((q (make-linked-queue)))
+         (queue-enqueue! q (-> tree root))
+         (let loop ()
+            (when (not (queue-empty? q))
+               (let ((curr::%red-black-node (queue-dequeue! q)))
+                  (when (not (eq? (-> curr left) +red-black-node-nil+))
+                     (queue-enqueue! q (-> curr left)))
+                  (when (not (eq? (-> curr right) +red-black-node-nil+))
+                     (queue-enqueue! q (-> curr right)))
+                  (proc curr)
+                  (loop)))))))
+
+(define (red-black-tree-depth-first-traversal tree::%red-black-tree proc)
+   (when (not (red-black-tree-empty? tree))
+      (let ((s (make-linked-stack)))
+         (stack-push! s (-> tree root))
+         (let loop ()
+            (when (not (stack-empty? s))
+               (let ((curr::%red-black-node (stack-pop! s)))
+                  (when (not (eq? (-> curr left) +red-black-node-nil+))
+                     (stack-push! s (-> curr left)))
+                  (when (not (eq? (-> curr right) +red-black-node-nil+))
+                     (stack-push! s (-> curr right)))
+                  (proc curr)
+                  (loop)))))))
 
 
 (define (red-black-tree-visualize tree::%red-black-tree)
@@ -335,8 +358,49 @@
    
 
 
+;;;; red-black-tree-enumerator implementation
+(define (make-red-black-tree-in-order-enumerator tree::%red-black-tree)
+   (let ((stack (linked-stack)))
+      (when (not (red-black-tree-empty? tree))
+         (stack-push! stack (-> tree root)))
+      (instantiate::%red-black-tree-enumerator (curr +red-black-node-nil+) (nodes stack))))
+
+(define-method (enumerator? enumerator::%red-black-tree-enumerator)
+   #t)
+
+
+(define-inline (push-left-spine! node::%red-black-node stack)
+   (let loop ((curr::%red-black-node node))
+      (when (not (eq? curr +red-black-node-nil+))
+         (stack-push! stack curr)
+         (loop (-> curr left))))) 
+          
+(define-method (enumerator-move-next! enumerator::%red-black-tree-enumerator)
+   (cond ((and (eq? #f (-> enumerator started))
+               (not (stack-empty? (-> enumerator nodes))))
+          (set! (-> enumerator started) #t)
+          (push-left-spine! (stack-pop! (-> enumerator nodes)) (-> enumerator nodes))
+          (set! (-> enumerator curr) (stack-pop! (-> enumerator nodes)))
+          (push-left-spine! (-> enumerator curr right) (-> enumerator nodes))
+          #t)
+         ((not (stack-empty? (-> enumerator nodes)))
+          (set! (-> enumerator curr) (stack-pop! (-> enumerator nodes)))
+          (push-left-spine! (-> enumerator curr right) (-> enumerator nodes))
+          #t)
+         (else
+          #f)))
+
+(define-method (enumerator-clone enumerator::%red-black-tree-enumerator)
+   (duplicate::%red-black-tree-enumerator enumerator
+      (nodes (stack-copy (-> enumerator nodes)))))
        
 
+(define-method (enumerator-current enumerator::%red-black-tree-enumerator)
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception :proc "enumerator-current"
+          :msg "invalid state; enumerator-move-next! must be called before enumerator-current"
+          :obj enumerator)
+       (-> enumerator curr item)))
 
 
        

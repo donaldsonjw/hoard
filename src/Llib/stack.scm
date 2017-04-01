@@ -7,7 +7,8 @@
            (generic stack-length stk)
            (generic stack-fixed-capacity? queue)
            (generic stack-capacity queue)
-           (generic stack-empty? stk)))
+           (generic stack-empty? stk)
+           (generic stack-copy stk)))
 
 (define-generic (stack? stk)
    #f)
@@ -22,7 +23,8 @@
 
 (define-generic (stack-length stk))
 
-(define-generic (stack-fixed-capacity? queue))
+(define-generic (stack-fixed-capacity? stk))
 
-(define-generic (stack-capacity queue))
- 
+(define-generic (stack-capacity stk))
+
+(define-generic (stack-copy stk))

@@ -75,7 +75,7 @@
 (define-method (enumerator-current enumerator::%list-enumerator)
    (if (not (-> enumerator started))
        (raise-invalid-state-exception :proc "enumerator-current"
-          :msg "invalid state; enumerator-move-next must be called before enumerator-current"
+          :msg "invalid state; enumerator-move-next! must be called before enumerator-current"
           :obj enumerator)
        (car (-> enumerator curr))))
 

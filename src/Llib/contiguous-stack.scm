@@ -21,7 +21,8 @@
       (inline contiguous-stack-pop! stk::%contiguous-stack)
       (inline contiguous-stack-top stk::%contiguous-stack)
       (inline contiguous-stack-empty? stk::%contiguous-stack)
-      (inline contiguous-stack-length stk::%contiguous-stack)))
+      (inline contiguous-stack-length stk::%contiguous-stack)
+      (inline contiguous-stack-copy stk::%contiguous-stack)))
 
 
 (define-inline (contiguous-stack? obj)
@@ -74,7 +75,12 @@
           :msg "cannot retrieve the top item of an empty stack"
           :obj stk)
        (vector-ref (-> stk store) (- (-> stk top) 1))))
-       
+
+
+(define-inline (contiguous-stack-copy stk::%contiguous-stack)
+   (instantiate::%contiguous-stack (top (-> stk top))
+                                   (store (vector-copy (-> stk store)
+                                             0 (vector-length (-> stk store))))))
 
 ;;;; implementation of generic stack protocol
 (define-method (stack? obj::%contiguous-stack)
@@ -100,6 +106,9 @@
 
 (define-method (stack-empty? obj::%contiguous-stack)
    (contiguous-stack-empty? obj))
+
+(define-method (stack-copy obj::%contiguous-stack)
+   (contiguous-stack-copy obj))
 
 ;;;; contiguous stack enumerator
 (define-method (enumerator? enumerator::%contiguous-stack-enumerator)

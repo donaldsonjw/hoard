@@ -14,8 +14,8 @@
       (let ((hash-enum (collection-enumerator (create-hashtable))))
          (assert-false (dictionary-enumerator-move-next! hash-enum))))
 
-   (test "dictionary-enumerator for (hashtable '(a 1) '(b 2) '(c 3))  return 3 items"
-       (let ((hash (hashtable '(a 1) '(b 2) '(c 3))))
+   (test "dictionary-enumerator for (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3))  return 3 items"
+       (let ((hash (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3))))
          (let ((hash-enum (collection-enumerator hash)))
             (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! hash-enum))
                                       (res '()))
@@ -40,7 +40,7 @@
                                   res)) (list 'a 'b 'c)))))
 
    (test "dictionary-enumerator-clone works for hashtable-enumerators"
-      (let* ((hash (hashtable '(a 1) '(b 2) '(c 3)))
+      (let* ((hash (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (enumer1 (dictionary-enumerator hash))
              (enumer2 (dictionary-enumerator-clone enumer1)))
          (dictionary-enumerator-move-next! enumer1)
@@ -127,33 +127,29 @@
 
 
    (test "dictionary-enumerator->hashtable works"
-      (let* ((dict (hashtable '(a 1) '(b 2) '(c 3)))
+      (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (res (dictionary-enumerator->hashtable
                      (dictionary-enumerable-map (lambda (k v)
-                                                   (cons k (+ v 1)))
+                                                   (=> k (+ v 1)))
                         dict))))
          (assert-equal? (hashtable-get res 'a) 2)
          (assert-equal? (hashtable-get res 'b) 3)
          (assert-equal? (hashtable-get res 'c) 4)))
 
    (test "dictionary-enumerator->list works"
-      (let* ((dict (hashtable '(a 1) '(b 2) '(c 3)))
+      (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (res (dictionary-enumerator->list
                      (dictionary-enumerable-map (lambda (k v)
-                                                   (cons k (+ v 1)))
+                                                   (=> k (+ v 1)))
                         dict))))
-         (assert-equal? res '((c . 4) (b . 3) (a . 2)))))
+         (assert-equal? res (list (=> 'c  4) (=> 'b 3) (=> 'a  2)))))
 
 
    (test "dictionary-enumerator->vector works"
-      (let* ((dict (hashtable '(a 1) '(b 2) '(c 3)))
+      (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (res (dictionary-enumerator->vector
                      (dictionary-enumerable-map (lambda (k v)
-                                                   (cons k (+ v 1)))
+                                                   (=> k (+ v 1)))
                         dict))))
-         (assert-equal? res '#((c . 4) (b . 3) (a . 2)))))
-
-         
-
-   
+         (assert-equal? res (vector (=> 'c 4) (=> 'b 3) (=> 'a  2)))))
    )

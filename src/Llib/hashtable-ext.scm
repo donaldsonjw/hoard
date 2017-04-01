@@ -1,5 +1,6 @@
 (module hoard/hashtable-ext
-   (import hoard/exceptions)
+   (import hoard/exceptions
+           hoard/association)
    (export (hashtable #!key
                   (size 128)
                   (max-bucket-length 10)
@@ -8,15 +9,13 @@
                   (weak 'none)
                   (max-length 16384)
                   (bucket-expansion 1.2)
-                  #!rest list-of-key-values)))
+                  #!rest list-of-associations)))
 
 
 
-(define-inline (list-of-key-values? lop)
-   (and (list? lop)
-        (every (lambda (x) (and (list? x)
-                                (= (length x) 2)))
-           lop)))
+(define-inline (list-of-associations? loa)
+   (and (list? loa)
+        (every association? loa)))
 
 (define (hashtable #!key
                   (size 128)
@@ -26,8 +25,8 @@
                   (weak 'none)
                   (max-length 16384)
                   (bucket-expansion 1.2)
-                  #!rest list-of-key-values)
-   (if (list-of-key-values? list-of-key-values)
+                  #!rest list-of-associations)
+   (if (list-of-associations? list-of-associations)
        (let ((res (create-hashtable :size size
                      :max-bucket-length max-bucket-length
                      :eqtest eqtest
@@ -35,9 +34,9 @@
                      :weak weak
                      :max-length max-length
                      :bucket-expansion bucket-expansion)))
-          (for-each (lambda (kv) (hashtable-put! res (car kv) (cadr kv)))
-             list-of-key-values)
+          (for-each (lambda (kv) (hashtable-put! res (=>key kv) (=>value kv)))
+             list-of-associations)
           res)
        (raise-invalid-argument-exception :proc "hashtable"
-          :args list-of-key-values
-          :msg "values to include in hashtable must be lists of the form (key value)")))
+          :args list-of-associations
+          :msg "values to include in hashtable must be lists associations")))

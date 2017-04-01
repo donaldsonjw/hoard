@@ -16,7 +16,8 @@
       (inline linked-stack-top stk::%linked-stack)
       (inline linked-stack-empty? stk::%linked-stack)
       (inline linked-stack #!rest objs)
-      (inline linked-stack-length stk::%linked-stack)))
+      (inline linked-stack-length stk::%linked-stack)
+      (inline linked-stack-copy stk::%linked-stack)))
 
 (define-inline (linked-stack? obj)
    (isa? obj %linked-stack))
@@ -49,12 +50,14 @@
    (if (not (linked-stack-empty? stk))
        (car (-> stk items))
        (raise-invalid-state-exception :proc "linked-stack-top"
-          :msg "cannot pop an item off of an empty stack"
+          :msg "cannot get the top item of an empty stack"
           :obj stk)))
 
 (define-inline (linked-stack-length stk::%linked-stack)
    (-> stk length))
 
+(define-inline (linked-stack-copy stk::%linked-stack)
+   (duplicate::%linked-stack stk))
 
 ;;;; implementation of generic stack protocol
 
@@ -82,6 +85,8 @@
 (define-method (stack-capacity obj::%linked-stack)
    #unspecified)
 
+(define-method (stack-copy obj::%linked-stack)
+   (linked-stack-copy obj))
 
 ;;;; collection protocol
 

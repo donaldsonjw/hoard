@@ -37,8 +37,7 @@
          (assert-equal? (enumerator->list (enumerable-map (lambda (e) (+ e 1)) '#(1 2 3))) '(2 3 4)))
 
    (test "enumerable-map on hashtables works"
-      (let ((hash (create-hashtable))
-            (hash2 (create-hashtable)))
+      (let ((hash (create-hashtable)))
          (hashtable-put! hash 'a 1)
          (hashtable-put! hash 'b 2)
          (hashtable-put! hash 'c 3)
@@ -185,9 +184,8 @@
    (test "enumerable-take-while works on strings"
       (assert-equal? (enumerator->list (enumerable-take-while char-lower-case?  "abCDE"))
          '(#\a  #\b)))
+)
 
-
-   )
 
 
 

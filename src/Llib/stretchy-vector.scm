@@ -6,6 +6,7 @@
             hoard/dictionary-enumerable
             hoard/indexable
             hoard/collection
+            hoard/extendable
             hoard/mutable-collection)
    
    (export
@@ -228,6 +229,13 @@
 (define-method (collection-set! obj::%stretchy-vector index val)
    (stretchy-vector-set! obj index val))
 
+
+;;; extendable protocol
+(define-method (collection-extendable? obj::%stretchy-vector)
+   #t)
+
+(define-method (collection-extend! obj::%stretchy-vector itm)
+   (stretchy-vector-extend! obj itm))
 
 ;;; stretchy-vector enumerator
 (define-method (enumerator? enumerator::%stretchy-vector-enumerator)

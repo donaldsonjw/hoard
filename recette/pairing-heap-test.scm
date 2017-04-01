@@ -154,6 +154,15 @@
    (test "a pairing-heap is a mutable-collection"
       (assert-true (collection-mutable? (pairing-heap :comparator +number-comparator+))))
 
+
+   (test "a pairing-heap is extendable"
+      (assert-true (collection-extendable? (pairing-heap :comparator +number-comparator+))))
+
+   (test "extending a pairing heap works"
+      (let ((heap (pairing-heap :comparator +number-comparator+)))
+         (collection-extend! heap 5)
+         (assert-equal? (pairing-heap-dequeue! heap) 5)))
+
    ;;;; enumerable tests
    (test "enumerable-for-each on pairing-heaps work"
       (let ((count 0))
@@ -200,5 +209,5 @@
        (assert-equal? (enumerator->list (enumerable-take-while odd? (pairing-heap :comparator +number-comparator+ 1 3 4 5)))
           '(1 5)))
    
-   
+    
    )

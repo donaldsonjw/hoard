@@ -156,6 +156,15 @@
       (assert-equal? (enumerator->list (collection-slice (stretchy-vector 1 2 3 4) (range :start 1 :end 3)))
          '(2 3)))
 
+   ;;; extendable protocol tests
+   (test "a stretchy-vector is extendable"
+      (assert-true (collection-extendable? (stretchy-vector 1 2 3 4))))
+
+   (test "(collection-extend! (stretchy-vector 1 2 3 4) 5) works"
+      (let ((vec (stretchy-vector 1 2 3 4)))
+         (stretchy-vector-extend! vec 5)
+         (assert-equal? (stretchy-vector-ref vec 4) 5)))
+   
    
    ;;;; enumerable tests
    (test "enumerable-for-each on stretch-vectors works"
@@ -218,9 +227,43 @@
                                                (set! res (cons (list k v) res))) vec)
             (assert-equal? res '((2 3) (1 2) (0 1))))))
 
+   (test "dictionary-enumerable-map works on stretchy vectors"
+      (let* ((dict (stretchy-vector 1 2 3))
+             (res (dictionary-enumerator->vector (dictionary-enumerable-map
+                                                  (lambda (k v)
+                                                     (=> k (+ v 1))) dict))))
+         (assert-equal? res (vector (=> 0 2) (=> 1 3) (=> 2 4)))))
+   
+   (test "dictionary-enumerable-filter works on stretch-vectors"
+      (let* ((dict (stretchy-vector #\a #\b #\c #\d #\e))
+             (res (dictionary-enumerator->list
+                     (dictionary-enumerable-filter (lambda (k v) (even? k)) dict))))
+         (assert-equal? res (list (=> 0 #\a) (=> 2  #\c) (=> 4  #\e)))))
 
-   
-   
+   (test "dictionary-enumerable-fold works on stretchy vectors"
+      (let* ((dict (stretchy-vector 1 2 3))
+             (res (dictionary-enumerable-fold (lambda (s k v) (+ s v)) 0
+                     dict)))
+         (assert-equal? res 6)))
+
+    (test "dictionary-enumerable-any? works with stretchy vectors"
+       (let ((dict (stretchy-vector 'a 'b 'c)))
+          (assert-false (dictionary-enumerable-any? (lambda (k v) (>= k 3)) dict))
+          (assert-true (dictionary-enumerable-any? (lambda (k v) (eq? v 'b)) dict))))
+
+    (test "dictionary-enumerable-every? works with stretchy vectors"
+       (let ((dict (stretchy-vector 'a 'b 'c)))
+          (assert-false (dictionary-enumerable-every? (lambda (k v) (<= k 1)) dict))
+          (assert-true (dictionary-enumerable-every? (lambda (k v) (string<? (symbol->string v) "d")) dict))))
+
+    (test "dictionary-enumerable-append works on stretchy vectors"
+       (let* ((dict1 (stretchy-vector 'a 'b 'c))
+              (dict2 (stretchy-vector 'd 'e 'f))
+              (res (dictionary-enumerator->vector (dictionary-enumerable-append dict1 dict2))))
+          (assert-equal? res (vector (=> 0  'a) (=> 1  'b) (=> 2 'c) (=> 0  'd) (=> 1  'e) (=> 2 'f)))))
+    
+       
+       
    )
 
 

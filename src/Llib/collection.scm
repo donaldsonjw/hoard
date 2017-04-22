@@ -63,13 +63,9 @@
           (raise-invalid-argument-exception proc: "collection-size"
                                             args: (list obj)))))
 
-
 (define-inline (vector-contains? vec itm)
-   (bind-exit (return)
-      (do ((i 0 (+ i 1)))
-          ((= i (vector-length vec) #f))
-          (when (equal? (vector-ref vec i) itm)
-             (return #t)))))
+    (do ((i 0 (+ i 1)))
+        ((or (= i (vector-length vec)) (equal? (vector-ref vec i) itm)) (not (= i (vector-length vec))))))
 
 (define-inline (coll-string-contains? str itm)
    (bind-exit (return)
@@ -81,10 +77,10 @@
 (define-generic (collection-contains? obj itm)
    (cond ((list? obj)
           (not (eq? #f (member itm obj))))
-         ((vector? obj)
-          (vector-contains? obj itm))
          ((hashtable? obj)
           (collection-contains? (hashtable->vector obj) itm))
+         ((vector? obj)
+          (vector-contains? obj itm))
          ((string? obj)
           (coll-string-contains? obj itm))
          (else (raise-invalid-argument-exception proc: "collection-contains?"

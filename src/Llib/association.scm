@@ -11,11 +11,12 @@
       (inline =>value assoc::%association)
       (inline pair->association p::pair)
       (inline association? obj)
-      (make-association-comparator comp)))
+      (make-association-comparator comp)
+      (inline =>key! assoc::%association key)
+      (inline =>value! assoc::%association val)))
 
 (define-inline (association? obj)
    (isa? obj %association))
-
 
 (define-inline (pair->association p::pair)
    (=> (car p) (cdr p)))
@@ -30,6 +31,11 @@
 (define-inline (=>value assoc::%association)
    (-> assoc value))
 
+(define-inline (=>key! assoc::%association key)
+   (set! (-> assoc key) key))
+
+(define-inline (=>value! assoc::%association val)
+   (set! (-> assoc value) val))
 
 ;;; association comparator implementation
 (define (make-association-comparator comp)

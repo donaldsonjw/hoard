@@ -69,8 +69,6 @@
               msg: "not all arguments are enumerators or enumerables")))))
 
 
-
-
 (define-syntax enumerable-fold
    (syntax-rules ()
       ((_ proc seed obj)
@@ -230,3 +228,19 @@
                  msg: "not all arguments are enumerators or enumerables"))))))
 
 
+(define-syntax enumerable-collect
+   (syntax-rules ()
+      ((_ obj coll)
+       (if (and (collector? coll)
+                (enum-or-enumer? obj))
+           (let ((enumer (get-enumer obj)))
+              (let loop ((cont (enumerator-move-next! enumer))
+                         (supp (collector-supplier coll)))
+                 (if cont
+                     (let ((newsupp (collector-accumulate coll supp (enumerator-current enumer))))
+                        (loop (enumerator-move-next! enumer)
+                           newsupp))
+                     (collector-finish coll supp))))
+           (raise-invalid-argument-exception proc: "enumerable-collect" args: (list coll obj)
+              msg: "either we have an invalid enumerable/enumerator or invalid collector")))))
+      

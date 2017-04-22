@@ -31,6 +31,12 @@
       (let ((t (red-black-tree :comparator +number-comparator+ 1 2 3 4)))
          (assert-true (red-black-tree-contains? t 3))))
 
+   (test "existing-fun works with red-black-tree"
+      (let ((t (red-black-tree :comparator +number-comparator+ 1 2 3 4))
+            (exists-fun-called #f))
+         (red-black-tree-insert! t 1 :exists-fun (lambda (x) (set! exists-fun-called #t) x))
+         (assert-true exists-fun-called)))
+         
    (test "inserting 1 2 3 into a red black tree results in tree with 2 as the root
          and a black left child 1 and black right child 3"
       (let ((tree::%red-black-tree (make-red-black-tree :comparator +number-comparator+)))

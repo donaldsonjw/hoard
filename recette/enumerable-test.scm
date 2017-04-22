@@ -184,7 +184,18 @@
    (test "enumerable-take-while works on strings"
       (assert-equal? (enumerator->list (enumerable-take-while char-lower-case?  "abCDE"))
          '(#\a  #\b)))
-)
+
+   (test "enumerable-collect works"
+      (assert-equal? (enumerable-collect (vector 1 2 3 4) +stretchy-vector-collector+)
+         (stretchy-vector 1 2 3 4)))
+
+   (test "enumerable-collect works with +sum-collector+"
+      (assert-equal? (enumerable-collect (vector 1 2 3 4) +sum-collector+)
+         10)
+      (assert-equal? (enumerable-collect (stretchy-vector 1 2 3 4) +sum-collector+)
+         10)
+      (assert-equal? (enumerable-collect (list 1 2 3 4) +sum-collector+)
+         10)))
 
 
 

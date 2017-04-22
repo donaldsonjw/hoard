@@ -19,6 +19,13 @@
          (dictionary-put! dict #\a 1)
          (assert-equal? (dictionary-get dict #\a) 1)))
 
+   (test "dictionary-update!  works"
+      (let ((dict (create-hashtable)))
+         (dictionary-update! dict 1 2 (lambda (x) (+ x 1)))
+         (assert-equal? (dictionary-get dict 1) 2)
+         (dictionary-update! dict 1 0 (lambda (x) (+ x 1)))
+         (assert-equal? (dictionary-get dict 1) 3)))
+   
    (test "dictionary-remove! works"
       (let ((dict (create-hashtable)))
          (dictionary-put! dict #\a 1)

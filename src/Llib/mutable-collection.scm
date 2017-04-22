@@ -3,9 +3,6 @@
    (export (generic collection-mutable? obj)))
 
 
-
-
-
 ;;;; mutable-collection protocol
 
 (define-generic (collection-mutable? obj)

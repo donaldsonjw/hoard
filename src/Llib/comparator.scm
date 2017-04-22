@@ -27,7 +27,9 @@
       +ucs2-ci-comparator+
       +symbol-ci-comparator+
       +ucs2-string-comparator+
-      +uscs2-string-ci-comparator+))
+      +uscs2-string-ci-comparator+
+      +keyword-comparator+
+      +keyword-ci-comparator+))
 
 ;;;; utility functions
 (define-inline (compose f g)
@@ -160,7 +162,7 @@
       :hash (compose get-hashnumber string->symbol)))
 
 
-;;;; symbol comparator implementation
+;;;; symbol case-insensitive comparator implementation
 (define +symbol-ci-comparator+
    (make-comparator  :type? symbol?
       :equal? (lambda (x y)
@@ -169,6 +171,24 @@
       :lessthan? (lambda (x y) (string<? (symbol->string x)
                                   (symbol->string y)))
       :hash (compose get-hashnumber (compose string-upcase symbol->string))))
+
+;;;; keyword comparator implementation
+(define +keyword-comparator+
+   (make-comparator  :type? keyword? :equal? eq?
+      :lessthan? (lambda (x y) (string<? (keyword->string x)
+                                  (keyword->string y)))
+      :hash get-hashnumber))
+
+
+;;;; keyword case-insensitive comparator implementation
+(define +keyword-ci-comparator+
+   (make-comparator  :type? keyword?
+      :equal? (lambda (x y)
+                 (string-ci=? (keyword->string x)
+                    (keyword->string y)))
+      :lessthan? (lambda (x y) (string<? (keyword->string x)
+                                  (keyword->string y)))
+      :hash (compose get-hashnumber (compose string-upcase keyword->string))))
 
 
 (define (number-hash::long x)
@@ -220,6 +240,8 @@
       :hash (compose get-hashnumber ucs2-upcase)))
 
 
+
+;;; default comparator
 
 
 

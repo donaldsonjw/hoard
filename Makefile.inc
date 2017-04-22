@@ -107,10 +107,10 @@ jvm: .jfile .afile .etags libj
 
 all: c jvm
 
-test: c recette/test$(LIBNAME)
+test: c recette/test$(LIBNAME) 
 	./recette/test$(LIBNAME)
 
-jtest: jvm .recettejfile recette/jtest$(LIBNAME)
+jtest: jvm .recettejfile recette/jtest$(LIBNAME) 
 	./recette/jtest$(LIBNAME)
 
 .afile: $(BIGLOOSRCS)  $(TESTSRCS)

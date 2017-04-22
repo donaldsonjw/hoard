@@ -9,7 +9,8 @@
            (generic dictionary-remove! obj key)
            (generic dictionary-empty? obj)
            (generic dictionary-enumerator obj)
-           (generic dictionary-contains? obj key)))
+           (generic dictionary-contains? obj key)
+           (generic dictionary-update! obj key val exist-fun)))
 
 (define-generic (dictionary? obj)
    (hashtable? obj))
@@ -40,6 +41,13 @@
           (hashtable-put! obj key val))
          (else
           (raise-unsupported-operation-exception :proc "dictionary-put!"
+             :obj obj))))
+
+(define-generic (dictionary-update! obj key val exist-fun)
+   (cond ((hashtable? obj)
+          (hashtable-update! obj key exist-fun val))
+         (else
+          (raise-unsupported-operation-exception :proc "dictionary-update!"
              :obj obj))))
 
 (define-generic (dictionary-remove! obj key)

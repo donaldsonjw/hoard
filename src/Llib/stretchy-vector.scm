@@ -55,7 +55,9 @@
                                   (length len)))
 
 (define-inline (stretchy-vector #!rest elems)
-   (instantiate::%stretchy-vector (vec (list->vector elems))
+   (instantiate::%stretchy-vector (vec (if (> (length elems) 0)
+                                           (list->vector elems)
+                                           (make-vector  +minimum-stretchy-vector-capacity+ #unspecified)))
                                   (length (length elems))))
 
 
@@ -64,8 +66,14 @@
         (= (stretchy-vector-length a)
            (stretchy-vector-length b))
         (let ((bv::%stretchy-vector b))
-           (equal? (-> bv vec)
-              (-> a vec)))))
+           (do ((i 0 (+ i 1))
+                (res (equal? (vector-ref (-> a vec) 0)
+                        (vector-ref (-> bv vec) 0))
+                   (equal? (vector-ref (-> a vec) i)
+                      (vector-ref (-> bv vec) i))))
+               ((or (not res)
+                    (= i (stretchy-vector-length a))) res)
+               ))))
 
 
 ;; stretchy-vector predicate

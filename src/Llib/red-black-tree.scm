@@ -30,7 +30,7 @@
            +red-black-node-nil+
            (make-red-black-tree #!key comparator)
            (red-black-tree-size tree::%red-black-tree)
-           (red-black-tree-insert! tree::%red-black-tree item)
+           (red-black-tree-insert! tree::%red-black-tree item #!key exists-fun)
            (red-black-tree-contains? tree::%red-black-tree item)
            (red-black-tree #!key comparator #!rest objs)
            (red-black-tree-empty? tree::%red-black-tree)
@@ -65,10 +65,10 @@
 (define (red-black-tree-empty? tree::%red-black-tree)
    (= (node-size (-> tree root)) 0))
 
-(define (red-black-tree-insert! tree::%red-black-tree item)
-   (set! (-> tree root) (node-insert! (-> tree root) item (-> tree comparator)))
+(define (red-black-tree-insert! tree::%red-black-tree item #!key exists-fun)
+   (set! (-> tree root) (node-insert! (-> tree root) item (-> tree comparator) :exists-fun exists-fun))
    (node-red?-set! (-> tree root) #f))
-
+   
 (define (red-black-tree-contains? tree::%red-black-tree item)
    (node-contains? (-> tree root) item (-> tree comparator)))
 
@@ -322,7 +322,7 @@
    (set! (-> node left red?) (not (-> node left red?)))
    (set! (-> node right red?) (not (-> node right red?))))
           
-(define-inline (node-insert! node::%red-black-node item comparator)
+(define-inline (node-insert! node::%red-black-node item comparator #!key exists-fun)
    (if (eq? node +red-black-node-nil+)
        (instantiate::%red-black-node 
           (item item)
@@ -330,10 +330,10 @@
           (red? #t))
        (begin
           (cond ((comparator<? comparator item (-> node item))
-                 (set! (-> node left) (node-insert! (-> node left) item comparator)))
+                 (set! (-> node left) (node-insert! (-> node left) item comparator :exists-fun exists-fun)))
                 ((comparator<? comparator (-> node item) item)
-                 (set! (-> node right) (node-insert! (-> node right) item comparator)))
-                (else (set! (-> node item) item)))
+                 (set! (-> node right) (node-insert! (-> node right) item comparator :exists-fun exists-fun)))
+                (else (set! (-> node item) (if (procedure? exists-fun) (exists-fun (-> node item)) item))))
           (node-balance! node))))
 
 

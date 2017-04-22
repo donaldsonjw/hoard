@@ -17,6 +17,7 @@
  
 (module hoard_make_lib
    (import hoard/collection
+           hoard/collector
            hoard/comparable
            hoard/mutable-collection
            hoard/exceptions
@@ -25,6 +26,9 @@
            hoard/enumerable
            hoard/comparator
            hoard/enumerator
+           hoard/bag
+           hoard/hash-bag
+           hoard/sorted-bag
            hoard/dictionary
            hoard/dictionary-enumerator
            hoard/dictionary-enumerable
@@ -38,7 +42,7 @@
            hoard/contiguous-stack
            hoard/hashtable-ext
            hoard/red-black-tree
-           hoard/ordered-dictionary
+           hoard/sorted-dictionary
            hoard/priority-queue
            hoard/binary-heap
            hoard/pairing-heap

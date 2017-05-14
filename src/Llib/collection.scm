@@ -1,6 +1,7 @@
 (module hoard/collection
    (import hoard/exceptions
            hoard/enumerator
+           hoard/hashtable-ext
            hoard/dictionary-enumerator)
    (export
       (generic collection? obj)
@@ -9,7 +10,8 @@
       (generic collection-contains? obj itm)
       (generic collection-empty? obj)
       (generic collection-first  obj)
-      (generic collection-rest obj)))
+      (generic collection-rest obj)
+      (generic collection-copy obj)))
 
 
 ;;;; collections protocol
@@ -32,7 +34,22 @@
           (= (hashtable-size obj) 0))
          (else
           (raise-unsupported-operation-exception proc: "collection-empty"
-                                                 obj: obj))))
+             obj: obj))))
+
+
+(define-generic (collection-copy obj)
+   (cond ((list? obj)
+          (list-copy obj))
+         ((vector? obj)
+          (vector-copy obj 0 (vector-length obj)))
+         ((string? obj)
+          (string-copy obj))
+         ((hashtable? obj)
+          (hashtable-copy obj))
+         (else
+          (raise-unsupported-operation-exception :proc "collection-copy"
+             :obj obj))))
+          
                       
                  
 
@@ -64,15 +81,13 @@
                                             args: (list obj)))))
 
 (define-inline (vector-contains? vec itm)
-    (do ((i 0 (+ i 1)))
-        ((or (= i (vector-length vec)) (equal? (vector-ref vec i) itm)) (not (= i (vector-length vec))))))
+     (do ((i 0 (+ i 1)))
+         ((or (= i (vector-length vec)) (equal? (vector-ref vec i) itm)) (not (= i (vector-length vec))))))
+
 
 (define-inline (coll-string-contains? str itm)
-   (bind-exit (return)
-      (do ((i 0 (+ i 1)))
-          ((= i (string-length str) #f)
-           (when (equal? (string-ref str i) itm)
-              (return #t))))))
+  (do ((i 0 (+ i 1)))
+      ((or (= i (string-length str)) (equal? (string-ref str i) itm)) (not (= i (string-length str))))))
 
 (define-generic (collection-contains? obj itm)
    (cond ((list? obj)
@@ -97,7 +112,7 @@
 
 (define-generic (collection-rest obj)
    (if (enumerator? obj)
-       (let ((cln (enumerator-clone obj)))
+       (let ((cln (enumerator-copy obj)))
           (enumerator-move-next! cln)
           cln)
        (let ((enumer (collection-enumerator obj)))

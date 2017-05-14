@@ -124,7 +124,7 @@
          (else 
           #f)))
 
-(define-method (enumerator-clone enumerator::%contiguous-stack-enumerator)
+(define-method (enumerator-copy enumerator::%contiguous-stack-enumerator)
    (duplicate::%contiguous-stack-enumerator enumerator))
 
 (define-method (enumerator-current enumerator::%contiguous-stack-enumerator)
@@ -157,6 +157,9 @@
          
 (define-method (collection-empty? obj::%contiguous-stack)
    (contiguous-stack-empty? obj))
+
+(define-method (collection-copy obj::%contiguous-stack)
+   (contiguous-stack-copy obj))
 
 (define-method (collection-mutable? obj::%contiguous-stack)
    #t)

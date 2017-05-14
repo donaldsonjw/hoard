@@ -74,6 +74,20 @@
             (contiguous-queue-first q)
             &invalid-state-exception)))
 
+   (test "contiguous-queue-copy works on a contiguous-queue"
+         (let* ((q1 (contiguous-queue :capacity 6 1 2 3 4))
+                (q2 (contiguous-queue-copy q1)))
+           (assert-equal? (contiguous-queue-length q1)
+                         (contiguous-queue-length q2))
+           (assert-equal? (contiguous-queue-first q1)
+                         (contiguous-queue-first q2))
+           (contiguous-queue-dequeue! q1)
+           (assert-false (equal? (contiguous-queue-length q1)
+                                 (contiguous-queue-length q2)))
+           (contiguous-queue-enqueue! q2 6)
+           (assert-false (equal? (contiguous-queue-first q1)
+                                 (contiguous-queue-first q2)))))
+
    ;;;; queue protocol
 
    (test "a contiguous-queue is a queue?"
@@ -119,7 +133,21 @@
 
    (test "a contiguous-queue has  capacity"
       (let ((q (make-contiguous-queue :capacity 4)))
-         (assert-equal? (queue-capacity q) 4)))
+        (assert-equal? (queue-capacity q) 4)))
+
+   (test "queue-copy works on a contiguous-queue"
+         (let* ((q1 (contiguous-queue :capacity 6 1 2 3 4))
+                (q2 (queue-copy q1)))
+           (assert-equal? (queue-length q1)
+                         (queue-length q2))
+           (assert-equal? (queue-first q1)
+                         (queue-first q2))
+           (queue-dequeue! q1)
+           (assert-false (equal? (queue-length q1)
+                                 (queue-length q2)))
+           (queue-enqueue! q2 6)
+           (assert-false (equal? (queue-first q1)
+                                 (queue-first q2)))))
 
    ;;;; contiguous-queue-enumerator tests
    (test "contiguous-queue-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
@@ -143,7 +171,7 @@
 
    (test "cloning enumerators works correctly on contiguous-queue-enumerators"
       (let* ((enumer (get-enumer (contiguous-queue :capacity 4 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1 2 3 4))
          (assert-equal? (enumerator->list cln) '(1 2 3 4))))
 
@@ -158,7 +186,21 @@
       (assert-true (collection-contains? (contiguous-queue :capacity 3 1 2 3) 1)))
 
    (test "collection-empty? works on an empty contiguous-queue"
-      (assert-true (collection-empty? (contiguous-queue :capacity 3))))
+         (assert-true (collection-empty? (contiguous-queue :capacity 3))))
+
+   (test "collection-copy works on a contiguous-queue"
+         (let* ((q1 (contiguous-queue :capacity 6 1 2 3 4))
+                (q2 (collection-copy q1)))
+           (assert-equal? (collection-length q1)
+                         (collection-length q2))
+           (assert-equal? (queue-first q1)
+                         (queue-first q2))
+           (queue-dequeue! q1)
+           (assert-false (equal? (collection-length q1)
+                                 (collection-length q2)))
+           (queue-enqueue! q2 6)
+           (assert-false (equal? (queue-first q1)
+                                 (queue-first q2)))))
 
    (test "a contiguous-queue is a mutable-collection"
       (assert-true (collection-mutable? (contiguous-queue :capacity 3))))

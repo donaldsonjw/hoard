@@ -11,7 +11,11 @@
                   (weak 'none)
                   (max-length 16384)
                   (bucket-expansion 1.2)
-                  #!rest list-of-associations)))
+                  #!rest list-of-associations)
+           (hashtable-comparator table)
+           (hashtable-copy table)
+           (inline hashtable-buckets hash)
+           +hashtable-buckets-index+))
 
 
 
@@ -48,3 +52,79 @@
          list-of-associations)
       res)
    )
+
+
+(define +hashtable-hash-index+ 4)
+(define +hashtable-equal-index+ 3)
+(define +hashtable-max-bucket-len-index+ 1)
+(define +hashtable-buckets-index+ 2)
+(define +hashtable-weak-index+ 5)
+(define +hashtable-max-length-index+ 6)
+(define +hashtable-bucket-expansion-index+ 7)
+
+(define-inline (hashtable-max-bucket-len hash)
+   (struct-ref hash +hashtable-max-bucket-len-index+))
+
+(define-inline (hashtable-buckets hash)
+   (struct-ref hash +hashtable-buckets-index+))
+
+(define-inline (hashtable-weak hash)
+   (struct-ref hash +hashtable-weak-index+))
+
+(define-inline (hashtable-max-length hash)
+   (struct-ref hash +hashtable-max-length-index+))
+
+(define-inline (hashtable-bucket-expansion hash)
+   (struct-ref hash +hashtable-bucket-expansion-index+))
+
+(define-inline (hashtable-hash-proc hash)
+   (let ((res (struct-ref hash +hashtable-hash-index+)))
+      (if (procedure? res)
+          res
+          get-hashnumber)))
+
+(define-inline (buckets-copy buckets)
+   (vector-map list-copy buckets))
+
+(define-inline (hashtable-equal-proc hash)
+   (let ((res (struct-ref hash +hashtable-equal-index+)))
+      (if (procedure? res)
+          res
+          ;;; the following lambda will need to be updated if hashtable-equal? in runtime/Llib/hash.sch is
+          ;;; changed. 
+          (lambda (obj1 obj2)
+             (cond ((eq? obj1 obj2)
+                    #t)
+                   ((string? obj1)
+                    (if (string? obj2)
+                        (string=? obj1 obj2)
+                        #f))
+                   (else
+                    #f))))))
+
+
+(define (hashtable-comparator table)
+   (if (not (hashtable? table))
+       (raise-invalid-argument-exception :proc "hashtable-comparator"
+          :args table
+          :msg "must pass a hashtable")
+       (make-comparator :type? (lambda (x) #t)
+          :equal? (hashtable-equal-proc table)
+          :hash (hashtable-hash-proc table))))
+
+
+(define (hashtable-copy table)
+   (if (not (hashtable? table))
+       (raise-invalid-argument-exception :proc "hashtable-copy"
+          :args table
+          :msg "must pass a hashtable")
+       (let ((buckets (hashtable-buckets table)))
+          (list->struct (list '%hashtable
+                           (hashtable-size table)
+                           (hashtable-max-bucket-len table)
+                           (buckets-copy buckets)
+                           (hashtable-equal-proc table)
+                           (hashtable-hash-proc table)
+                           (hashtable-weak table)
+                           (hashtable-max-length table)
+                           (hashtable-bucket-expansion table))))))

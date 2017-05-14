@@ -24,7 +24,8 @@
            (inline binary-heap-capacity heap::%binary-heap)
            (inline binary-heap-empty? heap::%binary-heap)
            (inline binary-heap-bubble-down! vec start fin comparator)
-           (inline binary-heap-heapify! vec len comparator)))
+           (inline binary-heap-heapify! vec len comparator)
+           (inline binary-heap-copy heap::%binary-heap)))
 
 
 (define-inline (binary-heap? obj)
@@ -54,6 +55,10 @@
       (set! (-> res idx) (length vals))
       (binary-heap-heapify! (-> res store) (length vals) comparator)
       res))
+
+(define-inline (binary-heap-copy heap::%binary-heap)
+  (duplicate::%binary-heap
+   heap (store (vector-copy (-> heap store) 0 (vector-length (-> heap store)))))) 
 
 (define-inline (binary-heap-heapify! vec len comparator)
    (do ((i (/fx len 2) (- i 1)))
@@ -171,6 +176,9 @@
 (define-method (priority-queue-empty? pq::%binary-heap)
    (binary-heap-empty? pq))
 
+(define-method (priority-queue-copy pq::%binary-heap)
+   (binary-heap-copy pq))
+
 ;;;; %binary-heap-enumerator implementation
 
 (define-method (enumerator? enumerator::%binary-heap-enumerator)
@@ -188,7 +196,7 @@
           #f)))
 
 
-(define-method (enumerator-clone enumerator::%binary-heap-enumerator)
+(define-method (enumerator-copy enumerator::%binary-heap-enumerator)
    (duplicate::%binary-heap-enumerator enumerator))
 
 (define-method (enumerator-current enumerator::%binary-heap-enumerator)
@@ -221,6 +229,9 @@
          
 (define-method (collection-empty? obj::%binary-heap)
    (binary-heap-empty? obj))
+
+(define-method (collection-copy obj::%binary-heap)
+   (binary-heap-copy obj))
 
 (define-method (collection-mutable? obj::%binary-heap)
    #t)

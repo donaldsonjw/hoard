@@ -249,7 +249,7 @@
 (define-method (enumerator? enumerator::%stretchy-vector-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%stretchy-vector-enumerator)
+(define-method (enumerator-copy enumerator::%stretchy-vector-enumerator)
    (duplicate::%stretchy-vector-enumerator enumerator))
 
 (define-method (enumerator-move-next! enumerator::%stretchy-vector-enumerator)
@@ -281,7 +281,7 @@
 (define-method (dictionary-enumerator? enumerator::%stretchy-vector-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%stretchy-vector-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%stretchy-vector-enumerator)
    (duplicate::%stretchy-vector-enumerator enumerator))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%stretchy-vector-enumerator)

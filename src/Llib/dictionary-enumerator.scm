@@ -16,7 +16,7 @@
            (generic dictionary-enumerator-current obj)
            (generic dictionary-enumerator-key obj)
            (generic dictionary-enumerator-value obj)
-           (generic dictionary-enumerator-clone obj)
+           (generic dictionary-enumerator-copy obj)
            (generic dictionary-enumerator? obj)
            (dictionary-enumerator->list enumer)
            (dictionary-enumerator->vector enumer)
@@ -28,7 +28,7 @@
 
 (define-generic (dictionary-enumerator? obj)
    #f)
-(define-generic (dictionary-enumerator-clone obj))
+(define-generic (dictionary-enumerator-copy obj))
 (define-generic (dictionary-enumerator-move-next! obj))
 (define-generic (dictionary-enumerator-current obj))
 (define-generic (dictionary-enumerator-key obj))
@@ -40,7 +40,7 @@
 (define-method (dictionary-enumerator? enumerator::%hashtable-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%hashtable-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%hashtable-enumerator)
    (duplicate::%hashtable-enumerator enumerator))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%hashtable-enumerator)
@@ -64,7 +64,7 @@
 (define-method (dictionary-enumerator? enumerator::%vector-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%vector-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%vector-enumerator)
    (duplicate::%vector-enumerator enumerator))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%vector-enumerator)
@@ -88,7 +88,7 @@
 (define-method (dictionary-enumerator? enumerator::%string-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%string-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%string-enumerator)
    (duplicate::%string-enumerator enumerator))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%string-enumerator)
@@ -113,9 +113,9 @@
 (define-method (dictionary-enumerator? enumerator::%dictionary-map-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%dictionary-map-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%dictionary-map-enumerator)
    (duplicate::%dictionary-map-enumerator enumerator
-      (enumer (dictionary-enumerator-clone (-> enumerator enumer)))))
+      (enumer (dictionary-enumerator-copy (-> enumerator enumer)))))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%dictionary-map-enumerator)
    (let ((cont (dictionary-enumerator-move-next! (-> enumerator enumer))))
@@ -141,9 +141,9 @@
 (define-method (dictionary-enumerator? enumerator::%dictionary-filter-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%dictionary-filter-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%dictionary-filter-enumerator)
    (duplicate::%dictionary-filter-enumerator enumerator
-      (enumer (dictionary-enumerator-clone (-> enumerator enumer)))))
+      (enumer (dictionary-enumerator-copy (-> enumerator enumer)))))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%dictionary-filter-enumerator)
    (let loop ((cont (dictionary-enumerator-move-next! (-> enumerator enumer))))
@@ -200,9 +200,9 @@
 (define-method (dictionary-enumerator? enumerator::%dictionary-append-enumerator)
    #t)
 
-(define-method (dictionary-enumerator-clone enumerator::%dictionary-append-enumerator)
+(define-method (dictionary-enumerator-copy enumerator::%dictionary-append-enumerator)
    (duplicate::%dictionary-append-enumerator enumerator
-      (enumers (map dictionary-enumerator-clone (-> enumerator enumers)))))
+      (enumers (map dictionary-enumerator-copy (-> enumerator enumers)))))
 
 (define-method (dictionary-enumerator-move-next! enumerator::%dictionary-append-enumerator)
    (let loop ()

@@ -42,7 +42,7 @@
          (hashtable-put! hash 'b 2)
          (hashtable-put! hash 'c 3)
          (assert-equal? (enumerator->list (enumerable-map (lambda (e) (+ e 1)) hash))
-            '(4 3 2))))
+            '(2 3 4))))
             
    (test "enumerable-map on a string works"
          (assert-equal? (enumerator->list (enumerable-map (lambda (e) (char-upcase e)) "abc"))
@@ -63,7 +63,7 @@
          (hashtable-put! hash 'b 2)
          (hashtable-put! hash 'c 3)
          (assert-equal? (enumerator->list (enumerable-filter (lambda (e) (not (=  e 1))) hash))
-            '(3 2))))
+            '(2 3))))
             
    (test "enumerable-filter on a string works"
          (assert-equal? (enumerator->list (enumerable-filter (lambda (e) (not (equal? e #\a))) "abc"))

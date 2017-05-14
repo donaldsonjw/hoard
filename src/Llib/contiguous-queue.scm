@@ -21,7 +21,8 @@
            (inline contiguous-queue? obj)
            (inline contiguous-queue-capacity q::%contiguous-queue)
            (inline contiguous-queue-dequeue! q::%contiguous-queue)
-           (inline contiguous-queue-first q::%contiguous-queue)))
+           (inline contiguous-queue-first q::%contiguous-queue)
+           (inline contiguous-queue-copy q::%contiguous-queue)))
 
 
 (define-inline (contiguous-queue? obj)
@@ -82,6 +83,12 @@
           :obj q)
        (vector-ref (-> q store) (-> q front))))
 
+(define-inline (contiguous-queue-copy q::%contiguous-queue)
+   (instantiate::%contiguous-queue (length (-> q length))
+                                   (store (vector-copy (-> q store)
+                                             0 (vector-length (-> q store))))
+                                   (front (-> q front))
+                                   (back (-> q back))))
 
 ;;;; %contiguous-queue-enumerator implementation
 
@@ -103,7 +110,7 @@
          (else 
           #f)))
 
-(define-method (enumerator-clone enumerator::%contiguous-queue-enumerator)
+(define-method (enumerator-copy enumerator::%contiguous-queue-enumerator)
    (duplicate::%contiguous-queue-enumerator enumerator))
 
 (define-method (enumerator-current enumerator::%contiguous-queue-enumerator)
@@ -139,6 +146,10 @@
 (define-method (queue-capacity obj::%contiguous-queue)
   (contiguous-queue-capacity obj))
 
+
+(define-method (queue-copy obj::%contiguous-queue)
+   (contiguous-queue-copy obj))
+
 ;;;; collection protocol
 (define-method (collection? obj::%contiguous-queue)
    #t)
@@ -161,6 +172,9 @@
          
 (define-method (collection-empty? obj::%contiguous-queue)
    (contiguous-queue-empty? obj))
+
+(define-method (collection-copy obj::%contiguous-queue)
+   (contiguous-queue-copy obj))
 
 (define-method (collection-mutable? obj::%contiguous-queue)
    #t)

@@ -90,7 +90,7 @@
 
    (test "cloning a %range-enumerator works correctly"
       (let* ((enum (get-enumer (range :start  1 :end 6)))
-             (cln (enumerator-clone enum)))
+             (cln (enumerator-copy enum)))
          (assert-equal? (enumerator->list enum) '(1 2 3 4 5))
          (assert-equal? (enumerator->list cln) '(1 2 3 4 5))))
 

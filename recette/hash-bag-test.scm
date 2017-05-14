@@ -80,6 +80,19 @@
          (hash-bag-count-set! bag 4 2)
          (assert-equal? (hash-bag-count bag 4) 2)))
 
+      (test "hash-bag-copy works"
+      (let* ((bag1 (hash-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (hash-bag-copy bag1)))
+         (assert-true (and (hash-bag-contains? bag2 1)
+                           (hash-bag-contains? bag2 2)
+                           (hash-bag-contains? bag2 4)))
+         (assert-equal? (hash-bag-length bag1)
+             (hash-bag-length bag2))
+         (hash-bag-delete! bag2 4)
+         (assert-false (equal? (hash-bag-length bag1)
+                          (hash-bag-length bag2)))
+         (assert-false (hash-bag-contains? bag2 4))))
+
    ;;; bag protocol
    (test "bag-insert! works"
       (let ((bag (make-hash-bag)))
@@ -135,9 +148,21 @@
          (assert-equal? (bag-length bag) 3)
          (bag-delete! bag 2)
          (assert-equal? (bag-length bag) 2)))
+
+   (test "bag-copy works"
+      (let* ((bag1 (hash-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (bag-copy bag1)))
+         (assert-true (and (bag-contains? bag2 1)
+                           (bag-contains? bag2 2)
+                           (bag-contains? bag2 4)))
+         (assert-equal? (bag-length bag1)
+             (hash-bag-length bag2))
+         (hash-bag-delete! bag2 4)
+         (assert-false (equal? (hash-bag-length bag1)
+                          (hash-bag-length bag2)))
+         (assert-false (hash-bag-contains? bag2 4))))
+
    
-
-
    ;;;; hash-bag-enumerator tests
    (test "hash-bag-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
       (let ((enumer  (make-hash-bag-enumerator (hash-bag 1 1 2 3 4))))
@@ -163,7 +188,7 @@
    (test "cloning enumerators works correctly on hash-bag-enumerators"
       (let* ((bag (hash-bag 1 4 2 3))
              (enumer (make-hash-bag-enumerator bag))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer)
             (enumerator->list cln))))
 
@@ -211,15 +236,15 @@
     
     (test "enumerable-append works on hash-bags"
       (let ((enumer (enumerable-append (hash-bag 1 2 3) (hash-bag 4 5 6))))
-         (assert-equal? (enumerator->list enumer) '(3 2 1 6 5 4))))
+         (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))))
 
     (test "enumerable-take works on hash-bags"
       (assert-equal? (enumerator->list (enumerable-take 2 (hash-bag 1 2 3 4 5)))
-         '(5 4)))
+         '(1 2)))
 
     (test "enumerable-take-while works on hash-bags"
        (assert-equal? (enumerator->list (enumerable-take-while odd? (hash-bag 1 3 4 5)))
-          '(5)))
+          '(1 3)))
 
 
    ;;;; collection tests    
@@ -235,6 +260,18 @@
    (test "collection-empty? works on an empty hash-bag"
       (assert-true (collection-empty? (hash-bag))))
 
+   (test "collection-copy works"
+      (let* ((bag1 (hash-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (collection-copy bag1)))
+         (assert-true (and (collection-contains? bag2 1)
+                           (collection-contains? bag2 2)
+                           (collection-contains? bag2 4)))
+         (assert-equal? (collection-length bag1)
+             (collection-length bag2))
+         (bag-delete! bag2 4)
+         (assert-false (equal? (collection-length bag1)
+                          (collection-length bag2)))
+         (assert-false (collection-contains? bag2 4))))
 
    ;;;; hash-bag is mutable
    (test "hash-bag is mutable"

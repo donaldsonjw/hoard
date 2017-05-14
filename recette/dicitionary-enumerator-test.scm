@@ -23,7 +23,7 @@
                                   (let ((t (dictionary-enumerator-current hash-enum))) 
                                      (loop (dictionary-enumerator-move-next! hash-enum)
                                         (cons t res)))
-                                  res)) (list 1 2 3)))))
+                                  res)) (list 3 2 1)))))
 
    (test "dictionary-enumerator enumerates over keys correctly"
       (let ((hash (create-hashtable)))
@@ -37,19 +37,19 @@
                                   (let ((t (dictionary-enumerator-key hash-enum))) 
                                      (loop (dictionary-enumerator-move-next! hash-enum)
                                         (cons t res)))
-                                  res)) (list 'a 'b 'c)))))
+                                  res)) (list 'c 'b 'a)))))
 
-   (test "dictionary-enumerator-clone works for hashtable-enumerators"
+   (test "dictionary-enumerator-copy works for hashtable-enumerators"
       (let* ((hash (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (enumer1 (dictionary-enumerator hash))
-             (enumer2 (dictionary-enumerator-clone enumer1)))
+             (enumer2 (dictionary-enumerator-copy enumer1)))
          (dictionary-enumerator-move-next! enumer1)
          (dictionary-enumerator-move-next! enumer1)
          (assert-equal? (dictionary-enumerator-key enumer1) 'b)
          (assert-equal? (dictionary-enumerator-value enumer1) 2)
          (dictionary-enumerator-move-next! enumer2)
-         (assert-equal? (dictionary-enumerator-key enumer2) 'c)
-         (assert-equal? (dictionary-enumerator-value enumer2) 3)))
+         (assert-equal? (dictionary-enumerator-key enumer2) 'a)
+         (assert-equal? (dictionary-enumerator-value enumer2) 1)))
 
    (test "dictionary-enumerator for vector throws an exception if enumerator-move-next is not called before enumerator-current"
       (let ((enum (collection-enumerator (vector))))
@@ -80,10 +80,10 @@
                                      (cons t res)))
                                (reverse! res))) (list 0 1 2))))
 
-   (test "dictionary-enumerator-clone works for vector-enumerators"
+   (test "dictionary-enumerator-copy works for vector-enumerators"
       (let* ((vec (vector 'a 'b 'c))
              (enumer1 (dictionary-enumerator vec))
-             (enumer2 (dictionary-enumerator-clone enumer1)))
+             (enumer2 (dictionary-enumerator-copy enumer1)))
          (dictionary-enumerator-move-next! enumer1)
          (dictionary-enumerator-move-next! enumer1)
          (assert-equal? (dictionary-enumerator-key enumer1) 1)
@@ -113,10 +113,10 @@
                                      (cons t res)))
                                (reverse! res))) (list 0 1 2))))
 
-   (test "dictionary-enumerator-clone works for string dictionary enumerators"
+   (test "dictionary-enumerator-copy works for string dictionary enumerators"
       (let* ((vec "abc")
              (enumer1 (dictionary-enumerator vec))
-             (enumer2 (dictionary-enumerator-clone enumer1)))
+             (enumer2 (dictionary-enumerator-copy enumer1)))
          (dictionary-enumerator-move-next! enumer1)
          (dictionary-enumerator-move-next! enumer1)
          (assert-equal? (dictionary-enumerator-key enumer1) 1)
@@ -142,7 +142,7 @@
                      (dictionary-enumerable-map (lambda (k v)
                                                    (=> k (+ v 1)))
                         dict))))
-         (assert-equal? res (list (=> 'c  4) (=> 'b 3) (=> 'a  2)))))
+         (assert-equal? res (list (=> 'a  2) (=> 'b 3) (=> 'c  4)))))
 
 
    (test "dictionary-enumerator->vector works"
@@ -151,5 +151,5 @@
                      (dictionary-enumerable-map (lambda (k v)
                                                    (=> k (+ v 1)))
                         dict))))
-         (assert-equal? res (vector (=> 'c 4) (=> 'b 3) (=> 'a  2)))))
+         (assert-equal? res (vector (=> 'a 2) (=> 'b 3) (=> 'c  4)))))
    )

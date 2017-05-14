@@ -60,6 +60,20 @@
       (let ((heap (pairing-heap :comparator +number-comparator+)))
          (assert-exception-thrown (pairing-heap-dequeue! heap)
             &invalid-state-exception)))
+   
+   (test "pairing-heap-copy works"
+      (let* ((h1 (pairing-heap :comparator +number-comparator+ 9 3 8 5))
+            (h2 (pairing-heap-copy h1)))
+         (assert-equal? (pairing-heap-length h1)
+            (pairing-heap-length h2))
+         (assert-equal? (pairing-heap-first h1)
+            (pairing-heap-first h2))
+         (pairing-heap-dequeue! h1)
+         (assert-false (equal? (pairing-heap-first h1)
+                          (pairing-heap-first h2)))
+         (assert-false (equal? (pairing-heap-length h1)
+                          (pairing-heap-length h2)))))
+
 
    ;;;; priority queue protocol tests
    (test "a pairing-heap is a priority queue"
@@ -112,6 +126,20 @@
          (priority-queue-dequeue! heap)
          (assert-true (priority-queue-empty? heap))))
 
+   (test "priority-queue-copy works"
+      (let* ((h1 (pairing-heap :comparator +number-comparator+ 9 3 8 5))
+            (h2 (priority-queue-copy h1)))
+         (assert-equal? (priority-queue-length h1)
+            (priority-queue-length h2))
+         (assert-equal? (priority-queue-first h1)
+            (priority-queue-first h2))
+         (priority-queue-dequeue! h1)
+         (assert-false (equal? (priority-queue-first h1)
+                          (priority-queue-first h2)))
+         (assert-false (equal? (priority-queue-length h1)
+                          (priority-queue-length h2)))))
+
+
    ;;;; pairing-heap-enumerator tests
    (test "pairing-heap-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
       (let ((enumer (collection-enumerator (pairing-heap :comparator +number-comparator+))))
@@ -134,7 +162,7 @@
 
    (test "cloning enumerators works correctly on pairing-heap-enumerators"
       (let* ((enumer (get-enumer (pairing-heap :comparator +number-comparator+ 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) (enumerator->list cln))))
 
 
@@ -150,7 +178,21 @@
 
    (test "collection-empty? works on an empty pairing-heaps"
       (assert-true (collection-empty? (pairing-heap :comparator +number-comparator+))))
+   
+   (test "collection-copy works"
+      (let* ((h1 (pairing-heap :comparator +number-comparator+ 9 3 8 5))
+            (h2 (collection-copy h1)))
+         (assert-equal? (collection-length h1)
+            (collection-length h2))
+         (assert-equal? (priority-queue-first h1)
+            (priority-queue-first h2))
+         (priority-queue-dequeue! h1)
+         (assert-false (equal? (priority-queue-first h1)
+                          (priority-queue-first h2)))
+         (assert-false (equal? (collection-length h1)
+                          (collection-length h2)))))
 
+   
    (test "a pairing-heap is a mutable-collection"
       (assert-true (collection-mutable? (pairing-heap :comparator +number-comparator+))))
 

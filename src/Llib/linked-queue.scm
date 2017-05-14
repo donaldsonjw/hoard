@@ -17,7 +17,8 @@
       (inline make-linked-queue)
       (inline linked-queue? q)
       (inline linked-queue #!rest objs)
-      (inline linked-queue-empty? q::%linked-queue)))
+      (inline linked-queue-empty? q::%linked-queue)
+      (inline linked-queue-copy q::%linked-queue)))
 
 
 (define-inline (make-linked-queue)
@@ -69,6 +70,18 @@
           :obj q)
        (car (-> q first))))
 
+(define-inline (linked-queue-copy q::%linked-queue)
+   (define (find-last lst)
+      (let loop ((lst lst))
+         (if (pair? lst)
+             (if (pair? (cdr lst))
+                 (loop (cdr lst))
+                 lst)
+             lst)))
+   (let ((storage (list-copy (-> q first))))
+      (instantiate::%linked-queue (size (-> q size))
+                                  (first storage)
+                                  (last (find-last storage)))))
 
 ;;;; queue protocol
 (define-method (queue? obj::%linked-queue)
@@ -95,6 +108,9 @@
 (define-method (queue-capacity obj::%linked-queue)
    #unspecified)
 
+(define-method (queue-copy obj::%linked-queue)
+   (linked-queue-copy obj))
+
 ;;;; collection protocol
 
 (define-method (collection? obj::%linked-queue)
@@ -111,6 +127,9 @@
 
 (define-method (collection-empty? obj::%linked-queue)
    (linked-queue-empty? obj))
+
+(define-method (collection-copy obj::%linked-queue)
+   (linked-queue-copy obj))
 
 (define-method (collection-mutable? obj::%linked-queue)
    #t)

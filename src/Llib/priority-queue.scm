@@ -6,7 +6,8 @@
            (generic priority-queue-length pq)
            (generic priority-queue-fixed-capacity? pq)
            (generic priority-queue-capacity pq)
-           (generic priority-queue-empty? pq)))
+           (generic priority-queue-empty? pq)
+           (generic priority-queue-copy pg)))
 
 (define-generic (priority-queue? obj)
    #f)
@@ -24,3 +25,5 @@
 (define-generic (priority-queue-capacity pq))
 
 (define-generic (priority-queue-empty? pq))
+
+(define-generic (priority-queue-copy pg))

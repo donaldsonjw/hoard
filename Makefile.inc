@@ -27,9 +27,9 @@ BHEAPFLAGS = -I src/Llib -unsafe -q -mkaddheap -mkaddlib \
 BCOMMONFLAGS = -mkaddlib -fsharing -q \
                -copt '$(CCOMMONFLAGS)' -I src/Llib
 
-BSAFEFLAGS = $(BCOMMONFLAGS) -cg -O3 
+BSAFEFLAGS = $(BCOMMONFLAGS) -cg -O6 
 
-BUNSAFEFLAGS = $(BCOMMONFLAGS) -O4 -unsafe
+BUNSAFEFLAGS = $(BCOMMONFLAGS) -O6 -unsafe
 
 #C Flags
 CCOMMONFLAGS = -fPIC
@@ -81,22 +81,22 @@ TESTCLASSES = $(TESTSRCS:%.scm=%.class)
 .SUFFIXES:
 
 $(OBJDIR)/%_s.o:src/Llib/%.scm
-	$(BIGLOO) -c $(BSAFEFLAGS) -o $@ $^
+	$(BIGLOO)  -c $(BSAFEFLAGS) -o $@ $^
 
 $(OBJDIR)/%_u.o:src/Llib/%.scm
-	$(BIGLOO) -c $(BUNSAFEFLAGS) -o $@ $^
+	$(BIGLOO)  -c $(BUNSAFEFLAGS) -o $@ $^
 
 $(SCLASSDIR)/%.class:src/Llib/%.scm
-	$(BIGLOO) -jvm -c $(BSAFEFLAGS) -o $@ $^
+	$(BIGLOO) -jvm  -c $(BSAFEFLAGS) -o $@ $^
 
 $(UCLASSDIR)/%.class:src/Llib/%.scm
-	$(BIGLOO) -jvm -c $(BUNSAFEFLAGS) -o $@ $^
+	$(BIGLOO) -jvm  -c $(BUNSAFEFLAGS) -o $@ $^
 
 recette/%.o:recette/%.scm heap
-	$(BIGLOO) -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $<
+	$(BIGLOO)  -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $<
 
 recette/%.class:recette/%.scm heap
-	$(BIGLOO) -jfile .recettejfile -jvm -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $<
+	$(BIGLOO) -jfile .recettejfile -jvm  -c $(BSAFEFLAGS) -L $(DISTDIR) -o $@ $<
 
 
 #targets
@@ -133,13 +133,13 @@ $(DISTDIR)/$(LIBNAME).heap: $(DISTDIR) $(HEAPSRC)
 	$(BIGLOO) $(BHEAPFLAGS) $(HEAPSRC)  -addheap $@
 
 $(DISTDIR)/$(LIBNAME).jheap: $(DISTDIR) $(HEAPSRC)
-	$(BIGLOO) -jvm $(BHEAPFLAGS) $(HEAPSRC)  -addheap $@
+	$(BIGLOO) -jvm  $(BHEAPFLAGS) $(HEAPSRC)  -addheap $@
 
 $(OBJDIR)/make_lib_s.o:src/Misc/make_lib.scm
-	$(BIGLOO) -c $(BSAFEFLAGS) -o $@ $^
+	$(BIGLOO) -c  $(BSAFEFLAGS) -o $@ $^
 
 $(ESCLASSDIR)/make_lib.class:src/Misc/make_lib.scm
-	$(BIGLOO) -jvm -c $(BSAFEFLAGS) -o $@ $^
+	$(BIGLOO) -jvm  -c $(BSAFEFLAGS) -o $@ $^
 
 
 $(OBJDIR)/make_lib_u.o:src/Misc/make_lib.scm

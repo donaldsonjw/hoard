@@ -66,6 +66,19 @@
          (sorted-dictionary-put! dict "a" 1)
          (assert-false (sorted-dictionary-empty? dict))))
 
+   (test "sorted-dictionary-copy works"
+      (let* ((dict1 (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3)))
+             (dict2 (sorted-dictionary-copy dict1)))
+         (assert-true (sorted-dictionary-contains? dict2 "a"))
+         (assert-true (sorted-dictionary-contains? dict2 "b"))
+         (assert-true (sorted-dictionary-contains? dict2 "c"))
+         (assert-equal? (sorted-dictionary-length dict1)
+            (sorted-dictionary-length dict2))
+         (sorted-dictionary-remove! dict2 "a")
+         (assert-false (sorted-dictionary-contains? dict2 "a"))
+         (assert-false (equal? (sorted-dictionary-length dict2)
+                          (sorted-dictionary-length dict1)))))
+
    ;;; collection tests
    ;;; need to return to this
    (test "an sorted-dictionary is a collection"
@@ -88,6 +101,19 @@
          (assert-false (collection-empty? dict))
          (sorted-dictionary-remove! dict "a")
          (assert-true (collection-empty? dict))))
+
+   (test "collection-copy works"
+      (let* ((dict1 (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3)))
+             (dict2 (collection-copy dict1)))
+         (assert-true (dictionary-contains? dict2 "a"))
+         (assert-true (dictionary-contains? dict2 "b"))
+         (assert-true (dictionary-contains? dict2 "c"))
+         (assert-equal? (collection-length dict1)
+            (collection-length dict2))
+         (dictionary-remove! dict2 "a")
+         (assert-false (dictionary-contains? dict2 "a"))
+         (assert-false (equal? (collection-length dict2)
+                          (collection-length dict1)))))
 
 
    ;;; dictionary tests
@@ -141,6 +167,20 @@
          (assert-equal? (dictionary-length dict) 1)
          (dictionary-remove! dict #\a)
          (assert-equal? (dictionary-length dict) 0)))
+
+   (test "dictionary-copy works"
+      (let* ((dict1 (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3)))
+             (dict2 (dictionary-copy dict1)))
+         (assert-true (dictionary-contains? dict2 "a"))
+         (assert-true (dictionary-contains? dict2 "b"))
+         (assert-true (dictionary-contains? dict2 "c"))
+         (assert-equal? (dictionary-length dict1)
+            (dictionary-length dict2))
+         (dictionary-remove! dict2 "a")
+         (assert-false (dictionary-contains? dict2 "a"))
+         (assert-false (equal? (dictionary-length dict2)
+                          (dictionary-length dict1)))))
+
 
    ;;; enumerable tests 
    (test "enumerable-for-each on sorted-dictionary works"
@@ -261,7 +301,38 @@
              (assert-equal? (dictionary-get dict 'b) 2)
              (assert-equal? (dictionary-get dict 'c) 3)))
 
-
+       ;;; sorted-dictionary indexable methods
+       (test "sorted-dictionary is indexable"
+          (assert-true (collection-indexable? (sorted-dictionary :comparator +number-comparator+)))
+          (assert-false (collection-indexable? 5)))
        
+       (test "collection-ref for sorted-dictionary works"
+          (let ((dict (sorted-dictionary :comparator +string-comparator+)))
+         (collection-set! dict "k1" 1)
+         (collection-set! dict "k2" 2)
+         (assert-equal? (collection-ref dict "k2")
+            2)))
+
+        (test "collection-ref throws exception for invalid index on sorted-dictionary"
+           (assert-exception-thrown
+              (collection-ref (sorted-dictionary :comparator +number-comparator+) 4) &invalid-index-exception))
+
+        
+        (test "collection-set! works on sorted dictionaries"
+           (let ((t (sorted-dictionary :comparator +string-comparator+)))
+              (collection-set! t "key" 5)
+              (collection-set! t "key" 4)
+              (assert-equal? (collection-ref t "key") 4)))
+
+
+        (test "collection-slice works on sorted dictionaries"
+           (let ((dict (sorted-dictionary :comparator +string-comparator+)))
+              (collection-set! dict "a" 1)
+              (collection-set! dict "b" 2)
+              (collection-set! dict "c" 1)
+              (collection-set! dict "d" 1)
+              (assert-equal? (enumerator->list (collection-slice dict '("b" "c")))
+                 '(2 1))))
+        
        
        )

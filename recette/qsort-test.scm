@@ -12,7 +12,7 @@
    (define (qsort-int enumer)
       (if (enumerator-move-next! enumer)
           (let* ((pivot (enumerator-current enumer))
-                 (cln (enumerator-clone enumer)))
+                 (cln (enumerator-copy enumer)))
              (enumerable-append (qsort-int (enumerable-filter (lambda (x) (less-than x pivot)) enumer))
                 (list pivot)
                 (qsort-int (enumerable-filter (lambda (x) (not (less-than x pivot))) cln))))

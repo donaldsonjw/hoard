@@ -46,5 +46,8 @@
            hoard/priority-queue
            hoard/binary-heap
            hoard/pairing-heap
-           hoard/association)
+           hoard/association
+           hoard/set
+           hoard/hash-set
+           hoard/sorted-set)
    (eval (export-all)))

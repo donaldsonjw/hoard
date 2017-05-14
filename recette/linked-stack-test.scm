@@ -68,6 +68,18 @@
          (assert-equal? (linked-stack-top stack) 2)
          (assert-equal? (linked-stack-pop! stack) 2)
          (assert-equal? (linked-stack-top stack) 3)))
+   
+   (test "linked-stack-copy works"
+      (let* ((stk1 (linked-stack 1 2 3))
+             (stk2 (linked-stack-copy stk1)))
+         (assert-equal? (linked-stack-length stk2)
+            (linked-stack-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (linked-stack-pop! stk1)
+         (assert-false (= (linked-stack-length stk1)
+                          (linked-stack-length stk2)))))
+
 
 
    ;;;; generic stack protocol tests
@@ -115,6 +127,19 @@
    (test "stack-capacity return #unspecified for a linked-stack"
       (assert-equal? (stack-capacity (linked-stack)) #unspecified))
    
+
+   (test "stack-copy works"
+      (let* ((stk1 (linked-stack 1 2 3))
+             (stk2 (stack-copy stk1)))
+         (assert-equal? (stack-length stk2)
+            (stack-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (stack-pop! stk1)
+         (assert-false (= (stack-length stk1)
+                          (stack-length stk2)))))
+         
+     
    
 
    ;;;; collection tests
@@ -130,8 +155,18 @@
 
    (test "collection-empty? works on an empty linked-stack"
       (assert-true (collection-empty? (linked-stack))))
-
-
+   
+   (test "collection-copy works"
+      (let* ((stk1 (linked-stack 1 2 3))
+             (stk2 (collection-copy stk1)))
+         (assert-equal? (collection-length stk2)
+            (collection-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (stack-pop! stk1)
+         (assert-false (= (collection-length stk1)
+                          (collection-length stk2)))))
+   
    (test "a linked-stack is a mutable-collection"
       (assert-true (collection-mutable? (linked-stack))))
    

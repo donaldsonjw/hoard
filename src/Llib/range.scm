@@ -43,7 +43,7 @@
 (define-method (enumerator? obj::%range-enumerator)
    #t)
 
-(define-method (enumerator-clone obj::%range-enumerator)
+(define-method (enumerator-copy obj::%range-enumerator)
    (duplicate::%range-enumerator obj))
 
 (define-method (enumerator-move-next! obj::%range-enumerator)

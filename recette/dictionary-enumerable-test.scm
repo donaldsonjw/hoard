@@ -18,7 +18,7 @@
          (let ((res '()))
             (dictionary-enumerable-for-each (lambda (k v)
                                                (set! res (cons (list k v) res))) dict)
-            (assert-equal? res '((a 1) (b 2) (c 3))))))
+            (assert-equal? res '((c 3) (b 2) (a 1))))))
 
    (test "dictionary-enumerable-for-each works on vectors"
       (let ((vec (vector 1 2 3)))
@@ -39,7 +39,7 @@
              (res (dictionary-enumerator->list (dictionary-enumerable-map
                                                   (lambda (k v)
                                                      (=> k (+ v 1))) dict))))
-         (assert-equal? res (list (=> 'c 4) (=> 'b 3) (=> 'a  2)))))
+         (assert-equal? res (list (=> 'a  2) (=> 'b 3)  (=> 'c 4)))))
 
    (test "dictionary-enumerable-map works on vectors"
       (let* ((dict (vector 1 2 3))
@@ -61,7 +61,7 @@
       (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3) (=> 'd 4)))
              (res (dictionary-enumerator->list
                      (dictionary-enumerable-filter (lambda (k v) (even? v)) dict))))
-         (assert-equal? res (list (=> 'd  4) (=> 'b  2)))))
+         (assert-equal? res (list (=> 'b  2)(=> 'd  4) ))))
 
    (test "dictionary-enumerable-filter works on vectors"
       (let* ((dict (vector #\a #\b #\c #\d #\e))

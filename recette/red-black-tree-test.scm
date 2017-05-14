@@ -50,7 +50,23 @@
          (assert-equal? (-> tree root right item) 3)
          (assert-false (-> tree root right red?))))
 
-
+   (test "red-black-tree-copy works"
+      (let ((tree1::%red-black-tree (make-red-black-tree :comparator +number-comparator+)))
+         (red-black-tree-insert! tree1 1)
+         (red-black-tree-insert! tree1 2)
+         (red-black-tree-insert! tree1 3)
+         (let ((tree2 (red-black-tree-copy tree1)))
+            (assert-true (and (red-black-tree-contains? tree2 1)
+                              (red-black-tree-contains? tree2 2)
+                              (red-black-tree-contains? tree2 3)))
+            (assert-equal? (red-black-tree-size tree1)
+               (red-black-tree-size tree2))
+            (red-black-tree-delete! tree2 1)
+            (assert-false (equal? (red-black-tree-size tree1)
+                             (red-black-tree-size tree2)))
+            (assert-false (red-black-tree-contains? tree2 1))
+            (assert-true (red-black-tree-contains? tree1 1)))))
+               
    (test "empty tree is balanced"
       (assert-true (red-black-tree-balanced? (make-red-black-tree :comparator +number-comparator+))))
    
@@ -133,7 +149,7 @@
    (test "cloning enumerators works correctly on red-black-tree-in-order-enumerators"
       (let* ((rbt (red-black-tree :comparator +number-comparator+ 1 4 2 3))
              (enumer (make-red-black-tree-in-order-enumerator rbt))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1 2 3 4))
          (assert-equal? (enumerator->list cln) '(1 2 3 4))))
 

@@ -14,7 +14,8 @@
       hoard/collection
       hoard/stack
       hoard/linked-stack
-      hoard/comparator)
+      hoard/comparator
+      hoard/indexable)
    (export
       (class %sorted-dictionary-enumerator::%red-black-tree-enumerator)
       (class %sorted-dictionary::%red-black-tree)
@@ -27,7 +28,9 @@
       (sorted-dictionary-contains? dict::%sorted-dictionary key)
       (sorted-dictionary-remove! dict::%sorted-dictionary key)
       (sorted-dictionary-empty? dict::%sorted-dictionary)
-      (make-sorted-dictionary-enumerator dict::%sorted-dictionary)))
+      (make-sorted-dictionary-enumerator dict::%sorted-dictionary)
+      (sorted-dictionary-copy dict::%sorted-dictionary)
+      (sorted-dictionary-length dict::%sorted-dictionary)))
 
 ;;; utility procedures for sorted-dictionary implementation
 (define-inline (list-of-associations? loa)
@@ -98,6 +101,9 @@
    (let ((item (=> key #unspecified)))
       (red-black-tree-delete! dict item)))
 
+(define (sorted-dictionary-copy dict::%sorted-dictionary)
+   (duplicate::%sorted-dictionary dict (root (red-black-node-copy (-> dict root)))))
+
 ;;; dictionary implementation
 
 (define-method (dictionary? dict::%sorted-dictionary)
@@ -125,6 +131,9 @@
 (define-method (dictionary-contains? dict::%sorted-dictionary key)
    (sorted-dictionary-contains? dict key))
 
+(define-method (dictionary-copy dict::%sorted-dictionary)
+   (sorted-dictionary-copy dict))
+
 (define-method (dictionary-enumerator dict::%sorted-dictionary)
    (make-sorted-dictionary-enumerator dict))
 
@@ -144,6 +153,8 @@
 (define-method (collection-empty? dict::%sorted-dictionary)
    (sorted-dictionary-empty? dict))
 
+(define-method (collection-copy dict::%sorted-dictionary)
+   (sorted-dictionary-copy dict))
 
 ;;; sorted-dictionary-enumerator implementation
 (define (make-sorted-dictionary-enumerator dict::%sorted-dictionary)
@@ -156,7 +167,7 @@
    (let ((association (call-next-method)))
       (=>value association)))
 
-(define-method (enumerator-clone enumer::%sorted-dictionary-enumerator)
+(define-method (enumerator-copy enumer::%sorted-dictionary-enumerator)
    (duplicate::%sorted-dictionary-enumerator enumer
       (nodes (stack-copy (-> enumer nodes)))))
 
@@ -180,8 +191,8 @@
 (define-method (dictionary-enumerator-value enumer::%sorted-dictionary-enumerator)
    (enumerator-current enumer))
 
-(define-method (dictionary-enumerator-clone enumer::%sorted-dictionary-enumerator)
-   (enumerator-clone enumer))
+(define-method (dictionary-enumerator-copy enumer::%sorted-dictionary-enumerator)
+   (enumerator-copy enumer))
 
 
 ;;; enumerable implementation
@@ -215,3 +226,19 @@
           :args (list dict item)))) 
 
 
+;;; sorted dictionary is indexable
+
+(define-method (collection-indexable? obj::%sorted-dictionary)
+   #t)
+
+(define-method (collection-ref dict::%sorted-dictionary index
+                  #!optional (default +collection-unspecified+))
+   (let ((res (sorted-dictionary-get dict index)))
+      (if res
+          res
+          (if (specified? default) default
+              (raise-invalid-index-exception :proc "collection-ref"
+                 :index index)))))
+
+(define-method (collection-set! dict::%sorted-dictionary index val)
+   (sorted-dictionary-put! dict index val))

@@ -29,7 +29,8 @@
       (inline sorted-bag-empty? bag::%sorted-bag)
       (inline sorted-bag-count bag::%sorted-bag item)
       (inline sorted-bag-count-set! bag::%sorted-bag item count)
-      (make-sorted-bag-enumerator bag::%sorted-bag)))
+      (make-sorted-bag-enumerator bag::%sorted-bag)
+      (inline sorted-bag-copy bag::%sorted-bag)))
 
 
 (define-inline (sorted-bag? obj)
@@ -52,6 +53,9 @@
       (for-each (lambda (x) (sorted-bag-insert! bag x)) items)
       bag))
 
+(define-inline (sorted-bag-copy bag::%sorted-bag)
+   (duplicate::%sorted-bag bag (root (red-black-node-copy (-> bag root)))))
+
 (define-inline (sorted-bag-insert! bag::%sorted-bag item)
    (sorted-dictionary-update! bag item 1 (lambda (x) (+ x 1))))
 
@@ -70,6 +74,8 @@
 
 (define-inline (sorted-bag-empty? bag::%sorted-bag)
    (sorted-dictionary-empty? bag))
+
+
 
 (define-inline (sorted-bag-count bag::%sorted-bag item)
    (let ((res (sorted-dictionary-get bag item)))
@@ -106,6 +112,9 @@
 (define-method (bag-empty? bag::%sorted-bag)
    (sorted-bag-empty? bag))
 
+(define-method (bag-copy bag::%sorted-bag)
+   (sorted-bag-copy bag))
+
 ;;; collection implementation
 (define-method (collection? bag::%sorted-bag)
    #t)
@@ -122,6 +131,9 @@
 (define-method (collection-empty? bag::%sorted-bag)
    (sorted-bag-empty? bag))
 
+(define-method (collection-copy bag::%sorted-bag)
+   (sorted-bag-copy bag))
+
 ;;;; sorted-bag-enumerator
 (define (make-sorted-bag-enumerator bag::%sorted-bag)
    (instantiate::%sorted-bag-enumerator (enumer (make-sorted-dictionary-enumerator bag))))
@@ -136,13 +148,13 @@
           :obj enumer)
        (=>key (-> enumer curr))))
 
-(define-method (enumerator-clone enumer::%sorted-bag-enumerator)
+(define-method (enumerator-copy enumer::%sorted-bag-enumerator)
    (instantiate::%sorted-bag-enumerator (curr (if (eq? (-> enumer curr)
                                                    #unspecified)
                                                 (-> enumer curr)
                                                 (=> (=>key (-> enumer curr))
                                                    (=>value (-> enumer curr)))))
-                                      (enumer (dictionary-enumerator-clone (-> enumer enumer)))))
+                                      (enumer (dictionary-enumerator-copy (-> enumer enumer)))))
 
 (define-method (enumerator-move-next! enumer::%sorted-bag-enumerator)
    (if (or (eq? (-> enumer curr) #unspecified)

@@ -41,7 +41,9 @@
            (red-black-tree-find-min tree::%red-black-tree)
            (red-black-tree-find-max tree::%red-black-tree)
            (red-black-tree-delete-max! tree::%red-black-tree)
-           (make-red-black-tree-in-order-enumerator tree::%red-black-tree)))
+           (make-red-black-tree-in-order-enumerator tree::%red-black-tree)
+           (red-black-tree-copy tree::%red-black-tree)
+           (inline red-black-node-copy node::%red-black-node)))
 
 (define +red-black-node-nil+ (class-nil %red-black-node))
 
@@ -55,6 +57,9 @@
    (let ((tree (make-red-black-tree :comparator comparator)))
       (for-each (lambda (i) (red-black-tree-insert! tree i)) objs)
       tree))
+
+(define (red-black-tree-copy tree::%red-black-tree)
+   (duplicate::%red-black-tree tree (root (red-black-node-copy (-> tree root)))))
 
 (define-inline (red-black-tree? obj)
    (isa? obj %red-black-tree))
@@ -171,6 +176,13 @@
    (system "dot -Tsvg /tmp/tree.dot > /tmp/tree.svg; eog /tmp/tree.svg")) 
 
 ;;;; node utility methods
+
+(define-inline (red-black-node-copy node::%red-black-node)
+   (if (not (eq? node +red-black-node-nil+))
+       (duplicate::%red-black-node node (left (red-black-node-copy (-> node left)))
+                                   (right (red-black-node-copy (-> node right))))
+       node))
+
 (define-inline (node-red?-set! node::%red-black-node val)
    (set! (-> node red?) val))
 
@@ -390,7 +402,7 @@
          (else
           #f)))
 
-(define-method (enumerator-clone enumerator::%red-black-tree-enumerator)
+(define-method (enumerator-copy enumerator::%red-black-tree-enumerator)
    (duplicate::%red-black-tree-enumerator enumerator
       (nodes (stack-copy (-> enumerator nodes)))))
        

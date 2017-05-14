@@ -54,5 +54,14 @@
          (assert-true (hashtable-contains? hash "B"))
          (assert-true (hashtable-contains? hash "C"))
          (assert-true (hashtable-contains? hash "c"))))
+
+
+   (test "hashtable-comparator works"
+      (let* ((hash (hashtable :comparator +string-ci-comparator+))
+             (comp (hashtable-comparator hash)))
+         (assert-true (comparator=? comp "A" "a"))
+         (assert-equal? (comparator-hash comp "A")
+            (comparator-hash +string-ci-comparator+ "a"))))
+         
    
    )

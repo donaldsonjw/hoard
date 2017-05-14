@@ -29,7 +29,8 @@
       +ucs2-string-comparator+
       +uscs2-string-ci-comparator+
       +keyword-comparator+
-      +keyword-ci-comparator+))
+      +keyword-ci-comparator+
+      (make-comparator #!key type? equal? lessthan? hash)))
 
 ;;;; utility functions
 (define-inline (compose f g)

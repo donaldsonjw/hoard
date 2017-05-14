@@ -67,6 +67,22 @@
             (linked-queue-first q)
             &invalid-state-exception)))
 
+   (test "copying a linked-queue works"
+         (let* ((q1 (linked-queue 1 2 3 4))
+                (q2 (linked-queue-copy q1)))
+           (assert-equal? (linked-queue-length q1)
+                         (linked-queue-length q2))
+           (assert-equal? (linked-queue-first q1)
+                         (linked-queue-first q2))
+           (linked-queue-dequeue! q1)
+           (assert-false (equal? (linked-queue-length q1)
+                                 (linked-queue-length q2)))
+           (linked-queue-enqueue! q2 6)
+           (assert-false (equal? (linked-queue-first q1)
+                                 (linked-queue-first q2)))))
+           
+           
+
    ;;;; queue protocol
 
    (test "a linked-queue is a queue?"
@@ -112,7 +128,22 @@
 
    (test "a linked-queue returns #unspecified for capacity"
       (let ((q (make-linked-queue)))
-         (assert-equal? (queue-capacity q) #unspecified)))
+        (assert-equal? (queue-capacity q) #unspecified)))
+
+   (test "queue-copy works on a linked-queue"
+         (let* ((q1 (linked-queue 1 2 3 4))
+                (q2 (queue-copy q1)))
+           (assert-equal? (queue-length q1)
+                         (queue-length q2))
+           (assert-equal? (queue-first q1)
+                         (queue-first q2))
+           (queue-dequeue! q1)
+           (assert-false (equal? (queue-length q1)
+                                 (queue-length q2)))
+           (queue-enqueue! q2 6)
+           (assert-false (equal? (queue-first q1)
+                                 (queue-first q2)))))
+   
 
    ;;;; collection tests
 
@@ -130,7 +161,21 @@
 
 
    (test "a linked-queue is a mutable-collection"
-      (assert-true (collection-mutable? (linked-queue))))
+         (assert-true (collection-mutable? (linked-queue))))
+
+    (test "collection-copy works on a linked-queue"
+         (let* ((q1 (linked-queue 1 2 3 4))
+                (q2 (collection-copy q1)))
+           (assert-equal? (collection-length q1)
+                         (collection-length q2))
+           (assert-equal? (queue-first q1)
+                         (queue-first q2))
+           (queue-dequeue! q1)
+           (assert-false (equal? (collection-length q1)
+                                 (collection-length q2)))
+           (queue-enqueue! q2 6)
+           (assert-false (equal? (queue-first q1)
+                                 (queue-first q2)))))
    
 
    ;;;; enumerable tests

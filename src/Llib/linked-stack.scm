@@ -105,6 +105,9 @@
 (define-method (collection-contains? obj::%linked-stack itm)
    (collection-contains? (-> obj items) itm))
 
+(define-method (collection-copy obj::%linked-stack)
+   (linked-stack-copy obj))
+
 (define-method (collection-mutable? obj::%linked-stack)
    #t)
 

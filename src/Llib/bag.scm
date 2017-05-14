@@ -6,11 +6,14 @@
            (generic bag-count bag item)
            (generic bag-count-set! bag item count)
            (generic bag-length bag)
-           (generic bag-empty? bag)))
+           (generic bag-empty? bag)
+           (generic bag-copy ob)))
 
 ;;;; bag protocol
 (define-generic (bag? obj)
    #f)
+
+(define-generic (bag-copy ob))
 
 (define-generic (bag-empty? bag))
 

@@ -54,5 +54,19 @@
          (dictionary-put! dict #\a 1)
          (assert-equal? (dictionary-length dict) 1)
          (dictionary-remove! dict #\a)
-         (assert-equal? (dictionary-length dict) 0)))   
+         (assert-equal? (dictionary-length dict) 0)))
+
+   (test "dictionary-copy works"
+      (let* ((dict1 (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
+             (dict2 (dictionary-copy dict1)))
+         (assert-equal? (dictionary-length dict1)
+            (dictionary-length dict2))
+         (assert-true (and (dictionary-contains? dict2 'a)
+                           (dictionary-contains? dict2 'b)
+                           (dictionary-contains? dict2 'c)))
+
+         (dictionary-remove! dict2 'a)
+         (assert-false (dictionary-contains? dict2 'a))
+         (assert-true (dictionary-contains? dict1 'a))))
+         
    )

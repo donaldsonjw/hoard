@@ -78,6 +78,18 @@
          (assert-equal? (contiguous-stack-pop! stack) 2)
          (assert-equal? (contiguous-stack-top stack) 3)))
 
+
+   (test "contiguous-stack-copy works"
+      (let* ((stk1 (contiguous-stack :capacity 3 1 2 3))
+             (stk2 (contiguous-stack-copy stk1)))
+         (assert-equal? (contiguous-stack-length stk2)
+            (contiguous-stack-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (contiguous-stack-pop! stk1)
+         (assert-false (= (contiguous-stack-length stk1)
+                          (contiguous-stack-length stk2)))))
+   
    ;;;; generic stack protocol tests
    (test "a contiguous-stack is a stack"
       (assert-true (stack? (contiguous-stack :capacity 3))))
@@ -123,6 +135,17 @@
    (test "stack-capacity returns 3 for a contigous-stack of capacity 3"
       (assert-equal? (stack-capacity (contiguous-stack :capacity 3)) 3))
 
+   (test "stack-copy works"
+      (let* ((stk1 (contiguous-stack :capacity 3 1 2 3))
+             (stk2 (stack-copy stk1)))
+         (assert-equal? (stack-length stk2)
+            (stack-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (stack-pop! stk1)
+         (assert-false (= (stack-length stk1)
+                          (stack-length stk2)))))
+
 
    ;;;; contiguous-stack-enumerator tests
    (test "contiguous-stack-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
@@ -146,7 +169,7 @@
 
    (test "cloning enumerators works correctly on contiguous-stack-enumerators"
       (let* ((enumer (get-enumer (contiguous-stack :capacity 4 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1 2 3 4))
          (assert-equal? (enumerator->list cln) '(1 2 3 4))))
 
@@ -165,6 +188,16 @@
    (test "collection-empty? works on an empty contiguous-stack"
       (assert-true (collection-empty? (contiguous-stack :capacity 3))))
 
+   (test "collection-copy works"
+      (let* ((stk1 (contiguous-stack :capacity 3 1 2 3))
+             (stk2 (collection-copy stk1)))
+         (assert-equal? (collection-length stk2)
+            (collection-length stk1))
+         (assert-equal? (enumerable-collect stk2 +list-collector+)
+            (enumerable-collect stk1 +list-collector+))            
+         (stack-pop! stk1)
+         (assert-false (= (collection-length stk1)
+                          (collection-length stk2)))))
 
    (test "a contiguous-stack is a mutable-collection"
       (assert-true (collection-mutable? (contiguous-stack :capacity 3))))

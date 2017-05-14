@@ -205,7 +205,7 @@
 
    (test "cloning a %stretchy-vector-enumerator works correctly"
       (let* ((enum (get-enumer (stretchy-vector 1 2 3 4 5)))
-             (cln (enumerator-clone enum)))
+             (cln (enumerator-copy enum)))
          (assert-equal? (enumerator->list enum) '(1 2 3 4 5))
          (assert-equal? (enumerator->list cln) '(1 2 3 4 5))))
 

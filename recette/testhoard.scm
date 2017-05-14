@@ -24,7 +24,9 @@
            pairing-heap-test
            association-test
            hash-bag-test
-           sorted-bag-test)
+           sorted-bag-test
+           hash-set-test
+           sorted-set-test)
    (main main)
    (library btest hoard))
 
@@ -59,6 +61,8 @@
    (suite-add-subsuite! hoard-tests association-tests)
    (suite-add-subsuite! hoard-tests hash-bag-tests)
    (suite-add-subsuite! hoard-tests sorted-bag-tests)
+   (suite-add-subsuite! hoard-tests hash-set-tests)
+   (suite-add-subsuite! hoard-tests sorted-set-tests)
    (let ((tr (instantiate::terminal-test-runner (suite hoard-tests))))
       (if (test-runner-execute tr #t) 0 -1)))
 

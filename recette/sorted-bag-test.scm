@@ -17,6 +17,19 @@
          (assert-true (sorted-bag-contains? bag 4))
          (assert-false (sorted-bag-contains? bag 5))))
 
+   (test "sorted-bag-copy works"
+      (let* ((bag1 (sorted-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (sorted-bag-copy bag1)))
+         (assert-true (and (sorted-bag-contains? bag2 1)
+                           (sorted-bag-contains? bag2 2)
+                           (sorted-bag-contains? bag2 4)))
+         (assert-equal? (sorted-bag-length bag1)
+             (sorted-bag-length bag2))
+         (sorted-bag-delete! bag2 4)
+         (assert-false (equal? (sorted-bag-length bag1)
+                          (sorted-bag-length bag2)))
+         (assert-false (sorted-bag-contains? bag2 4))))
+
    (test "sorted-bag-insert! works"
       (let ((bag (make-sorted-bag :comparator +number-comparator+)))
          (assert-false (sorted-bag-contains? bag 1))
@@ -126,8 +139,22 @@
          (bag-delete! bag 2)
          (assert-equal? (bag-length bag) 2)))
 
+   (test "bag-copy works"
+      (let* ((bag1 (sorted-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (bag-copy bag1)))
+         (assert-true (and (bag-contains? bag2 1)
+                           (bag-contains? bag2 2)
+                           (bag-contains? bag2 4)))
+         (assert-equal? (bag-length bag1)
+             (bag-length bag2))
+         (bag-delete! bag2 4)
+         (assert-false (equal? (bag-length bag1)
+                          (bag-length bag2)))
+         (assert-false (bag-contains? bag2 4))))
+
+
    
-      ;;;; sorted-bag-enumerator tests
+   ;;;; sorted-bag-enumerator tests
    (test "sorted-bag-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
       (let ((enumer  (make-sorted-bag-enumerator (sorted-bag :comparator +number-comparator+ 1 1 2 3 4))))
          (assert-exception-thrown (enumerator-current enumer)
@@ -152,7 +179,7 @@
    (test "cloning enumerators works correctly on sorted-bag-enumerators"
       (let* ((bag (sorted-bag :comparator +number-comparator+ 1 4 2 3))
              (enumer (make-sorted-bag-enumerator bag))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer)
             (enumerator->list cln))))
 
@@ -225,6 +252,19 @@
    (test "collection-empty? works on an empty sorted-bag"
       (assert-true (collection-empty? (sorted-bag :comparator +number-comparator+))))
 
+   (test "collection-copy works"
+      (let* ((bag1 (sorted-bag :comparator +number-comparator+ 1 2 1 4 1))
+             (bag2 (collection-copy bag1)))
+         (assert-true (and (collection-contains? bag2 1)
+                           (collection-contains? bag2 2)
+                           (collection-contains? bag2 4)))
+         (assert-equal? (collection-length bag1)
+             (collection-length bag2))
+         (bag-delete! bag2 4)
+         (assert-false (equal? (collection-length bag1)
+                          (collection-length bag2)))
+         (assert-false (collection-contains? bag2 4))))
+   
    ;;;; sorted-bag is mutable
    (test "sorted-bag is mutable"
       (assert-true (collection-mutable? (sorted-bag :comparator +number-comparator+))))

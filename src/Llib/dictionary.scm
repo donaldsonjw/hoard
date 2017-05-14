@@ -1,6 +1,7 @@
 (module hoard/dictionary
    (import hoard/exceptions
            hoard/enumerator
+           hoard/hashtable-ext
            hoard/dictionary-enumerator)
    (export (generic dictionary? obj)
            (generic dictionary-get obj key)
@@ -10,7 +11,8 @@
            (generic dictionary-empty? obj)
            (generic dictionary-enumerator obj)
            (generic dictionary-contains? obj key)
-           (generic dictionary-update! obj key val exist-fun)))
+           (generic dictionary-update! obj key val exist-fun)
+           (generic dictionary-copy obj)))
 
 (define-generic (dictionary? obj)
    (hashtable? obj))
@@ -64,6 +66,18 @@
           (raise-unsupported-operation-exception :proc "dictionary-length"
              :obj obj))))
 
+(define-generic (dictionary-copy obj)
+   (cond ((hashtable? obj)
+          (hashtable-copy obj))
+         ((vector? obj)
+          (vector-copy obj 0 (vector-length obj)))
+         ((string? obj)
+          (string-copy obj))
+         (else
+          (raise-unsupported-operation-exception :proc "dictionary-copy"
+             :obj obj))))
+        
+
 
 (define-generic (dictionary-enumerator obj)
    (cond ((hashtable? obj)
@@ -75,5 +89,6 @@
          (else
           (raise-unsupported-operation-exception :proc "dictionary-enumerator"
              :obj obj))))
+
 
 

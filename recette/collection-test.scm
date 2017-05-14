@@ -51,8 +51,6 @@
          (hashtable-put! hash 'c 3)
          (assert-true (collection-contains? hash 1))))
 
-
-
    (test "collection-empty? works on empty list"
       (assert-true (collection-empty? (list))))
 
@@ -79,6 +77,34 @@
          (hashtable-put! t "a" 1)
          (assert-false (collection-empty? t))))
 
+
+   (test "collection-copy works on lists"
+      (let* ((list1 (list 1 2 3 4))
+             (list2 (collection-copy list1)))
+         (assert-equal? list1 list2)
+         (assert-false (eq? list1 list2))))
+
+   (test "collection-copy works on vectors"
+      (let* ((vec1 (vector 1 2 3 4))
+             (vec2 (collection-copy vec1)))
+         (assert-equal? vec1 vec2)
+         (assert-false (eq? vec1 vec2))))
+
+   (test "collection-copy works on strings"
+      (let* ((str1 "test")
+             (str2 (collection-copy str1)))
+         (assert-equal? str1 str2)
+         (assert-false (eq? str1 str2))))
+
+   (test "collection-copy works on hashtables"
+      (let* ((hash1 (hashtable (=> 1 1) (=> 2 2) (=> 3 3)))
+             (hash2 (collection-copy hash1)))
+         (assert-equal? (hashtable-size hash2) 3)
+         (assert-true (hashtable-contains? hash2 1))
+         (assert-true (hashtable-contains? hash2 2))
+         (assert-true (hashtable-contains? hash2 3))
+         (assert-false (eq? hash1 hash2))))
+         
      (test "collection-first on '(1 2 3 4) is 1"
       (assert-equal? (collection-first '(1 2 3 4))
          1))

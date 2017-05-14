@@ -31,7 +31,9 @@
       (inline pairing-node-enqueue! node::%pairing-node itm comparator)
       (inline pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
       (inline pairing-heap-first heap::%pairing-heap)
-      (inline pairing-heap-length heap::%pairing-heap)))
+      (inline pairing-heap-length heap::%pairing-heap)
+      (inline pairing-heap-copy heap::%pairing-heap)
+      (inline pairing-node-copy node::%pairing-node)))
 
 
 (define-inline (pairing-heap? obj)
@@ -60,9 +62,15 @@
 (define-inline (pairing-heap-empty? heap::%pairing-heap)
    (eq? (-> heap node) (class-nil %pairing-node)))
 
+(define-inline (pairing-heap-copy heap::%pairing-heap)
+   (duplicate::%pairing-heap heap (node (pairing-node-copy (-> heap node)))))
+
 (define-inline (singleton-pairing-heap itm comparator)
    (instantiate::%pairing-heap (node (instantiate::%pairing-node (elem itm)))
                                (comparator comparator)))
+
+(define-inline (pairing-node-copy node::%pairing-node)
+   (duplicate::%pairing-node node (subheaps (map pairing-node-copy (-> node subheaps)))))
 
 (define-inline (pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
    (cond ((eq? node1 (class-nil %pairing-node))
@@ -117,6 +125,7 @@
    (set! (-> heap1 node) (pairing-node-merge! (-> heap1 node) (-> heap2 node) (-> heap1 comparator)))
    heap1)
 
+
 ;;;; priority-queue protocol implementation
 (define-method (priority-queue? obj::%pairing-heap)
    #t)
@@ -142,6 +151,9 @@
 (define-method (priority-queue-empty? pq::%pairing-heap)
    (pairing-heap-empty? pq))
 
+(define-method (priority-queue-copy pq::%pairing-heap)
+   (pairing-heap-copy pq))
+
 ;;;; %pairing-heap-enumerator implementation
 (define-method (enumerator? enumerator::%pairing-heap-enumerator)
    #t)
@@ -160,7 +172,7 @@
         (else 
          #f)))
 
-(define-method (enumerator-clone enumerator::%pairing-heap-enumerator)
+(define-method (enumerator-copy enumerator::%pairing-heap-enumerator)
    (duplicate::%pairing-heap-enumerator enumerator (nodes (list-copy (-> enumerator nodes)))))
 
 (define-method (enumerator-current enumerator::%pairing-heap-enumerator)
@@ -195,6 +207,9 @@
          
 (define-method (collection-empty? obj::%pairing-heap)
    (pairing-heap-empty? obj))
+
+(define-method (collection-copy obj::%pairing-heap)
+   (pairing-heap-copy obj))
 
 (define-method (collection-mutable? obj::%pairing-heap)
    #t)

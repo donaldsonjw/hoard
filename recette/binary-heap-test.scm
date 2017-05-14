@@ -79,6 +79,20 @@
          (binary-heap-dequeue! heap)
          (assert-true (binary-heap-empty? heap))))
 
+
+   (test "binary-heap-copy works"
+      (let* ((h1 (binary-heap :capacity 6 :comparator +number-comparator+ 9 3 8 5))
+            (h2 (binary-heap-copy h1)))
+         (assert-equal? (binary-heap-length h1)
+            (binary-heap-length h2))
+         (assert-equal? (binary-heap-first h1)
+            (binary-heap-first h2))
+         (binary-heap-dequeue! h1)
+         (assert-false (equal? (binary-heap-first h1)
+                          (binary-heap-first h2)))
+         (assert-false (equal? (binary-heap-length h1)
+                          (binary-heap-length h2)))))
+
    ;;;; priority queue protocol tests
    (test "a binary-heap is a priority queue"
       (assert-true (priority-queue? (binary-heap :capacity 0 :comparator +number-comparator+))))
@@ -129,6 +143,21 @@
          (assert-false (priority-queue-empty? heap))
          (priority-queue-dequeue! heap)
          (assert-true (priority-queue-empty? heap))))
+
+
+   (test "priority-queue-copy works"
+      (let* ((h1 (binary-heap :capacity 6 :comparator +number-comparator+ 9 3 8 5))
+            (h2 (priority-queue-copy h1)))
+         (assert-equal? (priority-queue-length h1)
+            (binary-heap-length h2))
+         (assert-equal? (priority-queue-first h1)
+            (priority-queue-first h2))
+         (priority-queue-dequeue! h1)
+         (assert-false (equal? (priority-queue-first h1)
+                          (priority-queue-first h2)))
+         (assert-false (equal? (priority-queue-length h1)
+                          (priority-queue-length h2)))))
+
  
    ;;;; binary-heap-enumerator tests
    (test "binary-heap-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
@@ -152,7 +181,7 @@
 
    (test "cloning enumerators works correctly on binary-heap-enumerators"
       (let* ((enumer (get-enumer (binary-heap :capacity 4 :comparator +number-comparator+ 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) (enumerator->list cln))))
    
        ;;;; collection tests
@@ -168,6 +197,19 @@
    (test "collection-empty? works on an empty binary-heaps"
       (assert-true (collection-empty? (binary-heap :capacity 3 :comparator +number-comparator+))))
 
+   (test "collection-copy works"
+      (let* ((h1 (binary-heap :capacity 6 :comparator +number-comparator+ 9 3 8 5))
+            (h2 (collection-copy h1)))
+         (assert-equal? (collection-length h1)
+            (collection-length h2))
+         (assert-equal? (priority-queue-first h1)
+            (priority-queue-first h2))
+         (priority-queue-dequeue! h1)
+         (assert-false (equal? (priority-queue-first h1)
+                          (priority-queue-first h2)))
+         (assert-false (equal? (collection-length h1)
+                          (collection-length h2)))))
+   
    (test "a binary-heap is a mutable-collection"
       (assert-true (collection-mutable? (binary-heap :capacity 3 :comparator +number-comparator+))))
 

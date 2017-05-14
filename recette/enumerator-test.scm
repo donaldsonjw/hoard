@@ -88,37 +88,37 @@
                                   (let ((t (enumerator-current hash-enum))) 
                                      (loop (enumerator-move-next! hash-enum)
                                         (cons t res)))
-                                  res)) (list 1 2 3)))))
+                                  res)) (list 3 2 1)))))
    
    (test "cloning enumerators works correctly on list-enumerators"
       (let* ((enumer (get-enumer (list 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1 2 3 4))
          (assert-equal? (enumerator->list cln) '(1 2 3 4))))
 
    (test "cloning filter enumerators works correctly"
       (let* ((enumer (enumerable-filter (lambda (x) (< x 2)) (list 1 2 3 4)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1))
          (assert-equal? (enumerator->list cln) '(1))))
    
    
    (test "cloning append enumerators works correctly"
       (let* ((enumer (enumerable-append (list 1 2 3) (list 4 5 6)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(1 2 3 4 5 6))
          (assert-equal? (enumerator->list cln) '(1 2 3 4 5 6))))
 
    (test "cloning map enumerators works correctly"
       (let* ((enumer (enumerable-map (lambda (x) (+ x 2)) (list 1 2 3)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list enumer) '(3 4 5))
          (assert-equal? (enumerator->list cln) '(3 4 5))))
    
    
    (test "filtering a cloned enumerator works"
       (let* ((enumer (get-enumer (list 4 2 3 1)))
-             (cln (enumerator-clone enumer)))
+             (cln (enumerator-copy enumer)))
          (assert-equal? (enumerator->list (enumerable-filter (lambda (x) (<= x 2)) enumer)) '(2 1))
          (assert-equal? (enumerator->list (enumerable-filter (lambda (x) (> x 2)) cln)) '(4 3))))
 

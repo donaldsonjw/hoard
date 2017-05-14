@@ -28,7 +28,8 @@
       (inline hash-bag? obj)
       (hash-bag-length hash-bag::%hash-bag)
       (inline hash-bag-empty? hash-bag::%hash-bag)
-      (make-hash-bag-enumerator bag::%hash-bag)))
+      (make-hash-bag-enumerator bag::%hash-bag)
+      (inline hash-bag-copy hash-bag::%hash-bag)))
 
 (define-inline (hash-bag? obj)
    (isa? obj %hash-bag))
@@ -75,6 +76,9 @@
 (define-inline (hash-bag-empty? hash-bag::%hash-bag)
    (= (hashtable-size (-> hash-bag hash)) 0))
 
+(define-inline (hash-bag-copy hash-bag::%hash-bag)
+   (duplicate::%hash-bag hash-bag (hash (hashtable-copy (-> hash-bag hash)))))
+
 ;;;; implementation of bag protocol
 (define-method (bag? obj::%hash-bag)
    #t)
@@ -100,6 +104,9 @@
 (define-method (bag-empty? bag::%hash-bag)
    (hash-bag-empty? bag))
 
+(define-method (bag-copy bag::%hash-bag)
+   (hash-bag-copy bag))
+
 ;;;; hash-bag-enumerator
 (define (make-hash-bag-enumerator bag::%hash-bag)
    (instantiate::%hash-bag-enumerator (enumer (get-enumer (-> bag hash)))))
@@ -114,13 +121,13 @@
           :obj enumer)
        (=>key (-> enumer curr))))
 
-(define-method (enumerator-clone enumer::%hash-bag-enumerator)
+(define-method (enumerator-copy enumer::%hash-bag-enumerator)
    (instantiate::%hash-bag-enumerator (curr (if (eq? (-> enumer curr)
                                                    #unspecified)
                                                 (-> enumer curr)
                                                 (=> (=>key (-> enumer curr))
                                                    (=>value (-> enumer curr)))))
-                                      (enumer (dictionary-enumerator-clone (-> enumer enumer)))))
+                                      (enumer (dictionary-enumerator-copy (-> enumer enumer)))))
 
 (define-method (enumerator-move-next! enumer::%hash-bag-enumerator)
    (if (or (eq? (-> enumer curr) #unspecified)
@@ -159,6 +166,9 @@
 
 (define-method (collection-empty? obj::%hash-bag)
    (hash-bag-empty? obj))
+
+(define-method (collection-copy obj::%hash-bag)
+   (hash-bag-copy obj))
 
 ;;;; mutable-collection
 (define-method (collection-mutable? obj::%hash-bag)

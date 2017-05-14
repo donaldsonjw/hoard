@@ -1,5 +1,6 @@
 (module hoard/enumerator
-   (import hoard/exceptions)
+   (import hoard/exceptions
+           hoard/hashtable-ext)
    (export
       (class %list-enumerator
          (started (default #f))
@@ -41,7 +42,7 @@
       (generic enumerator-current enumerator)
       (generic enumerator? obj)
       (enumerator->list enumer)
-      (generic enumerator-clone enumerator)
+      (generic enumerator-copy enumerator)
       (enumerator->vector enumer)
       (enumerator->string enumer)))
 
@@ -52,14 +53,14 @@
    #f)
 (define-generic (enumerator-move-next! enumerator))
 (define-generic (enumerator-current enumerator))
-(define-generic (enumerator-clone enumerator))
+(define-generic (enumerator-copy enumerator))
 
 
 ;;;; list-enumerator implementation
 (define-method (enumerator? enumerator::%list-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%list-enumerator)
+(define-method (enumerator-copy enumerator::%list-enumerator)
    (duplicate::%list-enumerator enumerator))
 
 (define-method (enumerator-move-next! enumerator::%list-enumerator)
@@ -84,7 +85,7 @@
 (define-method (enumerator? enumerator::%vector-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%vector-enumerator)
+(define-method (enumerator-copy enumerator::%vector-enumerator)
    (duplicate::%vector-enumerator enumerator))
 
 
@@ -111,7 +112,7 @@
 (define-method (enumerator? enumerator::%string-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%string-enumerator)
+(define-method (enumerator-copy enumerator::%string-enumerator)
    (duplicate::%string-enumerator enumerator))
 
 (define-method (enumerator-move-next! enumerator::%string-enumerator)
@@ -133,19 +134,43 @@
 
 
 ;;;; hashtable-enumerator implementation
+
+(define (hashtable-lazy-key-list hash)
+   (let* ((buckets (hashtable-buckets hash))
+          (buckets-length (vector-length buckets)))
+      (let loop ((i 0))
+         (if (= i buckets-length)
+             '()
+             (let inner-loop ((bucket (vector-ref buckets i)))
+                (if (null? bucket)
+                    (loop (+fx i 1))
+                    (cons (caar bucket) (lambda ()
+                                           (inner-loop (cdr bucket))))))))))
+      
 (define-method (enumerator? enumerator::%hashtable-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%hashtable-enumerator)
+(define-method (enumerator-copy enumerator::%hashtable-enumerator)
    (duplicate::%hashtable-enumerator enumerator))
+
+; (define-method (enumerator-move-next! enumerator::%hashtable-enumerator)
+;    (cond ((eq? #f (-> enumerator started))
+;           (set! (-> enumerator started) #t)
+;           (set! (-> enumerator curr-key) (hashtable-key-list (-> enumerator hash))) 
+;           (not (null? (-> enumerator curr-key))))
+;          ((pair? (-> enumerator curr-key))
+;           (set! (-> enumerator curr-key) (cdr (-> enumerator curr-key)))
+;           (not (null? (-> enumerator curr-key))))
+;          (else 
+;           #f)))
 
 (define-method (enumerator-move-next! enumerator::%hashtable-enumerator)
    (cond ((eq? #f (-> enumerator started))
           (set! (-> enumerator started) #t)
-          (set! (-> enumerator curr-key) (hashtable-key-list (-> enumerator hash))) 
+          (set! (-> enumerator curr-key) (hashtable-lazy-key-list (-> enumerator hash))) 
           (not (null? (-> enumerator curr-key))))
          ((pair? (-> enumerator curr-key))
-          (set! (-> enumerator curr-key) (cdr (-> enumerator curr-key)))
+          (set! (-> enumerator curr-key) ((cdr (-> enumerator curr-key))))
           (not (null? (-> enumerator curr-key))))
          (else 
           #f)))
@@ -163,9 +188,9 @@
 (define-method (enumerator? enumerator::%aggregate-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%aggregate-enumerator)
+(define-method (enumerator-copy enumerator::%aggregate-enumerator)
    (duplicate::%aggregate-enumerator enumerator
-      (enums (map enumerator-clone (-> enumerator enums)))))
+      (enums (map enumerator-copy (-> enumerator enums)))))
 
 (define-method (enumerator-move-next! enumerator::%aggregate-enumerator)
    (every enumerator-move-next! (-> enumerator enums)))
@@ -183,9 +208,9 @@
 (define-method (enumerator? enumerator::%map-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%map-enumerator)
+(define-method (enumerator-copy enumerator::%map-enumerator)
    (duplicate::%map-enumerator enumerator
-      (enumers (map enumerator-clone (-> enumerator enumers)))))
+      (enumers (map enumerator-copy (-> enumerator enumers)))))
 
 (define-method (enumerator-move-next! enumerator::%map-enumerator)
    (every enumerator-move-next! (-> enumerator enumers)))
@@ -200,9 +225,9 @@
 (define-method (enumerator? enumerator::%filter-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%filter-enumerator)
+(define-method (enumerator-copy enumerator::%filter-enumerator)
    (duplicate::%filter-enumerator enumerator
-      (enumer (enumerator-clone (-> enumerator enumer)))))
+      (enumer (enumerator-copy (-> enumerator enumer)))))
 
 
 (define-method (enumerator-move-next! enumerator::%filter-enumerator)
@@ -224,9 +249,9 @@
 (define-method (enumerator? enumerator::%take-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%take-enumerator)
+(define-method (enumerator-copy enumerator::%take-enumerator)
    (duplicate::%take-enumerator enumerator
-      (enumer (enumerator-clone (-> enumerator enumer)))))
+      (enumer (enumerator-copy (-> enumerator enumer)))))
 
 
 (define-method (enumerator-move-next! enumerator::%take-enumerator)
@@ -241,9 +266,9 @@
 (define-method (enumerator? obj::%append-enumerator)
    #t)
 
-(define-method (enumerator-clone enumerator::%append-enumerator)
+(define-method (enumerator-copy enumerator::%append-enumerator)
    (duplicate::%append-enumerator enumerator
-      (enumers (map enumerator-clone (-> enumerator enumers)))))
+      (enumers (map enumerator-copy (-> enumerator enumers)))))
 
 
 (define-method (enumerator-move-next! obj::%append-enumerator)

@@ -69,7 +69,7 @@
 
 
 (define-inline (hash-bag-count-set! hash-bag::%hash-bag item count)
-   (if (= count 0)
+   (if (<= count 0)
        (hashtable-remove! (-> hash-bag hash) item)
        (hashtable-put! (-> hash-bag hash) item count)))
 

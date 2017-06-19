@@ -16,7 +16,7 @@
    (export (class %red-black-node
               item
               size
-              (red? (default #f))
+              (red?::bool (default #f))
               (left::%red-black-node (default +red-black-node-nil+))
               (right::%red-black-node (default +red-black-node-nil+)))
            (class %red-black-tree

@@ -27,7 +27,7 @@
       +ucs2-ci-comparator+
       +symbol-ci-comparator+
       +ucs2-string-comparator+
-      +uscs2-string-ci-comparator+
+      +ucs2-string-ci-comparator+
       +keyword-comparator+
       +keyword-ci-comparator+
       (make-comparator #!key type? equal? lessthan? hash)))
@@ -150,7 +150,7 @@
       :hash get-hashnumber))
 
 ;;;; case-insensitive string comparator implementation
-(define +uscs2-string-ci-comparator+
+(define +ucs2-string-ci-comparator+
    (make-comparator  :type? ucs2-string? :equal? ucs2-string-ci=? :lessthan? ucs2-string-ci<?
       :hash (compose get-hashnumber ucs2-string-upcase)))
 

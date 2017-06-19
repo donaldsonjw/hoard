@@ -93,6 +93,7 @@
    (cond ((list? obj)
           (not (eq? #f (member itm obj))))
          ((hashtable? obj)
+          ;;; TODO fix this we should not convert to a vector for this. 
           (collection-contains? (hashtable->vector obj) itm))
          ((vector? obj)
           (vector-contains? obj itm))

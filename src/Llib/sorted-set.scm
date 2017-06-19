@@ -41,7 +41,7 @@
          :args comparator
          :msg "make-sorted-set must be passed a valid comparator"))
    (let ((set (make-sorted-set :comparator comparator)))
-      (for-each (lambda (item) (sorted-set-insert! set item)) items)
+      (for-each (lambda (item) (sorted-set-insert! set item)) items) 
       set))
 
 

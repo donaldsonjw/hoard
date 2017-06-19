@@ -82,7 +82,7 @@
       (if res res 0)))
 
 (define-inline (sorted-bag-count-set! bag::%sorted-bag item count)
-   (if (= count 0)
+   (if (<= count 0)
        (sorted-dictionary-remove! bag item)
        (sorted-dictionary-put! bag item count)))
 

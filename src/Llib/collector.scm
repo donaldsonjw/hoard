@@ -14,7 +14,8 @@
       (generic collector-combine coll a b)
       +list-collector+
       +stretchy-vector-collector+
-      +sum-collector+))
+      +sum-collector+
+      +vector-collector+))
 
 ;;;; collector protocol, heavily influenced by the Collector interface in Java 8
 
@@ -77,6 +78,19 @@
       :finish (lambda (x)
                  x)))
 
+(define +vector-collector+
+   (make-collector :supplier (lambda () (stretchy-vector))
+      :accumulate (lambda (supp val)
+                     (stretchy-vector-extend! supp val)
+                     supp)
+      :combine (lambda (a b)
+                  (stretchy-vector-append! a b)
+                  a)
+      :finish (lambda (x) (let ((res (make-vector (stretchy-vector-length x))))
+                             (do ((i 0 (+ i 1)))
+                                 ((= i (stretchy-vector-length x)) res)
+                                 (vector-set! res i (stretchy-vector-ref x i)))))))
+                             
 
 (define +sum-collector+
    (make-collector :supplier (lambda () 0)

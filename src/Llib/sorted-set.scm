@@ -44,7 +44,6 @@
       (for-each (lambda (item) (sorted-set-insert! set item)) items) 
       set))
 
-
 (define-inline (sorted-set-insert! set::%sorted-set item)
    (red-black-tree-insert! set item))
 

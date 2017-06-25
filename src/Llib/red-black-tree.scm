@@ -122,7 +122,7 @@
           obj: tree)))
 
 
-(define (red-black-tree-bread-first-traversal tree::%red-black-tree proc)
+(define (red-black-tree-breadth-first-traversal tree::%red-black-tree proc)
    (when (not (red-black-tree-empty? tree))
       (let ((q (make-linked-queue)))
          (queue-enqueue! q (-> tree root))
@@ -157,7 +157,7 @@
          (print "digraph tree {")
          (print " node[shape=\"circle\"];")
          (let ((res '()))
-            (red-black-tree-bread-first-traversal tree
+            (red-black-tree-breadth-first-traversal tree
                (lambda (n) (set! res (cons n res))))
             (set! res (reverse! res))
             (for-each (lambda (n::%red-black-node)

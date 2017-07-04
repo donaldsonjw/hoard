@@ -1,0 +1,107 @@
+@node association, range, Implementations, Implementations
+@section association
+
+@menu
+* association Overview::
+* association API Reference::
+* association Examples::
+@end menu
+
+@node association Overview, association API Reference, association, association
+@subsection Overview
+
+@code{association} is a simple data structure containing a key and a
+value. It is used by the @code{dictionary} protocol. 
+
+@node association API Reference, association Examples, association Overview, association
+@subsection API Reference
+
+
+@menu
+* association?::
+* =>::
+* =>key::
+* =>value::
+* pair->association::
+@end menu
+
+@node association?, =>, , association API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} association? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is an association.
+@end deffn
+
+@node =>, =>key, association?, association API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} => key value
+@b{requires} @code{key} and @code{value} be arbitrary objects. @* @*
+@b{returns} a new association with key @code{key} and value @code{value}.
+@end deffn
+
+@node =>key, =>value, =>, association API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} =>key assoc
+@b{requires} @code{assoc} be an association @* @*
+@b{returns} the key of the association.
+@end deffn
+
+@node =>value, pair->association, =>key, association API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} =>value assoc
+@b{requires} @code{assoc} be an association @* @*
+@b{returns} the value of the association.
+@end deffn
+
+@node pair->association, , =>value, association API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pair->association kv-pair
+@b{requires} @code{kv-pair} be a pair with the car the key and the cdr the
+value@* @*
+@b{returns} an association with key the car of @code{kv-pair} and the
+value the cdr of @code{kv-pair}.
+@end deffn
+
+@node association Examples,association API Reference, ,association
+@subsection Examples
+
+@code{association?} tests whether an object is an @code{association}
+or not:
+
+@smalllisp
+(association? '(key . value))
+  @result{} #f
+
+(association? (=> 'key 'value))
+  @result{} #t
+@end smalllisp
+
+A new association is constructucted with @code{=>}:
+
+@smalllisp
+(let ((assoc (=> 'key 'value)))
+   (=>key assoc))
+   @result{} 'key
+@end smalllisp
+
+A pair consisting of a key and value can also be converted to an @code{association}:
+
+@smalllisp
+(let ((assoc (pair->association '(key . value))))
+   (=>key assoc))
+   @result{} 'key
+@end smalllisp
+
+The key of an association is obtained with @code{=>key}:
+
+@smalllisp
+(=>key (=> "key" 1))
+  @result{} "key"
+@end smalllisp
+
+The value of an association is obtained with @code{=>value}:
+
+@smalllisp
+(=>value (=> "key" 1))
+  @result{} 1
+@end smalllisp

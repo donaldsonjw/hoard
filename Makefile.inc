@@ -9,6 +9,7 @@ JAR = jar
 RANLIB = ranlib
 INSTALL = install
 LINK = ln
+MAKEINFO = makeinfo
 
 BIGLOO_VERSION := $(shell $(BIGLOO) -eval "(print *bigloo-version*) (exit 0)" -q)
 BIGLOOLIBDIR := $(shell $(BIGLOO) -eval "(print *default-lib-dir*) (exit 0)" -q)
@@ -47,7 +48,7 @@ EUCLASSDIR = classes_eu/bigloo/$(LIBNAME)
 BIGLOOSRCS = $(wildcard src/Llib/*.scm)
 TESTSRCS = $(wildcard recette/*.scm)
 HEAPSRC = src/Misc/make_lib.scm
-
+DOCSRCS = $(wildcard manual/*.texi)
 
 # object files
 _TESTSRCSWOUTDIR = $(foreach src, $(TESTSRCS), $(notdir $(src)))
@@ -113,6 +114,16 @@ test: c recette/test$(LIBNAME)
 jtest: jvm .recettejfile recette/jtest$(LIBNAME) 
 	./recette/jtest$(LIBNAME)
 
+manual: manual-html manual-pdf
+
+manual-html : $(DOCSRCS)
+	(cd manual; \
+	makeinfo --html $(LIBNAME).texi)
+
+manual-pdf : $(DOCSRCS)
+	(cd manual; \
+	makeinfo --pdf $(LIBNAME).texi)
+
 .afile: $(BIGLOOSRCS)  $(TESTSRCS)
 	$(BGLAFILE) -o $@  $^
 
@@ -154,7 +165,7 @@ lib: init heap $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so  \
 	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).so  \
 	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a   \
 	       $(DISTDIR)/lib$(LIBNAME)_eu-$(VERSION).so
-               
+
 libj: init jheap heap jar_s jar_u jar_es jar_eu
 
 init: $(DISTDIR)/$(LIBNAME).init

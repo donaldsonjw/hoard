@@ -1,0 +1,143 @@
+@node collector,comparator, enumerable, Protocols
+@section collector
+
+@menu
+* collector Overview::
+* collector API Reference::
+* collector Examples::
+@end menu
+
+@node collector Overview, collector API Reference, , collector
+@subsection Overview
+
+The @code{collector} protocol defines the methods required for a general
+reduction facility for @code{enumerable}s. Examples include @code{collection}
+conversion and various accumulations. It is modeled after the
+@code{Collector} interface of Java.
+
+@node collector API Reference, collector Examples, collector Overview, collector
+@subsection API Reference
+
+@menu
+* collector?::
+* collector-supplier::
+* collector-accumulate::
+* collector-combine::
+* collector-finish::
+* make-collector::
+* +list-collector+::
+* +stretchy-vector-collector+::
+* +vector-collector+::
+* +sum-collector+::
+@end menu
+
+@node collector?,collector-supplier, , collector API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collector? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{collector} protocol
+@end deffn
+
+@node collector-supplier,collector-accumulate, collector?, collector API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collector-supplier object
+@b{requires} @code{object} support the @code{collector} protocol @* @*
+@b{returns} a thunk that when called returns an object for collecting results
+@end deffn
+
+@node collector-accumulate, collector-combine, collector-supplier, collector API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collector-accumulate coll supp val
+@b{requires} @code{coll} support the @code{collector} protocol,
+@code{supp} be an object originally created via the thunk returned by
+@code{collector-supplier}, and @code{val} be an arbitrary item to be accumulated. @* @*
+@b{returns} @code{supp} updated with @code{val}
+@end deffn
+
+@node collector-combine, collector-finish, collector-accumulate, collector API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collector-combine coll suppa suppb
+@b{requires} @code{coll} support the @code{collector} protocol and
+@code{suppa} and @code{suppb} be objects originally created via the thunk returned by
+@code{collector-supplier}, @* @*
+@b{returns} a single entity combining both @code{suppa} and @code{suppb}
+@end deffn
+
+@node collector-finish, make-collector, collector-combine, collector API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collector-finish coll supp
+@b{requires} @code{coll} support the @code{collector} protocol and
+@code{supp} be an object originally created via the thunk returned by
+@code{collector-supplier}, @* @*
+@b{returns} a single entity from the accumulated @code{supp} possibly
+with a final transformation.
+@end deffn
+
+@node make-collector, +list-collector+, collector-finish, collector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-collector :supplier :accumulate :combine :finish
+@b{requires} @code{:supplier} be a thunk returning an object used for
+accumulation by the collector, @code{:accumulate} be a procedure
+taking the current accumulation object and a val and returning an
+updated accumulation object, @code{:combine} be a procedure taking
+2 accumulation objects and returning an accumulation object combining
+the 2, and @code{:finish} be a procedure taking the final accumulation
+object and returning an possibly transformed result.   @* @*
+@b{returns} a final accumulation object.
+@end deffn
+
+@node +list-collector+,+stretchy-vector-collector+,make-collector, collector API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +list-collector+
+@code{+list-collector+} is a collector that accumulates the items
+provided by an @code{enumerator} into a list.
+@end defvar
+
+@node +stretchy-vector-collector+,+vector-collector+,+list-collector+, collector API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +stretchy-vector-collector+
+@code{+stretchy-vector-collector+} is a collector that accumulates the items
+provided by an @code{enumerator} into a stretchy-vector.
+@end defvar
+
+@node +vector-collector+,+sum-collector+,+stretchy-vector-collector+, collector API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +vector-collector+
+@code{+vector-collector+} is a collector that accumulates the items
+provided by an @code{enumerator} into a vector.
+@end defvar
+
+@node +sum-collector+,,+vector-collector+, collector API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +sum-collector+
+@code{+sum-collector+} is a collector that sums the items
+provided by an @code{enumerator}.
+@end defvar
+
+@node collector Examples, collector API Reference, ,collector
+@subsection Examples
+
+To create your own version of a list @code{collector} is as simple as
+the following:
+
+@smalllisp
+(define +my-list-collector+
+   (make-collector :supplier (lambda ()
+                                '())
+      :accumulate (lambda (supp val)
+                     (cons val supp))
+      :combine (lambda (a b)
+                  (append a b))
+      :finish (lambda (x) (reverse x))))
+@end smalllisp
+
+To obtain the product of all numbers in an @code{enumerable}
+
+@smalllisp
+(define +product-collector+
+   (make-collector :supplier (lambda () 1)
+      :accumulate (lambda (supp val)
+                     (* supp val))
+      :combine (lambda (a b) (* a b))
+      :finish (lambda (x)
+                 x)))
+@end smalllisp

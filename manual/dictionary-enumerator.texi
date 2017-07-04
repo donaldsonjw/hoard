@@ -1,0 +1,106 @@
+@node dictionary-enumerator protocol,dictionary-enumerable, dictionary, Protocols
+@section dictionary-enumerator
+
+@menu
+* dictionary-enumerator Overview::
+* dictionary-enumerator API Reference::
+* dictionary-enumerator Examples::
+@end menu
+
+@node dictionary-enumerator Overview, dictionary-enumerator API Reference, , dictionary-enumerator protocol
+@subsection Overview
+
+The @code{dictionary-enumerator} protocol is an abstraction for
+enumerating or iterating through the items contained by an
+object supporting the @code{dictionary} protocol. These items may be pre-existing or generated on
+demand. It is very similar to the @code{enumerator} protocol but provides access to both the keys and values
+of the dictionary.
+
+@node dictionary-enumerator API Reference, dictionary-enumerator Examples, dictionary-enumerator Overview, dictionary-enumerator protocol
+@subsection API Reference
+
+@menu
+* dictionary-enumerator?::
+* dictionary-enumerator-move-next!::
+* dictionary-enumerator-current::
+* dictionary-enumerator-key::
+* dictionary-enumerator-value::
+* dictionary-enumerator-copy::
+@end menu
+
+
+@node dictionary-enumerator?,dictionary-enumerator-move-next!, , dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{dictionary-enumerator} protocol
+@end deffn
+
+@node dictionary-enumerator-move-next!,dictionary-enumerator-current ,dictionary-enumerator?, dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator-move-next! object
+@b{requires} @code{object} support the @code{dictionary-enumerator} protocol @* @*
+@b{returns} a boolean indicating whether or not @code{object}
+has additional items available @* @*
+@b{modifies} @code{object} such that upon returning @code{#t} the next
+item under enumeration is current. Otherwise, @code{object} remains
+unmodified. @* @*
+@b{note} @code{dictionary-enumerator-move-next!} must be called before
+@code{dictionary-enumerator-current}. If it is not,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node dictionary-enumerator-current,dictionary-enumerator-key,dictionary-enumerator-move-next!, dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator-current object
+@b{requires} @code{object} support the @code{dictionary-enumerator} protocol @* @*
+@b{returns} the association found at the @code{dictionary-enumerators} current position
+or if @code{dictionary-enumerator-move-next!} has not been called before,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node dictionary-enumerator-key,dictionary-enumerator-value,dictionary-enumerator-current, dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator-key object
+@b{requires} @code{object} support the @code{dictionary-enumerator} protocol @* @*
+@b{returns} the key found at the @code{dictionary-enumerators} current position
+or if @code{dictionary-enumerator-move-next!} has not been called before,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node dictionary-enumerator-value,dictionary-enumerator-copy,dictionary-enumerator-key, dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator-value object
+@b{requires} @code{object} support the @code{dictionary-enumerator} protocol @* @*
+@b{returns} the value found at the @code{dictionary-enumerators} current position
+or if @code{dictionary-enumerator-move-next!} has not been called before,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node dictionary-enumerator-copy,,dictionary-enumerator-value, dictionary-enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator-copy object
+@b{requires} @code{object} support the @code{dictionary-enumerator} protocol @* @*
+@b{returns} a copy of the @code{dictionary-enumerator}.
+@end deffn
+
+
+@node dictionary-enumerator Examples, dictionary-enumerator API Reference, ,dictionary-enumerator protocol
+@subsection Examples
+
+You seldom use dictionary-enumerator directly but, instead, use the procedures
+and macros provided by @code{dictionary-enumerable}. However, if needed you can
+use the @code{dictionary-enumerator} protocol directly.
+
+@smalllisp
+
+(let ((enumer (enumerable-dictionary-enumerator (hashtable :comparator +number-comparator+
+                                                   (=> 'a 1) (=> 'b 2) (=> 'c 3))))
+   (let loop ((cont (dictionary-enumerator-move-next! enumer    )))
+      (when cont    
+         (print (dictionary-enumerator-value enumer))
+         (loop (dictionary-enumerator-move-next! enumer)))))
+   @print{} 1
+   @print{} 2
+   @print{} 3
+   @result{} #unspecified     
+@end smalllisp

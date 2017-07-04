@@ -1,0 +1,123 @@
+@node collection, indexable, Protocols, Protocols
+@section collection
+
+@menu
+* collection Overview::
+* collection API Reference::
+* collection Examples::
+@end menu
+
+@node collection Overview, collection API Reference, collection, collection
+@subsection Overview
+
+The collection protocol provides the operations expected of an entity
+that represents an aggregate or container of other entities.
+
+
+@node collection API Reference, collection Examples, collection Overview, collection
+@subsection API Reference
+
+@menu
+* collection?::
+* collection-length::
+* collection-empty?::
+* collection-contains?::
+* collection-enumerator::
+* collection-copy::
+@end menu
+
+@node collection?, collection-length, , collection API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection? object
+@b{returns} a boolean indicating whether or not 
+@code{object} supports the collection protocol.
+@end deffn
+
+@node collection-length, collection-empty?,collection? , collection API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-length object
+@b{requires} @code{object} support the @code{collection} protocol @* @*
+@b{returns} the length of the @code{collection} @code{object}
+@end deffn
+
+@node collection-empty?, collection-contains?,collection-length , collection API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-empty? object
+@b{requires} @code{object} support the @code{collection} protocol @* @*
+@b{returns} a boolean indicating whether the @code{collection object} is empty or not 
+@end deffn
+
+@node collection-contains?, collection-enumerator, collection-empty?, collection API Reference
+@deffn {generic} collection-contains? object itm
+@b{requires} @code{object} support the @code{collection} protocol and @code{itm} be an arbitrary value @* @*
+@b{returns} a boolean indicating whether or not @code{itm} is in @code{object} @* @*
+@b{Note} @code{collection-contains?} uses @code{equal?} for comparison, and for dictionary-like entities such as a hashtable or
+sorted-dictionary, it determines whether @code{itm} is a value in the
+collection, not whether it is a key in the collection. If you want to check to see if a key exists in
+such a collection, use @code{dictionary-contains?}
+@end deffn
+
+@node collection-enumerator, collection-copy, collection-contains?, collection API Reference
+@deffn {generic} collection-enumerator object
+@b{requires} @code{object} support the @code{collection} protocol @* @*
+@b{returns} an @code{enumerator} @* @*
+@b{note} an @code{enumerator} provides the ability to enumerate or iterate through the
+items in a collection.
+@end deffn
+
+@node collection-copy, , collection-enumerator, collection API Reference
+@deffn {generic} collection-copy object
+@b{requires} @code{object} support the @code{collection} protocol @* @*
+@b{returns} a shallow copy of @code{object} @* @*
+@end deffn
+
+@node collection Examples,collection API Reference, ,collection
+@subsection Examples
+
+The standard Bigloo lists, vectors, strings, and hashtables are
+collections.
+
+@smalllisp
+(collection? (list 1 2 3))                     
+   @result{} #t
+
+(collection? (vector 1 2 3))                     
+   @result{} #t
+
+(collection? (create-hashtable))                     
+   @result{} #t
+
+(collection? "example")                     
+   @result{} #t
+@end smalllisp
+
+We can check to see if a collection is empty, obtain its length, and
+check to see if an item is contained with in it.
+
+@smalllisp
+(collection-length (list 1 2 3))
+   @result{} 3
+
+(collection-empty? '())
+   @result{} #t
+
+(collection-empty? (list 1 2 3))
+   @result{} #f
+
+(collection-contains? (list 1 2 3) 3)
+   @result{} #t
+@end smalllisp
+
+When needed, we can also obtain a shallow copy of a collection.
+
+@smalllisp
+(let* ((vec1 (vector 1 2 3))
+       (vec2 (collection-copy vec1)))
+   (and (equal? vec1 vec2)
+        (not (eq? vec1 vec2))))
+  @result{} #t
+@end smalllisp
+
+
+The @code{collection-enumerator} function is used to implement the
+@code{enumerable} functionality. @xref{enumerable}

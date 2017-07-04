@@ -1,0 +1,304 @@
+@node comparator, bag, collector, Protocols
+@section comparator
+
+@menu
+* comparator Overview::
+* comparator API Reference::
+* comparator Examples::
+@end menu
+
+@node comparator Overview, comparator API Reference, , comparator
+@subsection Overview
+
+The @code{comparator} protocol defines those methods required to
+support comparison and, optionally, total ordering of a specific
+type. Although not identical, it is very similar to the functionality
+found in SRFI-128.
+
+@node comparator API Reference, comparator Examples, comparator Overview, comparator
+@subsection API Reference
+
+@menu
+* comparator?::
+* comparator-ordered?::
+* comparator-hashable?::
+* comparator-type?::
+* comparator=?::
+* comparator<?::
+* comparator>?::
+* comparator<=?::
+* comparator>=?::
+* comparator-hash::
+* make-comparator::
+* +number-comparator+::
+* +char-comparator+::
+* +char-ci-comparator+::
+* +ucs2-comparator+::
+* +ucs2-ci-comparator+::
+* +string-comparator+::
+* +string-ci-comparator+::
+* +symbol-comparator+::
+* +symbol-ci-comparator+::
+* +ucs2-string-comparator+::
+* +ucs2-string-ci-comparator+::
+* +keyword-comparator+::
+* +keyword-ci-comparator+::
+@end menu
+
+@node comparator?,comparator-ordered?, , comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{comparator} protocol
+@end deffn
+
+@node comparator-ordered?,comparator-hashable?, comparator?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator-ordered? comp
+@b{requires} @code{comp} implement the @code{comparator} protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{comp} supports ordering.
+@end deffn
+
+@node comparator-hashable?,comparator-type?, comparator-ordered?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator-hashable? comp
+@b{requires} @code{comp} implement the @code{comparator} protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{comp} supports hashing.
+@end deffn
+
+@node comparator-type?,comparator=?, comparator-hashable?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator-type? comp val
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{val} be an arbitrary object. @* @*
+@b{returns} a boolean indicating whether or not @code{val} is of an
+appropriate type for @code{comp}
+@end deffn
+
+@node comparator=?,comparator<?, comparator-type?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator=? comp a b
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{a} and @code{b} be of the type supported by @code{comp}. @* @*  
+@b{returns} a boolean indicating whether or not @code{a} is equal to
+@code{b} @* @*
+@b{note} @code{comparator=?} is supported by all @code{comparator} instances.
+@end deffn
+
+@node comparator<?,comparator>?, comparator=?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator<? comp a b
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{a} and @code{b} be of the type supported by @code{comp}. @* @*  
+@b{returns} a boolean indicating whether or not @code{a} is less than
+@code{b} @* @*
+@b{note} @code{comparator<?} is only supported by @code{comparator}
+instances that are ordered.
+@end deffn
+
+@node comparator>?,comparator<=?, comparator<?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator>? comp a b
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{a} and @code{b} be of the type supported by @code{comp}. @* @*  
+@b{returns} a boolean indicating whether or not @code{a} is greater than
+@code{b} @* @*
+@b{note} @code{comparator>?} is only supported by @code{comparator}
+instances that are ordered.
+@end deffn
+
+@node comparator<=?,comparator>=?, comparator>?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator<=? comp a b
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{a} and @code{b} be of the type supported by @code{comp}. @* @*  
+@b{returns} a boolean indicating whether or not @code{a} is less than
+or equal to @code{b} @* @*
+@b{note} @code{comparator<=?} is only supported by @code{comparator}
+instances that are ordered.
+@end deffn
+
+@node comparator>=?,comparator-hash, comparator<=?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator>=? comp a b
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{a} and @code{b} be of the type supported by @code{comp}. @* @*  
+@b{returns} a boolean indicating whether or not @code{a} is greater than
+or equal to @code{b} @* @*
+@b{note} @code{comparator>=?} is only supported by @code{comparator}
+instances that are ordered.
+@end deffn
+
+@node comparator-hash, make-comparator, comparator<=?, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} comparator-hash comp val
+@b{requires} @code{comp} implement the @code{comparator} protocol
+and @code{val} of the type supported by @code{comp}. @* @*  
+@b{returns} an integer hash value @* @*
+@b{note} @code{comparator-hash} is only supported by @code{comparator}
+instances that are hashable.
+@end deffn
+
+@node make-comparator,, comparator-hash, comparator API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-comparator :type? :equal? [:less-than?] [:hash]
+@b{requires} @code{:type?} be a single argument procedure returning a boolean
+indicating whether or not the argument is of the type supported by the
+@code{comparator}, @var{:equal?} be a 2 argument procedure returning
+whether or not the arguments are equal, @code{:less-than?} be a 2
+argument procedure returning whether or not the first argument is less
+than or equal to the second, and @code{:hash} be a single argument
+procedure returning an appropriate integer value.@* @*  
+@b{returns} a @code{comparator} @* @*
+@b{note} @code{:less-than?} and @code{:hash} are optional but at least
+one needs to be provided. Obviously, both can also be provided. If
+@code{:less-than?} is not provided, the comparator will not be
+ordered. Similarly, if the @code{:hash} is not provided, the
+comparator will not be hashable.
+@end deffn
+
+@node +number-comparator+,+char-comparator+, make-comparator, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +number-comparator++
+@code{+number-comparator+} is a comparator instance for numbers. It is ordered and hashable.
+@end defvar
+
+@node +char-comparator+,+char-ci-comparator+, +number-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +char-comparator+
+@code{+char-comparator+} is a comparator instance for characters. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +char-ci-comparator+,+ucs2-comparator+, +char-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +char-ci-comparator+
+@code{+char-ci-comparator+} is a comparator instance for characters. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node +ucs2-comparator+, +ucs2-ci-comparator+, +char-ci-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +ucs2-comparator+
+@code{+ucs2-comparator+} is a comparator instance for unicode characters. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +ucs2-ci-comparator+, +string-comparator+, +ucs2-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +ucs2-ci-comparator+
+@code{+ucs2-ci-comparator+} is a comparator instance for unicode characters. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node +string-comparator+, +string-ci-comparator+, +ucs2-ci-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +string-comparator+
+@code{+string-comparator+} is a comparator instance for strings. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +string-ci-comparator+, +symbol-comparator+, +string-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +string-ci-comparator+
+@code{+string-ci-comparator+} is a comparator instance for strings. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node +symbol-comparator+, +symbol-ci-comparator+, +string-ci-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +symbol-comparator+
+@code{+symbol-comparator+} is a comparator instance for symbols. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +symbol-ci-comparator+, +ucs2-string-comparator+, +symbol-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +symbol-ci-comparator+
+@code{+symbol-ci-comparator+} is a comparator instance for symbols. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node +ucs2-string-comparator+, +ucs2-string-ci-comparator+, +symbol-ci-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +ucs2-string-comparator+
+@code{+ucs2-string-comparator+} is a comparator instance for unicode strings. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +ucs2-string-ci-comparator+, +keyword-comparator+, +ucs2-string-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +ucs2-string-ci-comparator+
+@code{+ucs2-string-ci-comparator+} is a comparator instance for unicode strings. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node +keyword-comparator+, +keyword-ci-comparator+, +ucs2-string-ci-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +keyword-comparator+
+@code{+keyword-comparator+} is a comparator instance for keywords. It
+is ordered and hashable. The ordering is case-sensitive.
+@end defvar
+
+@node +keyword-ci-comparator+, , +keyword-comparator+, comparator API Reference
+@comment node-name, next,          previous, up
+@defvar {variable} +keyword-ci-comparator+
+@code{+keyword-ci-comparator+} is a comparator instance for keywords. It
+is ordered and hashable. The ordering is case-insensitive.
+@end defvar
+
+@node comparator Examples, comparator API Reference, ,comparator
+@subsection Examples
+
+To demonstrate the use of the comparator protocol, we will use the @code{+number-comparator+} instance.
+
+@code{+number-comparator+} is both ordered and hashable:
+
+@smalllisp
+(comparator-ordered? +number-comparator+)
+   @result{} #t
+
+(comparator-hashable? +number-comparator+)
+   @result{} #t
+@end smalllisp
+
+All comparators must support type checking and equality:
+
+@smalllisp
+(comparator-type? +number-comparator+ 4)
+   @result{} #t
+
+(comparator-type? +number-comparator+ "dog")
+   @result{} #f
+
+(comparator=? +number-comparator+ 4 4)
+   @result{} #t
+
+(comparator=? +number-comparator+ 3 4)
+   @result{} #f
+@end smalllisp
+
+Being ordered, we can use the ordered comparision methods with +number-comparator+:
+
+@smalllisp
+(comparator<? +number-comparator+ 4 5)
+   @result{} #t
+
+(comparator>? +number-comparator+ 4.0 5)
+   @result{} #f
+
+(comparator<=? +number-comparator+ 5 5)
+   @result{} #t
+
+(comparator>=? +number-comparator+ 5 6.0)
+   @result{} #f
+@end smalllisp
+
+And being hashable, we can use the hash method:
+
+@smalllisp
+(comparator-hash comp 4)
+   @result{} 4
+
+(comparator-hash comp 5.0)
+   @result{} 5
+@end smalllisp

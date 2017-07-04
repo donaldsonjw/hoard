@@ -94,6 +94,23 @@
                  msg: "not all arguments are dictionary enumerators or dictionary enumerables"))))))
 
 
+(define-syntax dictionary-enumerable-collect
+   (syntax-rules ()
+      ((_ obj coll)
+       (if (and (collector? coll)
+                (dictionary-enum-or-enumer? obj))
+           (let ((enumer (get-dictionary-enumer obj)))
+              (let loop ((cont (dictionary-enumerator-move-next! enumer))
+                         (supp (collector-supplier coll)))
+                 (if cont
+                     (let ((newsupp (collector-accumulate coll supp (dictionary-enumerator-current enumer))))
+                        (loop (dictionary-enumerator-move-next! enumer)
+                           newsupp))
+                     (collector-finish coll supp))))
+           (raise-invalid-argument-exception proc: "dictionary-enumerable-collect" args: (list coll obj)
+              msg: "either we have an invalid enumerable/enumerator or invalid collector")))))
+
+
 
 
 

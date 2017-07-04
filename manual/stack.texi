@@ -1,0 +1,182 @@
+@node stack, priority-queue, queue, Protocols
+@section stack
+
+@menu
+* stack Overview::
+* stack API Reference::
+* stack Examples::
+@end menu
+
+@node stack Overview, stack API Reference, , stack
+@subsection Overview
+
+The @code{stack} protocol defines the methods required by a stack
+implementation. A stack is a last-in-first-out sequential data
+structure.
+
+@node stack API Reference, stack Examples, stack Overview, stack
+@subsection API Reference
+
+@menu
+* stack?::
+* stack-copy::
+* stack-empty?::
+* stack-top::
+* stack-push!::
+* stack-pop!::
+* stack-length::
+* stack-fixed-capacity?::
+* stack-capacity::
+@end menu
+
+@node stack?,stack-copy, , stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{stack} protocol
+@end deffn
+
+@node stack-copy, stack-empty?, stack?, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-copy stack
+@b{requires} @code{stack} implement the stack protocol. @* @*
+@b{returns} a shallow copy of @code{stack}.
+@end deffn
+
+@node stack-empty?, stack-top, stack-copy, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-empty? stack
+@b{requires} @code{stack} implement the stack protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{stack} contains any items.
+@end deffn
+
+@node stack-top, stack-push!, stack-empty?, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-top stack
+@b{requires} @code{stack} implement the stack protocol. @* @*
+@b{returns} returns the top item on @code{stack}. If @code{stack} is
+empty, a @code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node stack-push!, stack-pop!, stack-top, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-push! stack item
+@b{requires} @code{stack} implement the stack protocol and @code{item}
+be an arbitrary item @* @*
+@b{returns} returns @code{unspecified}. If @code{stack} has a fixed
+capacity and is full, a @code{&invalid-state-exception} is
+thrown. @*@*
+@b{modifies} @code{stack} by placing @code{item} on the top.
+@end deffn
+
+@node stack-pop!, stack-length, stack-push!, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-pop! stack
+@b{requires} @code{stack} implement the stack protocol.@* @*
+@b{returns} returns the top item on @code{stack}. If @code{stack} is
+empty, a @code{&invalid-state-exception} is thrown.@*@*
+@b{modifies} @code{stack} by removing the top item.
+@end deffn
+
+@node stack-length, stack-fixed-capacity?, stack-pop!, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-length stack
+@b{requires} @code{stack} implement the stack protocol.@* @*
+@b{returns} returns the the number of items on @code{stack}
+@end deffn
+
+@node stack-fixed-capacity?, stack-capacity, stack-length, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-fixed-capacity? stack
+@b{requires} @code{stack} implement the stack protocol.@* @*
+@b{returns} returns a boolean indicating whether or not @code{stack}
+has a fixed capacity.
+@end deffn
+
+@node stack-capacity, , stack-fixed-capacity?, stack API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} stack-capacity stack
+@b{requires} @code{stack} implement the stack protocol.@* @*
+@b{returns} returns the capacity (i.e., the number of items that it
+can hold) of @code{stack} or @code{unspecified} if it has no fixed capacity.
+@end deffn
+
+@node stack Examples, stack API Reference, ,stack
+@subsection Examples
+
+
+hoard provides linked and contiguous implementations of the
+@code{stack} protocol.
+
+@smalllisp
+(stack? (contiguous-stack :capacity 5))
+   @result{} #t     
+(stack? (linked-stack))
+   @result{} #t
+@end smalllisp 
+
+
+You can push items on a stack:
+
+@smalllisp
+(let ((s (linked-stack)))
+   (stack-push! s 1)
+   (stack-push! s 2)
+   (enumerable-collect s +list-collector+))
+   @result{} (2 1)
+@end smalllisp
+
+look at the top item:
+
+@smalllisp
+(let ((s (linked-stack)))
+   (stack-push! s 1)
+   (stack-push! s 2)
+   (stack-top s))
+   @result{} 2
+@end smalllisp
+
+or remove the top item:
+
+@smalllisp
+(let ((s (linked-stack)))
+   (stack-push! q 1)
+   (stack-push! q 2)
+   (stack-pop! q)
+   (stack-top q))
+   @result{} 1
+@end smalllisp
+
+It is also possible to test to see if a stack is empty:
+
+@smalllisp
+(stack-empty? (linked-stack))
+   @result{} #t
+
+(stack-empty? (linked-stack 1 2 3))
+   @result{} #f
+@end smalllisp
+
+A copy of a stack can be useful:
+
+@smalllisp
+(let* ((q1 (linked-stack 1 2 3))
+       (q2 (stack-copy q1)))
+   (eq? q1 q2))
+   @result{} #f
+@end smalllisp
+
+Some stack implementations have a fixed-capacity:
+
+@smalllisp
+(stack-fixed-capacity? (contiguous-stack :capacity 5))
+   @result{} #t
+
+(stack-fixed-capacity? (linked-stack))
+   @result{} #f
+
+(stack-capacity (contiguous-stack :capacity 5))
+   @result{} 5
+
+(stack-capacity (linked-stack))
+   @result{} #unspecified
+@end smalllisp

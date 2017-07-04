@@ -1,0 +1,88 @@
+@node enumerator, enumerable, mutable , Protocols
+@section enumerator
+
+@menu
+* enumerator Overview::
+* enumerator API Reference::
+* enumerator Examples::
+@end menu
+
+@node enumerator Overview, enumerator API Reference, , enumerator
+@subsection Overview
+
+The @code{enumerator} protocol is an abstraction for
+enumerating or iterating through the items contained by an
+object. These items may be pre-existing or generated on
+demand. Collections are the most common object to provide
+@code{enumerators} but other objects, such as interval ranges, can
+provide enumerators as well.  
+
+@node enumerator API Reference, enumerator Examples, enumerator Overview, enumerator
+@subsection API Reference
+
+@menu
+* enumerator?::
+* enumerator-move-next!::
+* enumerator-current::
+* enumerator-copy::
+@end menu
+
+
+@node enumerator?,enumerator-move-next!, , enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerator? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{enumerator} protocol
+@end deffn
+
+@node enumerator-move-next!,enumerator-current ,enumerator?, enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerator-move-next! object
+@b{requires} @code{object} support the @code{enumerator} protocol @* @*
+@b{returns} a boolean indicating whether or not @code{object}
+additional items available @* @*
+@b{modifies} @code{object} such that upon returning @code{#t} the next
+item under enumeration is current. Otherwise, @code{object} remains
+unmodified. @* @*
+@b{note} @code{enumerator-move-next!} must be called before
+@code{enumerator-current}. If it is not,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node enumerator-current,enumerator-copy,enumerator-move-next!, enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerator-current object
+@b{requires} @code{object} support the @code{enumerator} protocol @* @*
+@b{returns} the item found at the @code{enumerators} current position
+or if @code{enumerator-move-next!} has not been called before,
+@code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node enumerator-copy,,enumerator-current, enumerator API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerator-copy object
+@b{requires} @code{object} support the @code{enumerator} protocol @* @*
+@b{returns} a copy of the @code{enumerator}.
+@end deffn
+
+
+@node enumerator Examples, enumerator API Reference, ,enumerator
+@subsection Examples
+
+You seldom use enumerator directly but, instead, use the procedures
+and macros provided by @code{enumerable}. However, if needed you can
+use the @code{enumerator} protocol directly.
+
+@smalllisp
+
+(let ((enumer (enumerable-enumerator (list 1 2 3 4 5))))
+   (let loop ((cont (enumerator-move-next! enumer    )))
+      (when cont    
+         (print (enumerator-current enumer))
+         (loop (enumerator-move-next! enumer)))))
+   @print{} 1
+   @print{} 2
+   @print{} 3
+   @print{} 4
+   @print{} 5
+   @result{} #unspecified     
+@end smalllisp

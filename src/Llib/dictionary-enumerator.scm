@@ -47,11 +47,16 @@
    (enumerator-move-next! enumerator))
 
 (define-method (dictionary-enumerator-current enumerator::%hashtable-enumerator)
-   (enumerator-current enumerator))
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+          msg: "enumerator-move-next! must be called before dictionary-enumerator-current"
+          obj: enumerator)
+       (=> (car (-> enumerator curr-key))
+          (enumerator-current enumerator))))
 
 (define-method (dictionary-enumerator-key enumerator::%hashtable-enumerator)
    (if (not (-> enumerator started))
-       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+       (raise-invalid-state-exception proc: "dictionary-enumerator-key"
           msg: "enumerator-move-next! must be called before dictionary-enumerator-key"
           obj: enumerator)
        (car (-> enumerator curr-key))))
@@ -71,11 +76,15 @@
    (enumerator-move-next! enumerator))
 
 (define-method (dictionary-enumerator-current enumerator::%vector-enumerator)
-   (enumerator-current enumerator))
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+          msg: "enumerator-move-next! must be called before dictionary-enumerator-current"
+          obj: enumerator)
+       (=> (-> enumerator curr-index) (enumerator-current enumerator))))
 
 (define-method (dictionary-enumerator-key enumerator::%vector-enumerator)
    (if (not (-> enumerator started))
-       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+       (raise-invalid-state-exception proc: "dictionary-enumerator-key"
           msg: "enumerator-move-next! must be called before dictionary-enumerator-key"
           obj: enumerator)
        (-> enumerator curr-index)))
@@ -95,19 +104,21 @@
    (enumerator-move-next! enumerator))
 
 (define-method (dictionary-enumerator-current enumerator::%string-enumerator)
-   (enumerator-current enumerator))
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+          msg: "enumerator-move-next! must be called before dictionary-enumerator-current"
+          obj: enumerator)
+       (=> (-> enumerator curr-index) (enumerator-current enumerator))))
 
 (define-method (dictionary-enumerator-key enumerator::%string-enumerator)
    (if (not (-> enumerator started))
-       (raise-invalid-state-exception proc: "dictionary-enumerator-current"
+       (raise-invalid-state-exception proc: "dictionary-enumerator-key"
           msg: "enumerator-move-next! must be called before dictionary-enumerator-key"
           obj: enumerator)
        (-> enumerator curr-index)))
 
 (define-method (dictionary-enumerator-value enumerator::%string-enumerator)
    (enumerator-current enumerator))
-
-
 
 ;;;; dictionary-map-enumerator implementation
 (define-method (dictionary-enumerator? enumerator::%dictionary-map-enumerator)
@@ -128,7 +139,7 @@
           #f)))
 
 (define-method (dictionary-enumerator-current enumerator::%dictionary-map-enumerator)
-   (=>value (-> enumerator curr-kv)))
+   (-> enumerator curr-kv))
 
 (define-method (dictionary-enumerator-key enumerator::%dictionary-map-enumerator)
    (=>key (-> enumerator curr-kv)))

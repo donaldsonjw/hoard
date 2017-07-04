@@ -20,7 +20,7 @@
             (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! hash-enum))
                                       (res '()))
                               (if cont
-                                  (let ((t (dictionary-enumerator-current hash-enum))) 
+                                  (let ((t (dictionary-enumerator-value hash-enum))) 
                                      (loop (dictionary-enumerator-move-next! hash-enum)
                                         (cons t res)))
                                   res)) (list 3 2 1)))))
@@ -65,7 +65,7 @@
          (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! enum))
                                    (res '()))
                            (if cont
-                               (let ((t (dictionary-enumerator-current enum))) 
+                               (let ((t (dictionary-enumerator-value enum))) 
                                   (loop (dictionary-enumerator-move-next! enum)
                                      (cons t res)))
                                (reverse! res))) (list 'a 'b 'c))))
@@ -98,7 +98,7 @@
          (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! enum))
                                    (res '()))
                            (if cont
-                               (let ((t (dictionary-enumerator-current enum))) 
+                               (let ((t (dictionary-enumerator-value enum))) 
                                   (loop (dictionary-enumerator-move-next! enum)
                                      (cons t res)))
                                (reverse! res))) (list #\a #\b #\c))))

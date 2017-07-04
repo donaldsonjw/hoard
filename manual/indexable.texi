@@ -1,0 +1,145 @@
+@node indexable, mutable , collection, Protocols
+@section indexable
+
+@menu
+* indexable Overview::
+* indexable API Reference::
+* indexable Examples::
+@end menu
+
+
+@node indexable Overview, indexable API Reference, , indexable
+@subsection Overview
+
+The indexable protocol specifies the operations expected of an indexable collection. An indexable collection is a collection which individual items can be referenced and potentially set via a key of some sort. This key can be an integer as is the case of lists, vectors, and strings, or arbitrary objects in the case of dictionary types.
+
+@node indexable API Reference, indexable Examples, indexable Overview, indexable
+@subsection API Reference
+
+@menu
+* collection-indexable?::
+* collection-ref::
+* collection-set!::
+* collection-slice::
+@end menu
+
+@node collection-indexable?,collection-ref , , indexable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-indexable? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{indexable} protocol
+@end deffn
+
+@node collection-ref,collection-set!  ,collection-indexable?, indexable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-ref object key [default-if-not-found]
+@b{requires} @code{object} support the @code{indexable} protocol, @code{key} be an arbitrary value, and optionally, @code{default-if-not-found} be an arbitrary value @* @*
+@b{returns} the value at the given @code{key} or throws @code{&invalid-index-exception} unless @code{default-if-not-found} is provided in which case @code{default-if-not-found} is returned @* @*
+@b{note} For vectors, lists, and their ilk, @code{key} is an integer
+value representing the position in the collection. For dictionaries,
+@code{key} is the traditional key associated with such types. 
+@end deffn
+
+@node collection-set!, collection-slice, collection-ref, indexable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-set! object key value
+@b{requires} @code{object} support the @code{indexable} protocol and both @code{key} and @code{value} be arbitrary values
+@b{returns} @code{#unspecified} or throws @code{&unsupported-operation-exception} if @code{collection-set!} is not supported. @* @*
+@b{modifies} @code{object} so that value at @code{key} is now @code{value}
+A generic function that sets the value found at key to the given
+value. If the key is not valid for the collection,
+@code{&invalid-index-exception} is thrown.
+@end deffn
+
+
+@node collection-slice, ,collection-set!, indexable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-slice object keys
+@b{requires} @code{object} support the @code{indexable} protocol and @code{keys} be an object implementing the @code{enumerable} protocol @* @*
+@b{returns} an @code{enumerator} providing access to the
+elements in the collection @code{object} represented by the provided
+enumerable of @code{keys}.
+@end deffn
+
+@node indexable Examples, indexable API Reference, ,indexable
+@subsection Examples
+
+The standard Bigloo lists, vectors, strings, and hashtables are
+indexable.
+
+@smalllisp
+(collection-indexable? (list 1 2 3))
+   @result{} #t
+
+(collection-indexable? (vector 1 2 3))
+   @result{} #t
+
+(collection-indexable? "test string")
+   @result{} #t
+
+(collection-indexable? (create-hashtable))
+   @result{} #t
+@end smalllisp
+
+For collections that are position addressable such as lists, vectors, and
+strings as well as other, you can reference each individual element
+with @code{collection-ref} given its position as a key.
+
+@smalllisp
+(collection-ref (list 1 2 3) 1)
+   @result{} 2
+
+(collection-ref (vector 1 2 3) 2)
+   @result{} 3
+
+(collection-ref "test string" 0)
+   @result{} t
+
+(collection-ref (vector 1 2 3) 3 -1)
+   @result{} -1
+
+(collection-ref (vector 1 2 3) 3)
+   @error{} &invalid-index-exception
+@end smalllisp
+
+For dictionary-like collections, such as a hashtables, @code{collection-ref}
+obtains the value in the collection associated with the provided
+@code{key}.
+
+@smalllisp
+(let ((table (create-hashtable)))
+   (hashtable-put! 'a 1)
+   (hashtable-put! 'b 2)
+   (hashtable-put! 'c 3)
+   (collection-ref table 'b))
+   @result{} 2
+
+(let ((table (create-hashtable)))
+   (hashtable-put! 'a 1)
+   (hashtable-put! 'b 2)
+   (hashtable-put! 'c 3)
+   (collection-ref table 'd -1))
+   @result{} -1
+
+(let ((table (create-hashtable)))
+   (hashtable-put! 'a 1)
+   (hashtable-put! 'b 2)
+   (hashtable-put! 'c 3)
+   (collection-ref table 'd))
+   @error{} &invalid-index-exception
+
+@end smalllisp
+
+It is sometimes useful to obtain a subset of elements provided by an
+indexable collection. @code{collection-slice} provides this
+functionality.
+
+@smalllisp
+(let ((slice-enumer (collection-slice (iota 50) (range :start 15 :end 30))))
+      (enumerable-collect slice-enumer +list-collector+))
+   @result{} (15 16 17 18 19 20 21 22 23 24 25 26 27 28 29)
+   
+(enumerable-collect (collection-slice (vector 3 4 5 6) '(2 3))
+                    +list-collector+)
+   @result{} (5 6)
+
+@end smalllisp

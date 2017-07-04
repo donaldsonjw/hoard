@@ -1,0 +1,4 @@
+@c -- Version and date --------------------------------------------- @c
+@set hoardvers 0.5
+@set hoarddate May 2017
+@set update-month May

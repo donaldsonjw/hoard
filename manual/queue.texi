@@ -1,0 +1,183 @@
+@node queue, stack, set, Protocols
+@section queue
+
+@menu
+* queue Overview::
+* queue API Reference::
+* queue Examples::
+@end menu
+
+@node queue Overview, queue API Reference, , queue
+@subsection Overview
+
+The @code{queue} protocol defines the methods required by a queue
+implementation. A queue is a first-in-first-out sequential data
+structure.
+
+@node queue API Reference, queue Examples, queue Overview, queue
+@subsection API Reference
+
+@menu
+* queue?::
+* queue-copy::
+* queue-empty?::
+* queue-first::
+* queue-enqueue!::
+* queue-dequeue!::
+* queue-length::
+* queue-fixed-capacity?::
+* queue-capacity::
+@end menu
+
+@node queue?,queue-copy, , queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{queue} protocol
+@end deffn
+
+@node queue-copy, queue-empty?, queue?, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-copy queue
+@b{requires} @code{queue} implement the queue protocol. @* @*
+@b{returns} a shallow copy of @code{queue}.
+@end deffn
+
+@node queue-empty?, queue-first, queue-copy, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-empty? queue
+@b{requires} @code{queue} implement the queue protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{queue} contains any items.
+@end deffn
+
+@node queue-first, queue-enqueue!, queue-empty?, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-first queue
+@b{requires} @code{queue} implement the queue protocol. @* @*
+@b{returns} returns the first item in @code{queue}. If @code{queue} is
+empty, a @code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node queue-enqueue!, queue-dequeue!, queue-first, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-enqueue! queue item
+@b{requires} @code{queue} implement the queue protocol and @code{item}
+be an arbitrary item @* @*
+@b{returns} returns @code{unspecified}. If @code{queue} has a fixed
+capacity and is full, a @code{&invalid-state-exception} is
+thrown. @*@*
+@b{modifies} @code{queue} by placing @code{item} on the end.
+@end deffn
+
+@node queue-dequeue!, queue-length, queue-enqueue!, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-dequeue! queue
+@b{requires} @code{queue} implement the queue protocol.@* @*
+@b{returns} returns the first item in @code{queue}. If @code{queue} is
+empty, a @code{&invalid-state-exception} is thrown.@*@*
+@b{modifies} @code{queue} by removing the first item.
+@end deffn
+
+@node queue-length, queue-fixed-capacity?, queue-dequeue!, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-length queue
+@b{requires} @code{queue} implement the queue protocol.@* @*
+@b{returns} returns the the number of items in @code{queue}
+@end deffn
+
+
+@node queue-fixed-capacity?, queue-capacity, queue-length, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-fixed-capacity? queue
+@b{requires} @code{queue} implement the queue protocol.@* @*
+@b{returns} returns a boolean indicating whether or not @code{queue}
+has a fixed capacity.
+@end deffn
+
+@node queue-capacity, , queue-fixed-capacity?, queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} queue-capacity queue
+@b{requires} @code{queue} implement the queue protocol.@* @*
+@b{returns} returns the capacity (i.e., the number of items that it
+can hold) of @code{queue} or @code{unspecified} if it has no fixed capacity.
+@end deffn
+
+@node queue Examples, queue API Reference, ,queue
+@subsection Examples
+
+
+hoard provides linked and contiguous implementations of the
+@code{queue} protocol.
+
+@smalllisp
+(queue? (contiguous-queue :capacity 5))
+   @result{} #t     
+(queue? (linked-queue))
+   @result{} #t
+@end smalllisp 
+
+
+You can add items to a queue:
+
+@smalllisp
+(let ((q (linked-queue)))
+   (queue-enqueue! q 1)
+   (queue-enqueue! q 2)
+   (enumerable-collect q +list-collector+))
+   @result{} (1 2)
+@end smalllisp
+
+look at the first item:
+
+@smalllisp
+(let ((q (linked-queue)))
+   (queue-enqueue! q 1)
+   (queue-enqueue! q 2)
+   (queue-first q))
+   @result{} 1
+@end smalllisp
+
+or remove the first item:
+
+@smalllisp
+(let ((q (linked-queue)))
+   (queue-enqueue! q 1)
+   (queue-enqueue! q 2)
+   (queue-dequeue! q)
+   (queue-front q))
+   @result{} 2
+@end smalllisp
+
+It is also possible to test to see if a queue is empty:
+
+@smalllisp
+(queue-empty? (linked-queue))
+   @result{} #t
+
+(queue-empty? (linked-queue 1 2 3))
+   @result{} #f
+@end smalllisp
+
+A copy of a queue can be useful:
+
+@smalllisp
+(let* ((q1 (linked-queue 1 2 3))
+       (q2 (queue-copy q1)))
+   (eq? q1 q2))
+   @result{} #f
+@end smalllisp
+
+Some queue implementations have a fixed-capacity:
+
+@smalllisp
+(queue-fixed-capacity? (contiguous-queue :capacity 5))
+   @result{} #t
+
+(queue-fixed-capacity? (linked-queue))
+   @result{} #f
+
+(queue-capacity (contiguous-queue :capacity 5))
+   @result{} 5
+
+(queue-capacity (linked-queue))
+   @result{} #unspecified
+@end smalllisp

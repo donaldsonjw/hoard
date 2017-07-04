@@ -1,0 +1,302 @@
+@node enumerable, collector, enumerator, Protocols
+@section enumerable
+
+@menu
+* enumerable Overview::
+* enumerable API Reference::
+* enumerable Examples::
+@end menu
+
+
+@node enumerable Overview, enumerable API Reference, , enumerable
+@subsection Overview
+
+@code{enumerable} is a protocol implemented by those objects that
+support a notion of enumeration or iteration. By providing an
+@code{enumerator}, they gain support for mapping, folding, filtering,
+and more.
+
+
+@node enumerable API Reference, enumerable Examples, enumerable Overview, enumerable
+@subsection API Reference
+
+@menu
+* enumerable?::
+* enumerable-enumerator::
+* enumerable-for-each::
+* enumerable-map::
+* enumerable-filter::
+* enumerable-take-while::
+* enumerable-take::
+* enumerable-fold::
+* enumerable-any?::
+* enumerable-every?::
+* enumerable-skip-while::
+* enumerable-skip::
+* enumerable-append::
+* enumerable-collect::
+@end menu
+
+@node enumerable?,enumerable-enumerator, , enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerable? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{enumerable} protocol
+@end deffn
+
+@node enumerable-enumerator,enumerable-for-each,enumerable?, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} enumerable-enumerator obj
+@b{requires} @code{object} support the @code{enumerable} protocol @* @*
+@b{returns} an @code{enumerator} 
+@end deffn
+
+@node enumerable-for-each,enumerable-map,enumerable-enumerator, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-for-each proc enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or @code{enumerator} protocol and @code{proc} be a procedure with an arity compatabile with applying it element-wise to the elements provided by the @code{enum}s. @* @*
+@b{returns} @code{#unspecified} @* @*
+@b{note} @code{enumerable-for-each} is applied for the side-effects resulting from applying @code{proc}.
+@end deffn
+
+@node enumerable-map,enumerable-filter,enumerable-for-each, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-map proc enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or @code{enumerator} protocol and @code{proc} be a procedure with an arity compatabile with applying it element-wise to the elements provided by the @code{enum}s. @* @*
+@b{returns} an @code{enumerator} providing the results of applying
+@code{proc} 
+@end deffn
+
+@node enumerable-filter,enumerable-take-while,enumerable-map, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-filter predicate enum
+@b{requires} @code{enum} to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{predicate} be a procedure returning a
+boolean indicating whether or not an element should be retained. @* @*
+@b{returns} an @code{enumerator} providing the retained elements 
+@end deffn
+
+@node enumerable-take-while,enumerable-take,enumerable-filter, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-take-while predicate enum
+@b{requires} @code{enum} to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{predicate} be a procedure returning a
+boolean indicating whether or not an elements should continue to be consumed. @* @*
+@b{returns} an @code{enumerator} providing the consumed elements 
+@end deffn
+
+@node enumerable-take,enumerable-fold, enumerable-take-while, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-take n enum
+@b{requires} @code{enum} to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{n} be an integer representing the
+max number of items to take@* @*
+@b{returns} an @code{enumerator} providing upto @code{n} elements 
+@end deffn
+
+@node enumerable-fold, enumerable-any?, enumerable-take, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-fold proc seed enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol, @code{proc} to be a procedure compatible
+with applying it to a seed and the element-wise elements provided by
+the @code{enum}s (it should produce a new seed value), and @code{seed}
+should be an appropriate initial seed value for @code{proc}.@* @*
+@b{returns} the result of folding @code{proc} over the provided
+@code{enum}s @* @*
+@b{note} @code{proc} is applied left to right with the seed resulting
+from the previous application being used in the next. When no more
+elements are available, the final seed is returned.
+@end deffn
+
+@node enumerable-any?,enumerable-every?, enumerable-fold, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-any? predicate enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{predicate} to be a procedure compatible
+with applying it element-wise to the elements provided by
+the @code{enum}s, returning a boolean.@* @*
+@b{returns} a boolean indicating whether or not any of the elements
+are @code{#t} for @code{predicate}.
+@end deffn
+
+@node enumerable-every?, enumerable-skip-while, enumerable-any?, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-every? predicate enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{predicate} to be a procedure compatible
+with applying it element-wise to the elements provided by
+the @code{enum}s, returning a boolean.@* @*
+@b{returns} a boolean indicating whether or not all of the elements
+are @code{#t} for @code{predicate}.
+@end deffn
+
+@node enumerable-skip-while, enumerable-skip, enumerable-every?, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-skip-while predicate enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{predicate} to be a procedure compatible
+with applying it element-wise to the elements provided by
+the @code{enum}s, returning a boolean indicating whether those
+elements should skipped.@* @*
+@b{returns} an @code{enumerator} providing acces to the elements in the original
+@code{enum}s after those that were skipped according to @code{predicate}.
+@end deffn
+
+@node enumerable-skip, enumerable-append, enumerable-skip-while, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-skip n enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{n} to be an integer representing the
+number of elements to skip from @code{enum}s.@* @*
+@b{returns} an @code{enumerator} providing access to the elements in the original
+@code{enum}s after those that were skipped.
+@end deffn
+
+@node enumerable-append, enumerable-collect, enumerable-skip, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-append enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{enumerable} or
+@code{enumerator} protocol.@* @*
+@b{returns} an @code{enumerator} providing access to the elements in the original
+@code{enum}s appended left to right.
+@end deffn
+
+@node enumerable-collect,, enumerable-append, enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} enumerable-collect enum collector
+@b{requires} @code{enum} to either support the @code{enumerable} or
+@code{enumerator} protocol and @code{collector} to support the
+@code{collector} protocol.@* @*
+@b{returns} a value collected from the given @code{enum} according to
+provided @code{collector}. @* @*
+@b{note} @code{enumerable-collect} is commonly used to transform the
+values provided by @code{enumerators} into concrete collections,
+although their uses are more flexible than that. For example, to
+collect all of the values from an @code{enumerator} into a list you
+could do the following:
+@smalllisp
+(enumerable-collect enumer +list-collector+)
+@end smalllisp
+@xref{collector} for more information.
+@end deffn
+
+@node enumerable Examples, enumerable API Reference, ,enumerable
+@subsection Examples
+
+All of the built in Bigloo collection types are @code{enumerable}s.
+
+@smalllisp
+(enumerable? (list 1 2 3))
+  @result{} #t
+
+(enumerable? (vector 1 2 3))
+  @result{} #t
+
+(enumerable? "test string")
+  @result{} #t
+
+(enumerable? (create-hashtable))
+  @result{} #t
+@end smalllisp
+
+With @code{numerable-for-each}, it is possible to iterate over any
+enumerable. A few examples follow:
+
+@smalllisp
+(let ((count 0))
+  (enumerable-for-each (lambda (x) (set! count (+ x count)))
+                       (vector 1 2 3))
+  count)
+
+  @result{} 6
+
+(enumerable-for-each (lambda (x) (print x)) (range :start 1 :end 5))
+
+  @print{} 1
+  @print{} 2
+  @print{} 3
+  @print{} 4
+  @result{} #unspecified
+@end smalllisp
+
+It is also possible to map a function over @code{enumerable}s.
+
+@smalllisp
+(enumerable-collect (enumerable-map (lambda (x) (+ x 1))
+                       (list 1 2 3 4))
+   +list-collector+)
+
+  @result{} (2 3 4 5)
+@end smalllisp
+
+For dictionary type collections, the values are mapped over.
+
+@smalllisp
+(let ((table (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3))))
+   (print (enumerable-collect (enumerable-map (lambda (x) (+ x 1)) table)
+             +vector-collector+)))
+
+@end smalllisp
+
+Given an appropriate seed an procedure, @code{enumerable-fold} can be
+used to reduce an enumerable to a single value.
+
+@smalllisp
+(enumerable-fold (lambda (s v) (+ s v)) 0 (range :start 1 :end 6))
+
+  @result{} 15
+@end smalllisp
+
+Filtering of values is also supported.
+
+@smalllisp
+(enumerable-collect (enumerable-filter odd? (range :start 1 :end 10))
+   +list-collector+)
+
+  @result{} (1 3 5 7 9)
+@end smalllisp
+
+
+It is also possible to consume values while a predicate remains true.
+
+@smalllisp
+(enumerable-collect
+   (enumerable-take-while (lambda (x) (< x 5)) (range :start 0 :end 10))
+   +list-collector+)
+
+  @result{} (0 1 2 3 4)
+@end smalllisp
+
+Or to test whether any or all values match a give predicate.
+
+@smalllisp
+(enumerable-any? odd? (list 4 6 8 7))
+
+  @result{} #t
+
+(enumerable-any? odd? (list 4 6 8 10))
+
+  @result{} #f
+
+(enumerable-every? even? (list 2 4 6 8))
+
+  @result{} #t
+
+(enumerable-every? even? (list 2 4 6 7))
+
+  @result{} #f
+@end smalllisp
+
+As shown in the above examples, @code{enumerable-collect} can be used
+to gather the values of an enumerable into a new collection, but it is
+more general than that. In fact, it is a general reduction
+facility. For example, the sum of an @code{enumerable} can be obtained
+as follows:
+
+@smalllisp
+(enumerable-collect (range :start 1 :end 6) +sum-collector+)
+
+  @result{} 15
+@end smalllisp
+
+For full details, @xref{collector}.

@@ -1,0 +1,249 @@
+@node set, queue , bag, Protocols
+@section set
+
+@menu
+* set Overview::
+* set API Reference::
+* set Examples::
+@end menu
+
+
+@node set Overview, set API Reference, , set
+@subsection Overview
+
+The @code{set} protocol defines those methods required by a set implementation.
+A set is a collection of objects where each object is unique.
+
+
+@node set API Reference, set Examples, set Overview, set
+@subsection API Reference
+
+@menu
+* set?::
+* set-copy::
+* set-empty?::
+* set-insert!::
+* set-delete!::
+* set-contains?::
+* set-length::
+* set-union!::
+* set-union::
+* set-intersect!::
+* set-intersect::
+* set-difference!::
+* set-difference::
+@end menu
+
+@node set?,set-copy, , set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{set} protocol
+@end deffn
+
+@node set-copy, set-empty?, set?, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-copy set
+@b{requires} @code{set} implement the set protocol. @* @*
+@b{returns} a shallow copy of @code{set}.
+@end deffn
+
+@node set-empty?, set-delete!, set-copy, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-empty? set
+@b{requires} @code{set} implement the set protocol. @* @*
+@b{returns} a boolean indicaing whether or not @code{set} contains any items.
+@end deffn
+
+@node set-insert!, set-delete!, set-empty?, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-insert! set item
+@b{requires} @code{set} implement the set protocol, and @code{item} be
+an arbitrary object. @* @*
+@b{modifies} @code{set} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node set-delete!, set-contains?, set-insert!, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-delete! set item
+@b{requires} @code{set} implement the set protocol, and @code{item} be
+an arbitrary object.  @* @*
+@b{modifies} @code{set} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{set}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node set-contains?, set-length, set-delete!, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-contains? set item
+@b{requires} @code{set} implement the set protocol, and @code{item} be
+an arbitrary object.  @* @*
+@b{returns} a boolean indicating whether or not the @code{set}
+contains @code{item}.
+@end deffn
+
+@node set-length,set-union!, set-contains?, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-length set
+@b{requires} @code{set} implement the set protocol
+@* @*
+@b{returns} the number of items contained in @code{set}
+@end deffn
+
+@node set-union!,set-union, set-length, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-union! set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{modifies} @code{set} to be the union of all sets provided.
+@b{returns} #unspecified
+@end deffn
+
+@node set-union,set-intersect!, set-union!, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-union set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{returns} a new set of the same type as @code{set} containing the
+union of all sets provided.
+@end deffn
+
+@node set-intersect!,set-intersect, set-union!, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-intersect! set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{modifies} @code{set} to be the intersection of all sets provided.
+@b{returns} #unspecified
+@end deffn
+
+@node set-intersect,set-difference, set-intersect!, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-intersect set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{returns} a new set of the same type as @code{set} containing the
+intersection of all sets provided.
+@end deffn
+
+@node set-difference!,set-difference, set-intersect, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-difference! set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{modifies} @code{set} to be the difference of all sets provided.
+@b{returns} #unspecified
+@end deffn
+
+@node set-difference,, set-difference, set API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} set-difference set . sets
+@b{requires} @code{set} implement the set protocol and @code{sets} be
+an arbitrary number of additional objects implementing the set
+protocol.
+@* @*
+@b{returns} a new set of the same type as @code{set} containing the
+difference of all sets provided.
+@end deffn
+
+@node set Examples, set API Reference, ,set
+@subsection Examples
+
+2 different implementations of the set protocol are currently provided
+by hoard. One is tree-based, and the other is hash-based. To create
+a tree-based set use:
+
+@smalllisp
+(let ((set (make-sorted-set :comparator +number-comparator+)))
+   (set? set))              
+   @result{} #t           
+@end smalllisp
+
+The @code{:comparator} argument must be an object implementing the
+comparator protocol for the type of item to be stored in the set. The
+comparator must be ordered.
+
+To create a hash-based set use:
+
+@smalllisp
+(let ((set (make-hash-set :comparator +number-comparator+)))
+   (set? set))
+   @result{} #t
+@end smalllisp
+
+The @code{:comparator} argument, like in the tree-based example, must
+be an object implementing the comparator protocol for the type of item
+to be stored in the set. However, the comparator must be hashable not ordered.
+
+Assuming a set has been created, to insert an item into a set use:
+
+@smalllisp
+(set-insert! set 1)
+   @result{} #unspecified
+@end smalllisp
+
+Or deleted with:
+
+@smalllisp
+(set-delete! set 1)
+   @result{} #unspecified
+
+(set-contains? set 1)
+   @result{} #f
+@end smalllisp
+
+To check to see if a set is empty:
+
+@smalllisp
+(set-empty? set)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a set:
+
+@smalllisp
+
+(set-contains? set 1)
+   @result{} #t
+
+(set-contains? set 3)
+   @result{} #f
+@end smalllisp
+
+
+To make a copy:
+
+@smalllisp
+(let ((set2 (set-copy? set)))
+   (eq? set set2))
+   @result{} #f
+@end smalllisp
+
+
+To non-destructively perform the union, intersection, and difference:
+
+@smalllisp
+(let* ((set1 (sorted-set :comparator +number-comparator+ 1 2))  
+       (set2 (hash-set :comparator +number-comparator+ 2 3))
+       (uset (set-union set1 set2))
+       (iset (set-intersect set1 set2))
+       (dset (set-difference set1 set2)))
+
+    (list (enumerable-collect uset +list-collector+))
+    (enumerable-collect iset +list-collector+)
+    (enumerable-collect dset +list-collector+))
+     
+@end smalllisp
+

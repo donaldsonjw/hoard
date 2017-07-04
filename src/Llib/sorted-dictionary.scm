@@ -178,6 +178,13 @@
 (define-method (dictionary-enumerator-move-next! enumer::%sorted-dictionary-enumerator)
    (enumerator-move-next! enumer))
 
+(define-method (dictionary-enumerator-current enumer::%sorted-dictionary-enumerator)
+   (if (not (-> enumer started))
+       (raise-invalid-state-exception :proc "dictionary-enumerator-current"
+          :msg "invalid state; dicitionary-enumerator-move-next! must be called before dictionary-enumerator-current"
+          :obj enumer)
+       (-> enumer curr item)))
+
 (define-method (dictionary-enumerator-key enumer::%sorted-dictionary-enumerator)
    (define (get-item)
       (if (not (-> enumer started))

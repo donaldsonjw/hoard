@@ -1,0 +1,184 @@
+@node priority-queue, dictionary, stack, Protocols
+@section priority-queue
+
+@menu
+* priority-queue Overview::
+* priority-queue API Reference::
+* priority-queue Examples::
+@end menu
+
+@node priority-queue Overview, priority-queue API Reference, , priority-queue
+@subsection Overview
+
+The @code{priority-queue} protocol defines the methods required by a priority-queue
+implementation. A priority-queue is a sequential data structure where items are
+ordered by priority.
+
+@node priority-queue API Reference, priority-queue Examples, priority-queue Overview, priority-queue
+@subsection API Reference
+
+@menu
+* priority-queue?::
+* priority-queue-copy::
+* priority-queue-empty?::
+* priority-queue-first::
+* priority-queue-enqueue!::
+* priority-queue-dequeue!::
+* priority-queue-length::
+* priority-queue-fixed-capacity?::
+* priority-queue-capacity::
+@end menu
+
+@node priority-queue?,priority-queue-copy, , priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{priority-queue} protocol
+@end deffn
+
+@node priority-queue-copy, priority-queue-empty?, priority-queue?, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-copy priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol. @* @*
+@b{returns} a shallow copy of @code{priority-queue}.
+@end deffn
+
+@node priority-queue-empty?, priority-queue-first, priority-queue-copy, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-empty? priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{priority-queue} contains any items.
+@end deffn
+
+@node priority-queue-first, priority-queue-enqueue!, priority-queue-empty?, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-first priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol. @* @*
+@b{returns} returns the first item in @code{priority-queue}. If @code{priority-queue} is
+empty, a @code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node priority-queue-enqueue!, priority-queue-dequeue!, priority-queue-first, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-enqueue! priority-queue item
+@b{requires} @code{priority-queue} implement the priority-queue protocol and @code{item}
+be an arbitrary item @* @*
+@b{returns} returns @code{unspecified}. If @code{priority-queue} has a fixed
+capacity and is full, a @code{&invalid-state-exception} is
+thrown. @*@*
+@b{modifies} @code{priority-queue} by placing @code{item} in the queue
+according to its priority.
+@end deffn
+
+@node priority-queue-dequeue!, priority-queue-length, priority-queue-enqueue!, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-dequeue! priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol.@* @*
+@b{returns} returns the first item in @code{priority-queue}. If @code{priority-queue} is
+empty, a @code{&invalid-state-exception} is thrown.@*@*
+@b{modifies} @code{priority-queue} by removing the first item.
+@end deffn
+
+@node priority-queue-length, priority-queue-fixed-capacity?, priority-queue-dequeue!, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-length priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol.@* @*
+@b{returns} returns the the number of items in @code{priority-queue}
+@end deffn
+
+
+@node priority-queue-fixed-capacity?, priority-queue-capacity, priority-queue-length, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-fixed-capacity? priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol.@* @*
+@b{returns} returns a boolean indicating whether or not @code{priority-queue}
+has a fixed capacity.
+@end deffn
+
+@node priority-queue-capacity, , priority-queue-fixed-capacity?, priority-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} priority-queue-capacity priority-queue
+@b{requires} @code{priority-queue} implement the priority-queue protocol.@* @*
+@b{returns} returns the capacity (i.e., the number of items that it
+can hold) of @code{priority-queue} or @code{unspecified} if it has no fixed capacity.
+@end deffn
+
+@node priority-queue Examples, priority-queue API Reference, ,priority-queue
+@subsection Examples
+
+
+hoard provides linked and contiguous implementations of the
+@code{priority-queue} protocol.
+
+@smalllisp
+(priority-queue? (binary-heap :capacity 5 :comparator +number-comparator+))
+   @result{} #t     
+(priority-queue? (pairing-heap :comparator +number-comparator+))
+   @result{} #t
+@end smalllisp 
+
+
+You can add items to a priority-queue:
+
+@smalllisp
+(let ((q (pairing-heap :comparator +number-comparator+)))
+   (priority-queue-enqueue! q 1)
+   (priority-queue-enqueue! q 2)
+   (enumerable-collect q +list-collector+))
+   @result{} (1 2)
+@end smalllisp
+
+look at the first item:
+
+@smalllisp
+(let ((q (pairing-heap :comparator +number-comparator+)))
+   (priority-queue-enqueue! q 2)
+   (priority-queue-enqueue! q 1)
+   (priority-queue-first q))
+   @result{} 1
+@end smalllisp
+
+or remove the first item:
+
+@smalllisp
+(let ((q (pairing-heap :comparator +number-comparator+)))
+   (priority-queue-enqueue! q 1)
+   (priority-queue-enqueue! q 2)
+   (priority-queue-dequeue! q)
+   (priority-queue-front q))
+   @result{} 2
+@end smalllisp
+
+It is also possible to test to see if a priority-queue is empty:
+
+@smalllisp
+(priority-queue-empty? (pairing-heap :comparator +number-comparator+))
+   @result{} #t
+
+(priority-queue-empty? (pairing-heap :comparator +number-comparator+))
+   @result{} #f
+@end smalllisp
+
+A copy of a priority-queue can be useful:
+
+@smalllisp
+(let* ((q1 (pairing-heap :comparator +number-comparator+ 1 2 3))
+       (q2 (priority-queue-copy q1)))
+   (eq? q1 q2))
+   @result{} #f
+@end smalllisp
+
+Some priority-queue implementations have a fixed-capacity:
+
+@smalllisp
+(priority-queue-fixed-capacity? (binary-heap :capacity 5 :comparator +number-comparator+))
+   @result{} #t
+
+(priority-queue-fixed-capacity? (pairing-heap :comparator +number-comparator+))
+   @result{} #f
+
+(priority-queue-capacity (binary-heap :capacity 5 :comparator +number-comparator+))
+   @result{} 5
+
+(priority-queue-capacity  (pairing-heap :comparator +number-comparator+))
+   @result{} #unspecified
+@end smalllisp

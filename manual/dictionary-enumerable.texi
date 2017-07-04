@@ -1,0 +1,211 @@
+@node dictionary-enumerable, , dictionary-enumerator, Protocols
+@section dictionary-enumerable
+
+@menu
+* dictionary-enumerable Overview::
+* dictionary-enumerable API Reference::
+* dictionary-enumerable Examples::
+@end menu
+
+
+@node dictionary-enumerable Overview, dictionary-enumerable API Reference, , dictionary-enumerable
+@subsection Overview
+
+@code{dictionary-enumerable} is a protocol implemented by those dictionary objects that
+support a notion of enumeration or iteration. By providing an
+@code{enumerator}, they gain support for mapping, folding, filtering,
+and more.
+
+
+@node dictionary-enumerable API Reference, dictionary-enumerable Examples, dictionary-enumerable Overview, dictionary-enumerable
+@subsection API Reference
+
+@menu
+* dictionary-enumerable?::
+* dictionary-enumerable-enumerator::
+* dictionary-enumerable-for-each::
+* dictionary-enumerable-map::
+* dictionary-enumerable-filter::
+* dictionary-enumerable-fold::
+* dictionary-enumerable-any?::
+* dictionary-enumerable-every?::
+* dictionary-enumerable-append::
+* dictionary-enumerable-collect::
+@end menu
+
+@node dictionary-enumerable?,dictionary-enumerable-enumerator, , dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerable? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{dictionary-enumerable} protocol
+@end deffn
+
+@node dictionary-enumerable-enumerator,dictionary-enumerable-for-each,dictionary-enumerable?, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerable-enumerator obj
+@b{requires} @code{object} support the @code{dictionary-enumerable} protocol @* @*
+@b{returns} an @code{dictionary-enumerator} 
+@end deffn
+
+@node dictionary-enumerable-for-each,dictionary-enumerable-map,dictionary-enumerable-enumerator, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-for-each proc enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or @code{dictionary-enumerator} protocol and @code{proc} be a procedure that accepts two arguments, a key and value.@* @*
+@b{returns} @code{#unspecified} @* @*
+@b{note} @code{dictionary-enumerable-for-each} is applied for the side-effects resulting from applying @code{proc}.
+@end deffn
+
+@node dictionary-enumerable-map,dictionary-enumerable-filter,dictionary-enumerable-for-each, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-map proc enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or @code{dictionary-enumerator} protocol and @code{proc} be a procedure taking the key and value of an association and returning a new association. @* @*
+@b{returns} an @code{enumerator} providing the results of applying
+@code{proc} 
+@end deffn
+
+@node dictionary-enumerable-filter,dictionary-enumerable-fold,dictionary-enumerable-map, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-filter predicate enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or
+@code{enumerator} protocol and @code{predicate} be a procedure accepting a key and a value and returning a
+boolean indicating whether or not the association should be retained. @* @*
+@b{returns} an @code{dictionary-enumerator} providing the retained elements 
+@end deffn
+
+
+@node dictionary-enumerable-fold, dictionary-enumerable-any?, dictionary-enumerable-filter, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-fold proc seed enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or
+@code{dictionary-enumerator} protocols, @code{proc} to be a procedure compatible
+with applying it to a seed and a key and value provided by
+@code{enum} (it should produce a new seed value), and @code{seed}
+should be an appropriate initial seed value for @code{proc}.@* @*
+@b{returns} the result of folding @code{proc} over the provided
+@code{enum} @* @*
+@b{note} @code{proc} is applied left to right with the seed resulting
+from the previous application being used in the next. When no more
+elements are available, the final seed is returned.
+@end deffn
+
+@node dictionary-enumerable-any?,dictionary-enumerable-every?, dictionary-enumerable-fold, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-any? predicate enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or
+@code{dictionary-enumerator} protocols and @code{predicate} to be a procedure accepting a key and a value and returning a boolean.@* @*
+@b{returns} a boolean indicating whether or not any of the associations
+are @code{#t} for @code{predicate}.
+@end deffn
+
+@node dictionary-enumerable-every?, dictionary-enumerable-append, dictionary-enumerable-any?, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-every? predicate enum
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or
+@code{dictionary-enumerator} protocols and @code{predicate} to be a procedure accepting a key and a value and returning a boolean.@* @*
+@b{returns} a boolean indicating whether or not all of the associations
+are @code{#t} for @code{predicate}.
+@end deffn
+
+@node dictionary-enumerable-append, dictionary-enumerable-collect, dictionary-enumerable-every?, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-append enum1 enum2 @dots{}
+@b{requires} @code{enum}s to either support the @code{dictionary-enumerable} or
+@code{dictionary-enumerator} protocols.@* @*
+@b{returns} an @code{dictionary-enumerator} providing access to the elements in the original
+@code{enum}s appended left to right.
+@end deffn
+
+@node dictionary-enumerable-collect,, dictionary-enumerable-append, dictionary-enumerable API Reference
+@comment node-name, next,          previous, up
+@deffn {syntax} dictionary-enumerable-collect enum collector
+@b{requires} @code{enum} to either support the @code{dictionary-enumerable} or
+@code{dictionary-enumerator} protocol and @code{collector} to support the
+@code{collector} protocol.@* @*
+@b{returns} a value collected from the given @code{enum} according to
+the provided @code{collector}. @* @*
+@b{note} @code{dictionary-enumerable-collect} is commonly used to transform the
+keys and values provided by @code{dictionary-enumerator}s into concrete collections,
+although their uses are more flexible than that. For example, to
+collect all of the values from an @code{dictionary-enumerator} into a list you
+could do the following:
+@smalllisp
+(dictionary-enumerable-collect enumer +list-collector+)
+@end smalllisp
+@xref{collector} for more information.
+@end deffn
+
+@node dictionary-enumerable Examples, dictionary-enumerable API Reference, ,dictionary-enumerable
+@subsection Examples
+
+Bigloo's hashtables and hoard's sorted-dictionary are @code{dictionary-enumerable}s.
+
+@smalllisp
+(dictionary-enumerable? (create-hashtable))
+  @result{} #t
+
+(dictionary-enumerable? (sorted-dictionary :comparator +number-comparator+))
+@end smalllisp
+
+With @code{numerable-for-each}, it is possible to iterate over any
+dictionary-enumerable. A few examples follow:
+
+@smalllisp
+(let ((count 0))
+  (dictionary-enumerable-for-each (lambda (k v) (set! count (+ v count)))
+                       (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
+  count)
+
+  @result{} 6
+@end smalllisp
+
+It is also possible to map a function over @code{dictionary-enumerable}s.
+
+@smalllisp
+(map =>value (dictionary-enumerable-collect (dictionary-enumerable-map (lambda (k v) (=> k (+ v 1))) (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3))) +list-collector+))
+  @result{} (2 3 4)
+@end smalllisp
+
+Given an appropriate seed an procedure, @code{dictionary-enumerable-fold} can be
+used to reduce an dictionary-enumerable to a single value.
+
+@smalllisp
+(dictionary-enumerable-fold (lambda (s k v) (+ s v)) 0
+                              (hashtable (=> 'a 1) (=> 'b 2)
+                                (=> 'c 3) (=> 'd 4) (=> 'e 5)))
+
+  @result{} 15
+@end smalllisp
+
+Filtering of values is also supported.
+
+@smalllisp
+(map =>value (dictionary-enumerable-collect (dictionary-enumerable-filter (lambda (k v) (odd? v))
+                                               (hashtable (=> 'a 1) (=> 'b 2)
+                                                  (=> 'c 3) (=> 'd 4) (=> 'e 5)))
+                +list-collector+))
+  @result{} (2 3 4 5)
+@end smalllisp
+
+Or to test whether any or all associations match a give predicate.
+
+@smalllisp
+(dictionary-enumerable-any? (lambda (k v) (odd? v)) (hashtable (=> 'a 1) (=> 'b 2)
+                                   (=> 'c 3) (=> 'd 4) (=> 'e 5)))
+  @result{} #t
+
+(dictionary-enumerable-any? (lambda (k v) (odd? v)) (hashtable (=> 'a 2) (=> 'b 4)
+                                   (=> 'c 6) (=> 'd 8) (=> 'e 10)))
+  @result{} #f
+
+(dictionary-enumerable-every? (lambda (k v) (even? v)) (hashtable (=> 'a 2) (=> 'b 4)
+                                   (=> 'c 6) (=> 'd 8) (=> 'e 10)))
+  @result{} #t
+
+(dictionary-enumerable-every? (lambda (k v) (even? v)) (hashtable (=> 'a 2) (=> 'b 3)
+                                   (=> 'c 6) (=> 'd 8) (=> 'e 10)))
+  @result{} #f
+@end smalllisp
+
+As shown in the above examples, @code{dictionary-enumerable-collect} can be used
+to gather the values of an dictionary-enumerable into a new collection, but it is
+more general than that. In fact, it is a general reduction
+facility. For full details, @xref{collector}.

@@ -1,0 +1,44 @@
+@node mutable , enumerator, Protocols, Protocols
+@section mutable
+
+@menu
+* mutable Overview::
+* mutable API Reference::
+* mutable Examples::
+@end menu
+
+@node mutable Overview, mutable API Reference, , mutable
+@subsection Overview
+
+The mutable protocol specifies the operations expected of an mutable collection. A mutable collection is one in which the collection can be modified in place.
+
+@node mutable API Reference, mutable Examples, mutable Overview, mutable
+@subsection API Reference
+
+@menu
+* collection-mutable?::
+@end menu
+
+@node collection-mutable?, , , mutable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-mutable? object
+@b{returns} a boolean indicating whether or not @code{object} is mutable
+@end deffn
+
+
+@node mutable Examples, mutable API Reference, ,mutable
+@subsection Examples
+
+Not surprisingly, the standard Bigloo lists, vectors, and hashtables are mutable.
+
+@smalllisp
+(collection-mutable? (list))
+   @result{} #t
+
+(collection-mutable? (vector 1 2 3))
+   @result{} #t
+
+(collection-mutable? "test string")
+   @result{} #t
+
+@end smalllisp

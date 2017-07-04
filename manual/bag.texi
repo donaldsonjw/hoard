@@ -1,0 +1,205 @@
+@node bag, set, comparator, Protocols
+@section bag
+
+@menu
+* bag Overview::
+* bag API Reference::
+* bag Examples::
+@end menu
+
+
+@node bag Overview, bag API Reference, , bag
+@subsection Overview
+
+The @code{bag} protocol defines those methods required by a bag implementation.
+A bag is set-like data structure that can contain multiple copies of an item.
+
+
+@node bag API Reference, bag Examples, bag Overview, bag
+@subsection API Reference
+
+@menu
+* bag?::
+* bag-copy::
+* bag-empty?::
+* bag-insert!::
+* bag-delete!::
+* bag-contains?::
+* bag-count::
+* bag-count-set!::
+* bag-length::
+@end menu
+
+@node bag?,bag-copy, , bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{bag} protocol
+@end deffn
+
+@node bag-copy, bag-empty?, bag?, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-copy bag
+@b{requires} @code{bag} implement the bag protocol. @* @*
+@b{returns} a shallow copy of @code{bag}.
+@end deffn
+
+@node bag-empty?, bag-delete!, bag-copy, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-empty? bag
+@b{requires} @code{bag} implement the bag protocol. @* @*
+@b{returns} a boolean indicaing whether or not @code{bag} contains any items.
+@end deffn
+
+@node bag-insert!, bag-delete!, bag-empty?, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-insert! bag item
+@b{requires} @code{bag} implement the bag protocol, and @code{item} be
+an arbitrary object. @* @*
+@b{modifies} @code{bag} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node bag-delete!, bag-contains?, bag-insert!, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-delete! bag item
+@b{requires} @code{bag} implement the bag protocol, and @code{item} be
+an arbitrary object.  @* @*
+@b{modifies} @code{bag} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{bag}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node bag-contains?, bag-count, bag-delete!, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-contains? bag item
+@b{requires} @code{bag} implement the bag protocol, and @code{item} be
+an arbitrary object.  @* @*
+@b{returns} a boolean indicating whether or not the @code{bag}
+contains @code{item}.
+@end deffn
+
+@node bag-count, bag-count-set!, bag-contains?, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-count bag item
+@b{requires} @code{bag} implement the bag protocol, and @code{item} be
+an arbitrary object.  @* @*
+@b{returns} the number of @code{item}s found in @code{bag}.
+@end deffn
+
+@node bag-count-set!, bag-length, bag-count, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-count-set! bag item count
+@b{requires} @code{bag} implement the bag protocol, @code{item} be
+an arbitrary object, and @code{count} be an integer
+representing the number of @code{item}s to include in @code{bag}
+@* @*
+@b{modifies} @code{bag} to contain @code{count} number of @code{items}
+unless @code{count} is less than or equal to 0 which results in the
+all @code{item}s begin removed from @code{bag}. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node bag-length, , bag-count-set!, bag API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} bag-length bag
+@b{requires} @code{bag} implement the bag protocol
+@* @*
+@b{returns} the number of items contained in @code{bag}
+@end deffn
+
+
+@node bag Examples, bag API Reference, ,bag
+@subsection Examples
+
+2 different implementations of the bag protocol are currently provided
+by hoard. One is tree-based, and the other is hash-based. To create
+a tree-based bag use:
+
+@smalllisp
+(let ((bag (make-sorted-bag :comparator +number-comparator+)))
+   (bag? bag))              
+   @result{} #t           
+@end smalllisp
+
+The @code{:comparator} argument must be an object implementing the
+comparator protocol for the type of item to be stored in the bag. The
+comparator must be ordered.
+
+To create a hash-based bag use:
+
+@smalllisp
+(let ((bag (make-hash-bag :comparator +number-comparator+)))
+   (bag? bag))
+   @result{} #t
+@end smalllisp
+
+The @code{:comparator} argument, like in the tree-based example, must
+be an object implementing the comparator protocol for the type of item
+to be stored in the bag. However, the comparator must be hashable not ordered.
+
+
+Assuming a bag has be created as above, to insert an item into a bag use:
+
+@smalllisp
+(bag-insert! bag 1)
+   @result{} #unspecified
+@end smalllisp
+
+The count of an item can be obtained with:
+
+@smalllisp
+(bag-count bag 1)
+   @result{} 1
+
+(bag-count bag 2)
+   @result{} 0
+@end smalllisp
+
+And the count can be explicitly set using:
+
+@smalllisp
+(bag-count-set! bag 1 4)
+   @result{} #unspecified
+
+(bag-count bag 1)
+   @result{} 4
+@end smalllisp
+
+Or a single copy deleted with:
+
+@smalllisp
+(bag-delete! bag 1)
+   @result{} #unspecified
+
+(bag-count bag 1)
+   @result{} 3
+@end smalllisp
+
+To check to see if a bag is empty:
+
+@smalllisp
+(bag-empty? bag)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a bag:
+
+@smalllisp
+
+(bag-contains? bag 1)
+   @result{} #t
+
+(bag-contains? bag 3)
+   @result{} #f
+@end smalllisp
+
+
+And finally, to make a copy:
+
+@smalllisp
+(let ((bag2 (bag-copy? bag)))
+   (eq? bag bag2))
+   @result{} #f
+@end smalllisp

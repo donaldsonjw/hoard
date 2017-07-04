@@ -1,0 +1,211 @@
+@node dictionary, , priority-queue, Protocols
+@section dictionary
+
+@menu
+* dictionary Overview::
+* dictionary API Reference::
+* dictionary Examples::
+@end menu
+
+
+@node dictionary Overview, dictionary API Reference, , dictionary
+@subsection Overview
+
+The @code{dictionary} protocol defines the methods required by a dictionary implementation. A dictionary is a data structure maintaining associations between keys and values.
+
+@node dictionary API Reference, dictionary Examples, dictionary Overview, dictionary
+@subsection API Reference
+
+@menu
+* dictionary?::
+* dictionary-copy::
+* dictionary-empty?::
+* dictionary-get::
+* dictionary-put!::
+* dictionary-length::
+* dictionary-remove!::
+* dictionary-contains?::
+* dictionary-update!::
+* dictionary-enumerator::
+@end menu
+
+@node dictionary?,dictionary-copy, , dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{dictionary} protocol
+@end deffn
+
+@node dictionary-copy,dictionary-empty?, dictionary?, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-copy dict
+@b{requires} @code{dict} implement the dictionary protocol. @*@*
+@b{returns} a shallow copy of @code{dict}
+@end deffn
+
+@node dictionary-empty?,dictionary-get, dictionary-copy, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-empty? dict
+@b{requires} @code{dict} implement the dictionary protocol. @*@*
+@b{returns} a boolean indicating whether or not the dictionary contains any associations.
+@end deffn
+
+@node dictionary-get,dictionary-put!, dictionary-empty?, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-get dict key
+@b{requires} @code{dict} implement the dictionary protocol and @code{key} be an arbitrary object @*@*
+@b{returns} the value associated with @code{key} or @code{#f} if no such association exists.
+@end deffn
+
+@node dictionary-put!,dictionary-length, dictionary-get, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-put! dict key value
+@b{requires} @code{dict} implement the dictionary protocol and @code{key} and @code{value} be arbitrary objects @*@*
+@b{modifies} @code{dict} so that it contains the association of @code{key} to @code{value}. If an association with @code{key} already exists it is replaced, and if not, a new association is created.@* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node dictionary-length,dictionary-remove!, dictionary-put!, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-length dict
+@b{requires} @code{dict} implement the dictionary protocol. @*@*
+@b{returns} the number of items in @code{dict}.
+@end deffn
+
+@node dictionary-remove!,dictionary-contains?, dictionary-length, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-remove! dict key
+@b{requires} @code{dict} implement the dictionary protocol and @code{key} be an arbitrary object. @*@*
+@b{modifies} @code{dict} by removing the association with the key @code{key}. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node dictionary-contains?,dictionary-update!, dictionary-remove!, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-contains? dict key
+@b{requires} @code{dict} implement the dictionary protocol and @code{key} be an arbitrary objects. @*@*
+@b{returns} a boolean indicating whether or not @code{dict} contains an association with the key @code{key}.
+@end deffn
+
+@node dictionary-update!, dictionary-enumerator, dictionary-contains?, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-update! dict key value exist-fun 
+@b{requires} @code{dict} implement the dictionary protocol, @code{key} and @code{value} be arbitrary objects, and @code{exist-fun} which is a procedure excepting a single value and returning an updated value when an association with a key @code{key} already exists. @*@*
+@b{modifies} @code{dict} such that if the dictionary doesn't currently contain an association with a key @code{key}, it contains an association with key @code{key} and value @code{value}, or if an existing association exists updates it so that has the value obtained by applying @code{exist-fun} to its value. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node dictionary-enumerator, , dictionary-update!, dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} dictionary-enumerator dict 
+@b{requires} @code{dict} implement the dictionary protocol. @*@*
+@b{returns} an object implementing the @code{dictionary-enumerator} protocol allowing the enumeration of the associations contained in @code{dict}.
+@end deffn
+
+
+
+
+@node dictionary Examples, dictionary API Reference, ,dictionary
+@subsection Examples
+
+Bigloo's native hashtable and the hoard provided sorted-dictionary implement the @code{dictionary} protocol.
+
+@smalllisp
+(dictionary? (create-hashtable))
+   @result{}#t
+
+(dictionary? (sorted-dictionary :comparator +number-comparator+))
+@end smalllisp
+
+Checking whether a dictionary is empty:
+
+@smalllisp
+(dictionary-empty? (create-hashtable))
+   @result{} #t
+
+(dictionary-empty? (hashtable (=> "A" 1)))
+   @result{} #f
+@end smalllisp
+
+
+Associations can be added to a dictionary:
+
+@smalllisp
+(let ((dict (create-hashtable)))
+   (dictionary-put! dict "a" 1)
+   (dictionary-put! dict "b" 2)
+   (map (lambda (kv) (cons (=>key kv) (=>value kv)))
+      (dictionary-enumerable-collect dict +list-collector+)))
+   @result{} (("a" . 1) ("b" . 2))
+@end smalllisp
+
+
+And removed (assuming the insertions above):
+
+@smalllisp
+
+(dictionary-remove! dict "a")
+(map (lambda (kv) (cons (=>key kv) (=>value kv)))
+   (dictionary-enumerable-collect dict +list-collector+))
+   @result{} (("b" . 2))
+
+@end smalllisp
+
+The value associated with a given key is easily obtained:
+
+@smalllisp
+(let ((dict (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (dictionary-get dict "b")
+   @result{} 2
+@end smalllisp
+
+The @code{dictionary-update!} method can be used to update an existing value or insert a new value if an existing association does not exist:
+
+@smalllisp
+(let ((dict (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (dictionary-update! dict "b" 0 (lambda (x) (+ x 1)))
+   (dictionary-update! dict "d" 0 (lambda (x) (+ x 1)))
+   (dictionary-get dict "b")
+   @result{} 3
+   (dictionary-get dict "d")
+   @result{} 0
+@end smalllisp
+
+To obtain the number of associations in a dictionary, call @code{dictionary-length}:
+
+@smalllisp
+(let ((dict (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (dictionary-length dict)
+   @result{} 3
+@end smalllisp
+
+Querying whether an association with a given key is accomplished with @code{dictionary-contains?}:
+
+@smalllisp
+(let ((dict (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (dictionary-contains? dict "a")
+   @result{} #t
+
+   (dictionary-contains? dict "d")
+   @result{} #f
+@end smalllisp
+
+
+Copying a dictionary is accomplished with @code{dictionary-copy}:
+
+@smalllisp
+(let* ((dict1 (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3)))
+       (dict2 (dictionary-copy dict1))) 
+    (eq? dict1 dict2)
+    @result{} #f
+    (and (dictionary-contains? dict1 "a")
+       (dictionary-contains? dict2 "a"))
+    @result{} #t
+@end smalllisp
+
+And last, but not least, you can obtain a @code{dictionary-enumerator} to enumerate the elements of the dictionary:
+
+@smalllisp
+(let ((dict (hashtable (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (dictionary-enumerator? (dictionary-enumerator dict)))
+   @result{} #t
+@end smalllisp

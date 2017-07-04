@@ -1,0 +1,220 @@
+\input texinfo    @c -*-texinfo-*-
+@setfilename hoard.info
+
+@c ------------------------------------------------------------------- @c
+@c    The version                                                      @c
+@c ------------------------------------------------------------------- @c
+@include version.texi
+
+
+@settitle hoard @value{hoardvers}
+@syncodeindex vr cp
+@syncodeindex pg cp
+@syncodeindex fn cp
+@value{hoardvers}
+
+@footnotestyle separate
+@ifinfo
+@paragraphindent 2
+@end ifinfo
+@finalout
+@comment %**end of header
+
+@ifinfo
+This file documents hoard, a collections library for Bigloo scheme.
+
+Copyright (C) 2016-17 Joseph Donaldson
+
+@display
+hoard is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+hoard is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with collections.  If not, see
+<http://www.gnu.org/licenses/>.
+@end display
+@end ifinfo
+
+@c ------------------------------------------------------------------- @c
+@c    The title page                                                   @c
+@c ------------------------------------------------------------------- @c
+@setchapternewpage odd
+
+@c @ifinfo
+@c @shorttitlepage Bigloo
+@c @end ifinfo
+
+@c use the new format for titles
+@titlepage
+@title hoard
+@subtitle A Collections Library for Bigloo scheme
+@subtitle User manual for version @value{hoardvers}
+@subtitle @value{update-month}
+
+@author Joseph Donaldson
+
+@c Include the Distribution inside the titlepage so
+@c that headings are turned off.
+
+@page
+@vskip 0pt plus 1filll
+
+Copyright @copyright{} 2016-17 Joseph Donaldson
+
+@display
+hoard is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+hoard is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with collections.  If not, see
+<http://www.gnu.org/licenses/>.
+@end display
+@end titlepage
+
+@c ------------------------------------------------------------------- @c
+@c    Dir entry                                                        @c
+@c ------------------------------------------------------------------- @c
+@ifinfo
+@dircategory Hoard a collections library
+@direntry
+* hoard: (hoard).       Hoard a collections library for Bigloo scheme.
+@end direntry
+@end ifinfo
+
+@c ------------------------------------------------------------------- @c
+@c    The main menu                                                    @c
+@c ------------------------------------------------------------------- @c
+@node Top, Overview, (dir), (dir)
+@cindex hoard
+
+@c ------------------------------------------------------------------- @c
+@c    Overview                                                         @c
+@c ------------------------------------------------------------------- @c
+@menu
+* Overview::
+* Protocols::
+* Implementations::
+@end menu
+
+@node Overview, Protocols, Top, Top
+@comment  node-name,  next,  previous,  up
+@chapter Overview of hoard
+@cindex Overview of hoard
+
+hoard is a collections library for Bigloo. It consists of a number of
+generic protocols and corresponding concrete
+implementations. Currently, it supports generic protocols for abstract
+collections, dictionaries, sets, queues, stacks, and priority queues
+as well as generic protocols for enumeration (i.e., iteration) and
+comparison. Multiple concrete implementations of each protocol are
+provided. For example, there are both sorted/tree and hash based versions
+of sets and dictionaries.
+
+Note: hoard heavily leverages bigloo-specific functionality, such as
+the object system, modules, and keyword arguments. Porting to other scheme systems would require significant effort. 
+
+@c ------------------------------------------------------------------- @c
+@c    Protocols                                                         @c
+@c ------------------------------------------------------------------- @c
+@c @node Overview, Program Structure, Copying, Top
+@node Protocols, Implementations, Overview, Top
+@comment  node-name,  next,  previous,  up
+@chapter Protocols
+@cindex Protocols
+
+This chapter documents the protocols provided by hoard. Each protocol
+is described, the api documented, and examples given. 
+
+@menu
+* collection::
+* indexable::
+* mutable::
+* enumerator::
+* enumerable::
+* collector::
+* comparator::
+* bag::
+* set::
+* queue::
+* stack::
+* priority-queue::
+* dictionary::
+* dictionary-enumerator: dictionary-enumerator protocol. :
+* dictionary-enumerable::
+@end menu
+
+@include collection.texi
+
+@include indexable.texi
+
+@include mutable.texi
+
+@include enumerator.texi
+
+@include enumerable.texi
+
+@include collector.texi
+
+@include comparator.texi
+
+@include bag.texi
+
+@include set.texi
+
+@include queue.texi
+
+@include stack.texi
+
+@include priority-queue.texi
+
+@include dictionary.texi
+
+@include dictionary-enumerator.texi
+
+@include dictionary-enumerable.texi
+
+@c ------------------------------------------------------------------- @c
+@c    Implementations                                                  @c
+@c ------------------------------------------------------------------- @c
+@c @node Overview, Program Structure, Copying, Top
+@node Implementations, , Protocols, Top
+@comment  node-name,  next,  previous,  up
+@chapter Implementations
+@cindex Implementations
+
+Each of the collection implementations and supporting data type are
+documented here. 
+
+@menu
+* association::
+* range::
+@end menu
+
+@include association.texi
+
+@include range.texi
+
+@c ------------------------------------------------------------------- @c
+@c    Bye                                                              @c
+@c ------------------------------------------------------------------- @c
+@iftex
+@chapter Table of contents
+@contents
+@summarycontents
+@end iftex
+ 
+@bye

@@ -1,13 +1,92 @@
-@node range, , Implementations, Implementations
+@node range, sorted-bag, Implementations, Implementations
 @section range
 
 @node range Overview, range API Reference, range, range
 @subsection Overview
 
+@code{range} is a data structure representing an integer interval having a
+start and an end (exclusive) possesing values between the two at a
+given step. It supports methods for iterating and mapping
+over the specified interval.
+
 @node range API Reference, range Examples, range Overview, range
 @subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by range. :
+* range?::
+* range: range constructor. :
+* range-for-each::
+* range-map::
+@end menu
+
+@node Protocols Implemented by range, range?, , range API Reference
+@comment node-name, next,          previous, up
+@code{range} implements the @code{enumerable} protocol. @xref{enumerable}.
+
+@node range?, range, Protocols Implemented by range, range API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} range? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a range.
+@end deffn
+
+@node range constructor, range-for-each, range?, range API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} range [:start 0] :end [:step 1]
+@b{requires} @code{:start}, @code{:end}, and @code{step} be integers
+with @code{:start} <= @code{:end} when @code{step} is positive or
+@code{:start} >= @code{:end} when @code{step} is
+negative. @code{:step} can not be 0. @code{:start} and @code{:step}
+are optional and default to 0 and 1, respectively. @* @*
+@b{returns} a range with the specified @code{start}, @code{end}, and @code{step}.
+@end deffn
+
+@node range-for-each, range-map, range constructor, range API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} range-for-each proc range
+@b{requires} @code{proc} be a procedure compatible with applying it
+element-wise to the values represented by @code{range} and @code{range} be a valid instance of the range data type. @* @*
+@b{returns} #unspecified. @*@*
+@b{note} @code{range-for-each} is applied for the side-effects
+resulting from applying @code{proc}.
+@end deffn
+
+@node range-map, , range-for-each, range API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} range-map proc range
+@b{requires} @code{proc} be a procedure compatible with applying it
+element-wise to the values represented by @code{range} and @code{range} be a valid instance of the range data type. @* @*
+@b{returns} a list providing the results of applying @code{proc} to
+each integer in @code{range}
+@end deffn
+
 
 @node range Examples,range API Reference, ,range
 @subsection Examples
 
+Creating a @code{range} is straight forward:
 
+@smalllisp
+(range :end 5) ; [0...4]
+(range :start 2 :end 5) ; [2,3,4]
+(range :start 2 :end 10 :step 2) ; [2,4,6,8]
+@end smalllisp
+
+Once you have a @code{range}, you can iterate and map over it:
+
+@smalllisp
+(range-for-each print (range :end 5))
+  @print{} 0
+  @print{} 1
+  @print{} 2
+  @print{} 3
+  @print{} 4
+  @result{} #unspecified
+
+(range-map (lambda (x) (+ x 1)) (range :end 5))
+  @result{} (1 2 3 4 5)
+@end smalllisp
+
+In addition, @code{range} implements the @code{enumerable}
+protocol. @xref{enumerable Examples}.

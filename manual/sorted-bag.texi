@@ -1,0 +1,220 @@
+@node sorted-bag, hash-bag, Implementations, Implementations
+@section sorted-bag
+
+@node sorted-bag Overview, sorted-bag API Reference, sorted-bag, sorted-bag
+@subsection Overview
+
+@code{sorted-bag} is an implementation of bag. It is based on a
+balanced-binary tree and keeps the elements of the bag sorted. 
+
+@node sorted-bag API Reference, sorted-bag Examples, sorted-bag Overview, sorted-bag
+@subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by sorted-bag. :
+* sorted-bag?::
+* make-sorted-bag::
+* sorted-bag: sorted-bag constructor. :
+* sorted-bag-copy::
+* sorted-bag-copy::
+* sorted-bag-empty?::
+* sorted-bag-insert!::
+* sorted-bag-delete!::
+* sorted-bag-contains?::
+* sorted-bag-count::
+* sorted-bag-count-set!::
+* sorted-bag-length::
+@end menu
+
+@node Protocols Implemented by sorted-bag, sorted-bag?, , sorted-bag API Reference
+@comment node-name, next,          previous, up
+@code{sorted-bag} implements the @code{bag}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{bag}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+@node sorted-bag?, make-sorted-bag, Protocols Implemented by sorted-bag, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a sorted-bag.
+@end deffn
+
+@node make-sorted-bag, sorted-bag, sorted-bag?, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-sorted-bag :comparator
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol. @code{comparator} must be ordered.@*@*
+@b{returns} an instance of @code{sorted-bag}
+@end deffn
+
+@node sorted-bag constructor, sorted-bag-copy , make-sorted-bag, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag :comparator . items
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol and @code{items} be a list of objects for which
+@code{comparator} is applicable. @code{comparator} must be ordered.@*@*
+@b{returns} an instance of @code{sorted-bag}@*@*
+@b{modifies} the returned @code{sorted-bag} so that it contains @code{items}
+@end deffn
+
+@node sorted-bag-copy, sorted-bag-empty?, sorted-bag constructor, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-copy bag
+@b{requires} @code{bag} be a sorted-bag @* @*
+@b{returns} a shallow copy of @code{bag}.
+@end deffn
+
+@node sorted-bag-empty?, sorted-bag-delete!, sorted-bag-copy, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-empty? bag
+@b{requires} @code{bag} be a sorted-bag @* @*
+@b{returns} a boolean indicaing whether or not @code{bag} contains any items.
+@end deffn
+
+@node sorted-bag-insert!, sorted-bag-delete!, sorted-bag-empty?, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-insert! bag item
+@b{requires} @code{bag} be a sorted-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}. @* @*
+@b{modifies} @code{bag} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node sorted-bag-delete!, sorted-bag-contains?, sorted-bag-insert!, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-delete! bag item
+@b{requires} @code{bag} be a sorted-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}.  @* @*
+@b{modifies} @code{bag} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{bag}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node sorted-bag-contains?, sorted-bag-count, sorted-bag-delete!, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-contains? bag item
+@b{requires} @code{bag} be a sorted-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}  @* @*
+@b{returns} a boolean indicating whether or not the @code{bag}
+contains @code{item}.
+@end deffn
+
+@node sorted-bag-count, sorted-bag-count-set!, sorted-bag-contains?, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-count bag item
+@b{requires} @code{bag} be a sorted-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}  @* @*
+@b{returns} the number of @code{item}s found in @code{bag}.
+@end deffn
+
+@node sorted-bag-count-set!, sorted-bag-length, sorted-bag-count, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-bag-count-set! bag item count
+@b{requires} @code{bag} be a sorted-bag, @code{item} be
+@code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}, and @code{count} be an integer
+representing the number of @code{item}s to include in @code{bag}
+@* @*
+@b{modifies} @code{bag} to contain @code{count} number of @code{items}
+unless @code{count} is less than or equal to 0 which results in the
+all @code{item}s begin removed from @code{bag}. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node sorted-bag-length, , sorted-bag-count-set!, sorted-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} bag-length bag
+@b{requires} @code{bag} be a sorted-bag
+@* @*
+@b{returns} the number of items contained in @code{bag}
+@end deffn
+
+@node sorted-bag Examples,sorted-bag API Reference, ,sorted-bag
+@subsection Examples
+
+2 procedures are provided for creating a @code{sorted-bag}. The first
+creates an empty bag and the other populates the bag with the items
+passed to it:
+
+@smalllisp
+(enumerable-collect (make-sorted-bag :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (sorted-bag :comparator +number-comparator+ 1 1 1 3)
+   +list-collector+)
+
+  @result{} (1 1 1 3)
+@end smalllisp
+
+
+Assuming a sorted-bag has been created as above, to insert an item into a sorted-bag use:
+
+@smalllisp
+(sorted-bag-insert! bag 1)
+   @result{} #unspecified
+@end smalllisp
+
+The count of an item can be obtained with:
+
+@smalllisp
+(sorted-bag-count bag 1)
+   @result{} 1
+
+(sorted-bag-count bag 2)
+   @result{} 0
+@end smalllisp
+
+And the count can be explicitly set using:
+
+@smalllisp
+(sorted-bag-count-set! bag 1 4)
+   @result{} #unspecified
+
+(sorted-bag-count bag 1)
+   @result{} 4
+@end smalllisp
+
+Or a single copy deleted with:
+
+@smalllisp
+(sorted-bag-delete! bag 1)
+   @result{} #unspecified
+
+(sorted-bag-count bag 1)
+   @result{} 3
+@end smalllisp
+
+To check to see if a sorted-bag is empty:
+
+@smalllisp
+(sorted-bag-empty? bag)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a sorted-bag:
+
+@smalllisp
+
+(sorted-bag-contains? bag 1)
+   @result{} #t
+
+(sorted-bag-contains? bag 3)
+   @result{} #f
+@end smalllisp
+
+
+And finally, to make a copy:
+
+@smalllisp
+(let ((bag2 (sorted-bag-copy? bag)))
+   (eq? bag bag2))
+   @result{} #f
+@end smalllisp
+
+@code{sorted-bag} also implements the @code{bag}, @code{collection},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{bag Examples}. @xref{collection
+Examples}. @xref{extendable Examples} @xref{mutable Examples}. @xref{enumerable Examples}.

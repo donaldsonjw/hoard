@@ -1,0 +1,173 @@
+@node hash-set,, Implementations, Implementations
+@section hash-set
+
+@node hash-set Overview, hash-set API Reference, hash-set, hash-set
+@subsection Overview
+
+@code{hash-set} is an implementation of set. As its name would imply, it is a hashtable-based implementation. 
+
+@node hash-set API Reference, hash-set Examples, hash-set Overview, hash-set
+@subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by hash-set. :
+* hash-set?::
+* make-hash-set::
+* hash-set: hash-set constructor. :
+* hash-set-copy::
+* hash-set-copy::
+* hash-set-empty?::
+* hash-set-insert!::
+* hash-set-delete!::
+* hash-set-contains?::
+* hash-set-length::
+@end menu
+
+@node Protocols Implemented by hash-set, hash-set?, , hash-set API Reference
+@comment node-name, next,          previous, up
+@code{hash-set} implements the @code{set}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{set}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+@node hash-set?, make-hash-set, Protocols Implemented by hash-set, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a hash-set.
+@end deffn
+
+@node make-hash-set, hash-set, hash-set?, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-hash-set [:comparator]
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol. @code{comparator} must be hashable. If it is not provided the default hashtable equality and hash functions are used. @*@*
+@b{returns} an instance of @code{hash-set}
+@end deffn
+
+@node hash-set constructor, hash-set-copy , make-hash-set, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set [:comparator] . items
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol and @code{items} be a list of objects for which
+@code{comparator} is applicable. @code{comparator} must be hashable. If it is not provided the default hashtable equality and hash functions are used.@*@*
+@b{returns} an instance of @code{hash-set}@*@*
+@b{modifies} the returned @code{hash-set} so that it contains @code{items}
+@end deffn
+
+@node hash-set-copy, hash-set-empty?, hash-set constructor, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set-copy set
+@b{requires} @code{set} be a hash-set @* @*
+@b{returns} a shallow copy of @code{set}.
+@end deffn
+
+@node hash-set-empty?, hash-set-delete!, hash-set-copy, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set-empty? set
+@b{requires} @code{set} be a hash-set @* @*
+@b{returns} a boolean indicaing whether or not @code{set} contains any items.
+@end deffn
+
+@node hash-set-insert!, hash-set-delete!, hash-set-empty?, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set-insert! set item
+@b{requires} @code{set} be a hash-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}. @* @*
+@b{modifies} @code{set} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node hash-set-delete!, hash-set-contains?, hash-set-insert!, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set-delete! set item
+@b{requires} @code{set} be a hash-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}.  @* @*
+@b{modifies} @code{set} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{set}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node hash-set-contains?, hash-set-length, hash-set-delete!, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-set-contains? set item
+@b{requires} @code{set} be a hash-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}  @* @*
+@b{returns} a boolean indicating whether or not the @code{set}
+contains @code{item}.
+@end deffn
+
+@node hash-set-length, , hash-set-contains?, hash-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} set-length set
+@b{requires} @code{set} be a hash-set
+@* @*
+@b{returns} the number of items contained in @code{set}
+@end deffn
+
+@node hash-set Examples,hash-set API Reference, ,hash-set
+@subsection Examples
+
+2 procedures are provided for creating a @code{hash-set}. The first
+creates an empty set and the other populates the set with the items
+passed to it:
+
+@smalllisp
+(enumerable-collect (make-hash-set :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (hash-set :comparator +number-comparator+ 1 1 1 3)
+   +list-collector+)
+
+  @result{} (1 3)
+@end smalllisp
+
+
+Assuming a hash-set has been created as above, to insert an item into a hash-set use:
+
+@smalllisp
+(hash-set-insert! set 1)
+   @result{} #unspecified
+@end smalllisp
+
+Or deleted with:
+
+@smalllisp
+(hash-set-delete! set 1)
+   @result{} #unspecified
+
+@end smalllisp
+
+To check to see if a hash-set is empty:
+
+@smalllisp
+(hash-set-empty? set)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a hash-set:
+
+@smalllisp
+
+(hash-set-contains? set 1)
+   @result{} #t
+
+(hash-set-contains? set 3)
+   @result{} #f
+@end smalllisp
+
+
+And finally, to make a copy:
+
+@smalllisp
+(let ((set2 (hash-set-copy? set)))
+   (eq? set set2))
+   @result{} #f
+@end smalllisp
+
+@code{hash-set} also implements the @code{set}, @code{collection},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{set Examples}. @xref{collection
+Examples}. @xref{extendable Examples} @xref{mutable Examples}. @xref{enumerable Examples}.

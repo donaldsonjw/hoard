@@ -1,0 +1,213 @@
+@node stretchy-vector,, Implementations, Implementations
+@section stretchy-vector
+
+@node stretchy-vector Overview, stretchy-vector API Reference, stretchy-vector, stretchy-vector
+@subsection Overview
+
+@code{stretchy-vector} is an auto-resizing vector; it grows and shrinks as items are added and deleted. It provides amortized constant time access.
+
+@node stretchy-vector API Reference, stretchy-vector Examples, stretchy-vector Overview, stretchy-vector
+@subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by stretchy-vector. :
+* stretchy-vector?::
+* make-stretchy-vector::
+* stretchy-vector: stretchy-vector constructor. :
+* stretchy-vector-length::
+* stretchy-vector-expand!::
+* stretchy-vector-resize!::
+* stretchy-vector-capacity::
+* stretchy-vector-set!::
+* stretchy-vector-ref::
+* list->stretchy-vector::
+* stretchy-vector->list::
+* vector->stretchy-vector::
+* stretchy-vector->vector::
+* stretchy-vector-map::
+* stretchy-vector-map!::
+* stretchy-vector-copy::
+* stretchy-vector-extend!::
+* stretchy-vector-remove!::
+* stretchy-vector-append::
+* stretchy-vector-append!::
+@end menu
+
+@node Protocols Implemented by stretchy-vector, stretchy-vector?, , stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@code{stretchy-vector} implements the @code{collection}, @code{extendable}, @code{indexable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{set}. @xref{collection}. @xref{extendable}. @xref{indexable}.  @xref{mutable}. @xref{enumerable}.
+
+@node stretchy-vector?, make-stretchy-vector, Protocols Implemented by stretchy-vector, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a stretchy-vector.
+@end deffn
+
+@node make-stretchy-vector, stretchy-vector constructor, stretchy-vector?, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-stretchy-vector len [fill]
+@b{requires} @code{len} be an integer specifying the requested initial vector
+capacity and @code{fill} be an arbitrary value to initialize each element. If not
+provided, @code{fill} defaults to @code{#unspecified}.@*@*
+@b{returns} a stretchy-vector with an initial capacity of at least @code{len}. 
+@end deffn
+
+@node stretchy-vector constructor, stretchy-vector-length, make-stretchy-vector, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector . elems
+@b{requires} @code{elems} be a list of arbitrary objects.@*@*
+@b{returns} a stretchy-vector with initial elements @code{elems}. 
+@end deffn
+
+@node stretchy-vector-length, stretchy-vector-expand!, stretchy-vector constructor, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-length vec
+@b{requires} @code{vec} be a stretchy-vector.@*@*
+@b{returns} the length of the stretchy-vector @code{vec}. 
+@end deffn
+
+@node stretchy-vector-expand!, stretchy-vector-resize!, stretchy-vector-length, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-expand! vec len
+@b{requires} @code{vec} be a stretchy-vector and @code{len} be a positive integer.@*@*
+@b{returns} a @code{vec} expanded to at least @code{len}. 
+@end deffn
+
+@node stretchy-vector-resize!, stretchy-vector-capacity, stretchy-vector-expand!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-resize! vec new-len
+@b{requires} @code{vec} be a stretchy-vector and @code{new-len} be a positive integer.@*@*
+@b{modifies} @code{vec} such that if @code{new-len} is larger than
+the the current length then all of the new elements are set to
+@code{#unspecified}, and if @code{new-len} is smaller than the current
+length, the elements greater than or equal to @code{new-len} are
+dropped. @* @*
+@b{returns} a @code{vec} resized to @code{new-len}. 
+@end deffn
+
+@node stretchy-vector-capacity, stretchy-vector-set!,stretchy-vector-resize!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-capacity vec
+@b{requires} @code{vec} be a stretchy-vector.@*@*
+@b{returns} the capacity of the stretchy-vector @code{vec}. 
+@end deffn
+
+@node stretchy-vector-set!, stretchy-vector-ref,stretchy-vector-capacity, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-set! vec index val
+@b{requires} @code{vec} be a stretchy-vector, @code{index} be a
+positive integer, and @code{val} be an arbitrary object.@*@*
+@b{modifies} @code{vec} so that the value at @code{index} is
+@code{value}. This may require expanding the @code{vect}, if it
+currently does not contain @code{index}.@* @*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+@node stretchy-vector-ref, list->stretchy-vector,stretchy-vector-set!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-ref vec index
+@b{requires} @code{vec} be a stretchy-vector and @code{index} be a
+positive integer.@*@*
+@b{returns} the value found at @code{index} or throws
+@code{&invalid-index-exception} if @code{index} is not in @code{vec}. 
+@end deffn
+
+@node list->stretchy-vector, stretchy-vector->list,stretchy-vector-ref, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} list->stretchy-vector lst
+@b{requires} @code{lst} be a list of arbitrary objects.@*@*
+@b{returns} a stretchy-vector containing the elements of @code{lst}. 
+@end deffn
+
+@node stretchy-vector->list, vector->stretchy-vector, list->stretchy-vector, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector->list vec
+@b{requires} @code{vec} be a stretchy-vector of arbitrary objects.@*@*
+@b{returns} a list containing the elements of @code{vec}. 
+@end deffn
+
+@node vector->stretchy-vector, stretchy-vector->vector, stretchy-vector->list, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} vector->stretchy-vector vec
+@b{requires} @code{vec} be a vector of arbitrary objects.@*@*
+@b{returns} a stretchy-vector containing the elements of @code{vec}. 
+@end deffn
+
+@node stretchy-vector->vector, stretchy-vector-map, vector->stretchy-vector, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector->vector vec
+@b{requires} @code{vec} be a stretchy-vector of arbitrary objects.@*@*
+@b{returns} a vector containing the elements of @code{vec}. 
+@end deffn
+
+@node stretchy-vector-map, stretchy-vector-map!, stretchy-vector->vector, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-map proc vec
+@b{requires} @code{proc} be a single argument procedure compatible
+with being called element-wise to @code{vec} and @code{vec} be a stretchy-vector of arbitrary objects.@*@*
+@b{returns} a new stretchy-vector containing the results of applying
+@code{proc} to th elements of @code{vec}. 
+@end deffn
+
+@node stretchy-vector-map!, stretchy-vector-copy, stretchy-vector-map, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-map proc vec
+@b{requires} @code{proc} be a single argument procedure compatible
+with being called element-wise to @code{vec} and @code{vec} be a
+stretchy-vector of arbitrary objects.@*@*
+@b{modifies} the elements of @code{vec} so that they are the value
+obtained by applying @code{proc} to each element.@*@*
+@b{returns} @code{vec}. 
+@end deffn
+
+@node stretchy-vector-copy, stretchy-vector-extend!, stretchy-vector-map!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-copy vec
+@b{requires} @code{vec} be a
+stretchy-vector of arbitrary objects.@*@*
+@b{returns} a shallow copy of @code{vec}. 
+@end deffn
+
+@node stretchy-vector-extend!, stretchy-vector-remove!, stretchy-vector-copy, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-extend! vec val
+@b{requires} @code{vec} be a
+stretchy-vector of arbitrary objects and @code{val} be an arbitrary
+object.@*@*
+@b{modifies} @code{vect} by adding @code{val} to the end.@*@*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+
+@node stretchy-vector-remove!, stretchy-vector-append, stretchy-vector-extend!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-remove! vec
+@b{requires} @code{vec} be a
+stretchy-vector of arbitrary objects@*@*
+@b{modifies} @code{vect} by removing the last element.@*@*
+@b{returns} the element removed from @code{vec}. 
+@end deffn
+
+@node stretchy-vector-append, stretchy-vector-append!, stretchy-vector-remove!, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-append vec1 vec2
+@b{requires} @code{vec1} and @code{vec2} be 
+stretchy-vectors of arbitrary objects@*@*
+@b{returns} a new stretchy-vector containing the elements of
+@code{vec1} appended to @code{vec2}. 
+@end deffn
+
+@node stretchy-vector-append!, , stretchy-vector-append, stretchy-vector API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} stretchy-vector-append! vec1 vec2
+@b{requires} @code{vec1} and @code{vec2} be 
+stretchy-vectors of arbitrary objects@*@*
+@b{modifies} @code{vec1} so that its current elements are followed by
+the elements of @code{vec2}.
+@b{returns} @code{#unspecified}. 
+@end deffn
+@node stretchy-vector Examples,stretchy-vector API Reference, ,stretchy-vector
+@subsection Examples

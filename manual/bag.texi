@@ -139,7 +139,7 @@ be an object implementing the comparator protocol for the type of item
 to be stored in the bag. However, the comparator must be hashable not ordered.
 
 
-Assuming a bag has be created as above, to insert an item into a bag use:
+Assuming a bag has been created as above, to insert an item into a bag use:
 
 @smalllisp
 (bag-insert! bag 1)
@@ -203,3 +203,6 @@ And finally, to make a copy:
    (eq? bag bag2))
    @result{} #f
 @end smalllisp
+
+In addition, @code{sorted-bag} implements the @code{enumerable}
+protocol. @xref{enumerable Examples}.

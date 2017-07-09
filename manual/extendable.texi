@@ -1,0 +1,56 @@
+@node extendable, mutable, Protocols, Protocols
+@section extendable
+
+@node extendable Overview, extendable API Reference, , extendable
+@subsection Overview
+
+The extendable protocol specifies the operations expected of a collection that can be dynamically extended beyond its initially allocated size.
+
+@node extendable API Reference, extendable Examples, extendable Overview, extendable
+@subsection API Reference
+
+@menu
+* collection-extendable?::
+* collection-extend!::
+@end menu
+
+@node collection-extendable?,collection-extend! , , extendable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-extendable? object
+@b{returns} a boolean indicating whether or not @code{object} is extendable.
+@end deffn
+
+@node collection-extend!,, collection-extendable?, extendable API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} collection-extend! object value
+@b{requires} @code{object} support the @code{extendable} protocol and @code{value} be an arbitrary value.
+@b{returns} @code{#unspecified} or throws @code{&unsupported-operation-exception} if @code{collection-extend!} is not supported. @* @*
+@b{modifies} @code{object} by adding @code{value}.@*@*
+@b{note} for dictionary-like collections @code{value} should be an @code{association} representing the key and value.
+@end deffn
+
+@node extendable Examples, extendable API Reference, ,extendable
+@subsection Examples
+
+Bigloo lists and hashtables (as well as a number of other collection types) implement the @code{extendable} protocol:
+
+@smalllisp
+(collection-extendable? (list 1 2 3))
+  @result{} #t
+
+(collection-extendable? (create-hashtable))
+  @result{} #t
+@end smalllisp
+
+Both can be extended:
+
+@smalllisp
+(collection-extend! (list 1 2 3 4) 5)
+  @result{} (5 1 2 3 4)
+
+(let ((table (hashtable :comparator +string-comparator+ (=> "a" 1) (=> "b" 2))))
+   (collection-extend! table (=> "c" 3))
+   (enumerable-collect table +list-collector+))
+  @result{} (1 2 3)
+@end smalllisp
+

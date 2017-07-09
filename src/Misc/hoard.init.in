@@ -19,7 +19,7 @@
 
 
 (declare-library! 'hoard 
-   :version "0.1"
+   :version "0.5"
    :srfi '(hoard)
    :basename "hoard"
    :module-eval 'hoard_make_lib)

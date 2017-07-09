@@ -19,7 +19,10 @@
 
 
 (define-inline (valid-range-args? start end step)
-   (and (not (= step 0))
+   (and (integer? start)
+        (integer? end)
+        (integer? step)
+        (not (= step 0))
         (or (and (positive? step)
                  (<= start end))
             (and (negative? step)

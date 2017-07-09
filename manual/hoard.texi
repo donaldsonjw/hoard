@@ -142,6 +142,7 @@ is described, the api documented, and examples given.
 @menu
 * collection::
 * indexable::
+* extendable::
 * mutable::
 * enumerator::
 * enumerable::
@@ -160,6 +161,8 @@ is described, the api documented, and examples given.
 @include collection.texi
 
 @include indexable.texi
+
+@include extendable.texi
 
 @include mutable.texi
 
@@ -202,11 +205,26 @@ documented here.
 @menu
 * association::
 * range::
+* sorted-bag::
+* hash-bag::
+* sorted-set::
+* hash-set::
+* stretchy-vector::
 @end menu
 
 @include association.texi
 
 @include range.texi
+
+@include sorted-bag.texi
+
+@include hash-bag.texi
+
+@include sorted-set.texi
+
+@include hash-set.texi
+
+@include stretchy-vector.texi
 
 @c ------------------------------------------------------------------- @c
 @c    Bye                                                              @c

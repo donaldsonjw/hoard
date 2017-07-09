@@ -1,0 +1,219 @@
+@node hash-bag,sorted-set, Implementations, Implementations
+@section hash-bag
+
+@node hash-bag Overview, hash-bag API Reference, hash-bag, hash-bag
+@subsection Overview
+
+@code{hash-bag} is an implementation of bag. As its name would imply, it is a hashtable-based implementation. 
+
+@node hash-bag API Reference, hash-bag Examples, hash-bag Overview, hash-bag
+@subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by hash-bag. :
+* hash-bag?::
+* make-hash-bag::
+* hash-bag: hash-bag constructor. :
+* hash-bag-copy::
+* hash-bag-copy::
+* hash-bag-empty?::
+* hash-bag-insert!::
+* hash-bag-delete!::
+* hash-bag-contains?::
+* hash-bag-count::
+* hash-bag-count-set!::
+* hash-bag-length::
+@end menu
+
+@node Protocols Implemented by hash-bag, hash-bag?, , hash-bag API Reference
+@comment node-name, next,          previous, up
+@code{hash-bag} implements the @code{bag}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{bag}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+@node hash-bag?, make-hash-bag, Protocols Implemented by hash-bag, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a hash-bag.
+@end deffn
+
+@node make-hash-bag, hash-bag, hash-bag?, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-hash-bag [:comparator]
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol. @code{comparator} must be hashable. If it is not provided the default hashtable equality and hash functions are used. @*@*
+@b{returns} an instance of @code{hash-bag}
+@end deffn
+
+@node hash-bag constructor, hash-bag-copy , make-hash-bag, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag [:comparator] . items
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol and @code{items} be a list of objects for which
+@code{comparator} is applicable. @code{comparator} must be hashable. If it is not provided the default hashtable equality and hash functions are used.@*@*
+@b{returns} an instance of @code{hash-bag}@*@*
+@b{modifies} the returned @code{hash-bag} so that it contains @code{items}
+@end deffn
+
+@node hash-bag-copy, hash-bag-empty?, hash-bag constructor, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-copy bag
+@b{requires} @code{bag} be a hash-bag @* @*
+@b{returns} a shallow copy of @code{bag}.
+@end deffn
+
+@node hash-bag-empty?, hash-bag-delete!, hash-bag-copy, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-empty? bag
+@b{requires} @code{bag} be a hash-bag @* @*
+@b{returns} a boolean indicaing whether or not @code{bag} contains any items.
+@end deffn
+
+@node hash-bag-insert!, hash-bag-delete!, hash-bag-empty?, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-insert! bag item
+@b{requires} @code{bag} be a hash-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}. @* @*
+@b{modifies} @code{bag} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node hash-bag-delete!, hash-bag-contains?, hash-bag-insert!, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-delete! bag item
+@b{requires} @code{bag} be a hash-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}.  @* @*
+@b{modifies} @code{bag} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{bag}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node hash-bag-contains?, hash-bag-count, hash-bag-delete!, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-contains? bag item
+@b{requires} @code{bag} be a hash-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}  @* @*
+@b{returns} a boolean indicating whether or not the @code{bag}
+contains @code{item}.
+@end deffn
+
+@node hash-bag-count, hash-bag-count-set!, hash-bag-contains?, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-count bag item
+@b{requires} @code{bag} be a hash-bag, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}  @* @*
+@b{returns} the number of @code{item}s found in @code{bag}.
+@end deffn
+
+@node hash-bag-count-set!, hash-bag-length, hash-bag-count, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} hash-bag-count-set! bag item count
+@b{requires} @code{bag} be a hash-bag, @code{item} be
+@code{item} be
+an arbitrary object supported by the comparator used to create @code{bag}, and @code{count} be an integer
+representing the number of @code{item}s to include in @code{bag}
+@* @*
+@b{modifies} @code{bag} to contain @code{count} number of @code{items}
+unless @code{count} is less than or equal to 0 which results in the
+all @code{item}s begin removed from @code{bag}. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node hash-bag-length, , hash-bag-count-set!, hash-bag API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} bag-length bag
+@b{requires} @code{bag} be a hash-bag
+@* @*
+@b{returns} the number of items contained in @code{bag}
+@end deffn
+
+@node hash-bag Examples,hash-bag API Reference, ,hash-bag
+@subsection Examples
+
+2 procedures are provided for creating a @code{hash-bag}. The first
+creates an empty bag and the other populates the bag with the items
+passed to it:
+
+@smalllisp
+(enumerable-collect (make-hash-bag :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (hash-bag :comparator +number-comparator+ 1 1 1 3)
+   +list-collector+)
+
+  @result{} (1 1 1 3)
+@end smalllisp
+
+
+Assuming a hash-bag has been created as above, to insert an item into a hash-bag use:
+
+@smalllisp
+(hash-bag-insert! bag 1)
+   @result{} #unspecified
+@end smalllisp
+
+The count of an item can be obtained with:
+
+@smalllisp
+(hash-bag-count bag 1)
+   @result{} 1
+
+(hash-bag-count bag 2)
+   @result{} 0
+@end smalllisp
+
+And the count can be explicitly set using:
+
+@smalllisp
+(hash-bag-count-set! bag 1 4)
+   @result{} #unspecified
+
+(hash-bag-count bag 1)
+   @result{} 4
+@end smalllisp
+
+Or a single copy deleted with:
+
+@smalllisp
+(hash-bag-delete! bag 1)
+   @result{} #unspecified
+
+(hash-bag-count bag 1)
+   @result{} 3
+@end smalllisp
+
+To check to see if a hash-bag is empty:
+
+@smalllisp
+(hash-bag-empty? bag)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a hash-bag:
+
+@smalllisp
+
+(hash-bag-contains? bag 1)
+   @result{} #t
+
+(hash-bag-contains? bag 3)
+   @result{} #f
+@end smalllisp
+
+
+And finally, to make a copy:
+
+@smalllisp
+(let ((bag2 (hash-bag-copy? bag)))
+   (eq? bag bag2))
+   @result{} #f
+@end smalllisp
+
+@code{hash-bag} also implements the @code{bag}, @code{collection},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{bag Examples}. @xref{collection
+Examples}. @xref{extendable Examples} @xref{mutable Examples}. @xref{enumerable Examples}.

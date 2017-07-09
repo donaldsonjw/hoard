@@ -1,4 +1,4 @@
-@node indexable, mutable , collection, Protocols
+@node indexable, extendable, collection, Protocols
 @section indexable
 
 @menu

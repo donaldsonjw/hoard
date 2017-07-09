@@ -1,0 +1,173 @@
+@node sorted-set, hash-set, Implementations, Implementations
+@section sorted-set
+
+@node sorted-set Overview, sorted-set API Reference, sorted-set, sorted-set
+@subsection Overview
+
+@code{sorted-set} is an implementation of set. It is based on a
+balanced-binary tree and keeps the elements of the set sorted. 
+
+@node sorted-set API Reference, sorted-set Examples, sorted-set Overview, sorted-set
+@subsection API Reference
+
+@menu
+* Protocols Implemented: Protocols Implemented by sorted-set. :
+* sorted-set?::
+* make-sorted-set::
+* sorted-set: sorted-set constructor. :
+* sorted-set-copy::
+* sorted-set-copy::
+* sorted-set-empty?::
+* sorted-set-insert!::
+* sorted-set-delete!::
+* sorted-set-contains?::
+* sorted-set-length::
+@end menu
+
+@node Protocols Implemented by sorted-set, sorted-set?, , sorted-set API Reference
+@comment node-name, next,          previous, up
+@code{sorted-set} implements the @code{set}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{set}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+@node sorted-set?, make-sorted-set, Protocols Implemented by sorted-set, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a sorted-set.
+@end deffn
+
+@node make-sorted-set, sorted-set, sorted-set?, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-sorted-set :comparator
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol. @code{comparator} must be ordered.@*@*
+@b{returns} an instance of @code{sorted-set}
+@end deffn
+
+@node sorted-set constructor, sorted-set-copy , make-sorted-set, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set :comparator . items
+@b{requires} @code{:comparator} be an object implementing the
+@code{comparator} protocol and @code{items} be a list of objects for which
+@code{comparator} is applicable. @code{comparator} must be ordered.@*@*
+@b{returns} an instance of @code{sorted-set}@*@*
+@b{modifies} the returned @code{sorted-set} so that it contains @code{items}
+@end deffn
+
+@node sorted-set-copy, sorted-set-empty?, sorted-set constructor, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set-copy set
+@b{requires} @code{set} be a sorted-set @* @*
+@b{returns} a shallow copy of @code{set}.
+@end deffn
+
+@node sorted-set-empty?, sorted-set-delete!, sorted-set-copy, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set-empty? set
+@b{requires} @code{set} be a sorted-set @* @*
+@b{returns} a boolean indicaing whether or not @code{set} contains any items.
+@end deffn
+
+@node sorted-set-insert!, sorted-set-delete!, sorted-set-empty?, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set-insert! set item
+@b{requires} @code{set} be a sorted-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}. @* @*
+@b{modifies} @code{set} so that it contains a copy or an addtional
+copy, if one already exists, of @code{item}. @* @*
+@b{returns} @code{unspecified}
+@end deffn
+
+@node sorted-set-delete!, sorted-set-contains?, sorted-set-insert!, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set-delete! set item
+@b{requires} @code{set} be a sorted-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}.  @* @*
+@b{modifies} @code{set} so that it contains one less copy of
+@code{item}. If 0 copies of @code{item} exist it is removed from @code{set}. @* @* 
+@b{returns} @code{unspecified}
+@end deffn
+
+@node sorted-set-contains?, sorted-set-length, sorted-set-delete!, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-set-contains? set item
+@b{requires} @code{set} be a sorted-set, and @code{item} be
+an arbitrary object supported by the comparator used to create @code{set}  @* @*
+@b{returns} a boolean indicating whether or not the @code{set}
+contains @code{item}.
+@end deffn
+
+
+@node sorted-set-length, , sorted-set-contains?, sorted-set API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} set-length set
+@b{requires} @code{set} be a sorted-set
+@* @*
+@b{returns} the number of items contained in @code{set}
+@end deffn
+
+@node sorted-set Examples,sorted-set API Reference, ,sorted-set
+@subsection Examples
+
+2 procedures are provided for creating a @code{sorted-set}. The first
+creates an empty set and the other populates the set with the items
+passed to it:
+
+@smalllisp
+(enumerable-collect (make-sorted-set :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (sorted-set :comparator +number-comparator+ 1 1 1 3)
+   +list-collector+)
+
+  @result{} (1 3)
+@end smalllisp
+
+
+Assuming a sorted-set has been created as above, to insert an item into a sorted-set use:
+
+@smalllisp
+(sorted-set-insert! set 1)
+   @result{} #unspecified
+@end smalllisp
+
+Or deleted with:
+
+@smalllisp
+(sorted-set-delete! set 1)
+   @result{} #unspecified
+@end smalllisp
+
+To check to see if a sorted-set is empty:
+
+@smalllisp
+(sorted-set-empty? set)
+   @result{} #f
+@end smalllisp
+
+
+To check whether an item is a member of a sorted-set:
+
+@smalllisp
+
+(sorted-set-contains? set 1)
+   @result{} #t
+
+(sorted-set-contains? set 3)
+   @result{} #f
+@end smalllisp
+
+
+And finally, to make a copy:
+
+@smalllisp
+(let ((set2 (sorted-set-copy? set)))
+   (eq? set set2))
+   @result{} #f
+@end smalllisp
+
+@code{sorted-set} also implements the @code{set}, @code{collection},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{set Examples}. @xref{collection Examples}. @xref{extendable Examples} @xref{mutable Examples}. @xref{enumerable Examples}.

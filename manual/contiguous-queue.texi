@@ -1,0 +1,13 @@
+@node contiguous-queue, linked-queue, Implementations, Implementations
+@section contiguous-queue
+
+@node contiguous-queue Overview, contiguous-queue API Reference, contiguous-queue, contiguous-queue
+@subsection Overview
+
+
+@node contiguous-queue API Reference, contiguous-queue Examples, contiguous-queue Overview, contiguous-queue
+@subsection API Reference
+
+
+@node contiguous-queue Examples,contiguous-queue API Reference, ,contiguous-queue
+@subsection Examples

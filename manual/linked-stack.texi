@@ -1,0 +1,13 @@
+@node linked-stack, contiguous-queue, Implementations, Implementations
+@section linked-stack
+
+@node linked-stack Overview, linked-stack API Reference, linked-stack, linked-stack
+@subsection Overview
+
+
+@node linked-stack API Reference, linked-stack Examples, linked-stack Overview, linked-stack
+@subsection API Reference
+
+
+@node linked-stack Examples,linked-stack API Reference, ,linked-stack
+@subsection Examples

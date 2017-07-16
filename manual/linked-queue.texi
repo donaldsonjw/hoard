@@ -1,0 +1,13 @@
+@node linked-queue, binary-heap, Implementations, Implementations
+@section linked-queue
+
+@node linked-queue Overview, linked-queue API Reference, linked-queue, linked-queue
+@subsection Overview
+
+
+@node linked-queue API Reference, linked-queue Examples, linked-queue Overview, linked-queue
+@subsection API Reference
+
+
+@node linked-queue Examples,linked-queue API Reference, ,linked-queue
+@subsection Examples

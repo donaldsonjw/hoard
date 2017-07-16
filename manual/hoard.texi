@@ -108,6 +108,7 @@ License along with collections.  If not, see
 * Overview::
 * Protocols::
 * Implementations::
+* Global Index::
 @end menu
 
 @node Overview, Protocols, Top, Top
@@ -194,12 +195,12 @@ is described, the api documented, and examples given.
 @c    Implementations                                                  @c
 @c ------------------------------------------------------------------- @c
 @c @node Overview, Program Structure, Copying, Top
-@node Implementations, , Protocols, Top
+@node Implementations, Global Index , Protocols, Top
 @comment  node-name,  next,  previous,  up
-@chapter Implementations
+@chapter Implementations and Supporting Data Types
 @cindex Implementations
 
-Each of the collection implementations and supporting data type are
+Each of the collection implementations and supporting data types are
 documented here. 
 
 @menu
@@ -210,6 +211,13 @@ documented here.
 * sorted-set::
 * hash-set::
 * stretchy-vector::
+* contiguous-stack::
+* linked-stack::
+* contiguous-queue::
+* linked-queue::
+* binary-heap::
+* pairing-heap::
+* sorted-dictionary::
 @end menu
 
 @include association.texi
@@ -225,6 +233,27 @@ documented here.
 @include hash-set.texi
 
 @include stretchy-vector.texi
+
+@include contiguous-stack.texi
+
+@include linked-stack.texi
+
+@include contiguous-queue.texi
+
+@include linked-queue.texi
+
+@include binary-heap.texi
+
+@include pairing-heap.texi
+
+@include sorted-dictionary.texi
+
+
+@node Global Index, , Implementations, Top
+@comment  node-name,  next,  previous,  up
+@chapter Global Index
+
+@printindex cp
 
 @c ------------------------------------------------------------------- @c
 @c    Bye                                                              @c

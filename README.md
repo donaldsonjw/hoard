@@ -35,7 +35,7 @@ And it currently provides the following concrete collection implementations and 
 * sorted-bag
 * hash-bag
 * sorted-set
-* sorted-bag
+* hash-set
 * stretchy-vector
 * linked-queue
 * contiguous-queue
@@ -72,5 +72,5 @@ This will result in the libraries being installed to /path/prefix/lib/bigloo/<bi
 
 ### Documentation
 
-The current documentation is incomplete but can be found in the [manual](https://github.com/donaldsonjw/hoard/tree/master/manual/hoard.pdf). The protocols are mostly documented but sustantial work remains for the concrete implementations. There are also number of tests included which can provid examples of using the library (To run the tests, you will need to install [btest](https://github.com/donaldsonjw/btest)).
+The current documentation is incomplete but can be found in the [manual](https://github.com/donaldsonjw/hoard/raw/master/manual/hoard.pdf). The protocols are mostly documented but work remains for the concrete implementation documentation. There are also number of tests included which can provide examples of using the library (To run the tests, you will need to install [btest](https://github.com/donaldsonjw/btest)).
 

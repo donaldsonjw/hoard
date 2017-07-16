@@ -1,0 +1,13 @@
+@node contiguous-stack, linked-stack, Implementations, Implementations
+@section contiguous-stack
+
+@node contiguous-stack Overview, contiguous-stack API Reference, contiguous-stack, contiguous-stack
+@subsection Overview
+
+
+@node contiguous-stack API Reference, contiguous-stack Examples, contiguous-stack Overview, contiguous-stack
+@subsection API Reference
+
+
+@node contiguous-stack Examples,contiguous-stack API Reference, ,contiguous-stack
+@subsection Examples

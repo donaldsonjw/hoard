@@ -1,0 +1,11 @@
+@node sorted-dictionary,, Implementations, Implementations
+@section sorted-dictionary
+
+@node sorted-dictionary Overview, sorted-dictionary API Reference, sorted-dictionary, sorted-dictionary
+@subsection Overview
+
+@node sorted-dictionary API Reference, sorted-dictionary Examples, sorted-dictionary Overview, sorted-dictionary
+@subsection API Reference
+
+@node sorted-dictionary Examples,sorted-dictionary API Reference, ,sorted-dictionary
+@subsection Examples

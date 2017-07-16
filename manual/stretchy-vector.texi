@@ -1,4 +1,4 @@
-@node stretchy-vector,, Implementations, Implementations
+@node stretchy-vector, contiguous-stack, Implementations, Implementations
 @section stretchy-vector
 
 @node stretchy-vector Overview, stretchy-vector API Reference, stretchy-vector, stretchy-vector
@@ -197,7 +197,7 @@ stretchy-vector of arbitrary objects@*@*
 @b{requires} @code{vec1} and @code{vec2} be 
 stretchy-vectors of arbitrary objects@*@*
 @b{returns} a new stretchy-vector containing the elements of
-@code{vec1} appended to @code{vec2}. 
+@code{vec1} followed by those in @code{vec2}. 
 @end deffn
 
 @node stretchy-vector-append!, , stretchy-vector-append, stretchy-vector API Reference
@@ -209,5 +209,67 @@ stretchy-vectors of arbitrary objects@*@*
 the elements of @code{vec2}.
 @b{returns} @code{#unspecified}. 
 @end deffn
+
 @node stretchy-vector Examples,stretchy-vector API Reference, ,stretchy-vector
 @subsection Examples
+
+To test whether an object is a @code{stretchy-vector} use the predicate @code{stretchy-vector?}:
+
+@smalllisp
+(stretchy-vector? (stretchy-vector))
+  @result{} #t
+
+(stretchy-vector? (vector))
+  @result{} #f
+@end smalllisp
+
+Two procedures are used to create @code{stretchy-vector}s. The first creates an empty vector of a specified size with an optional fill value, and the second allows for the creation of a stretchy vector containing the passed values.
+
+@smalllisp
+(let* ((fill 9) 
+       (vec (make-stretchy-vector 3 9)))
+   (enumerable-collect vec +list-collector+))
+  @result{} (9 9 9)
+
+(let ((vec (stretchy-vector 1 2 3)))
+   (enumerable-collect vec +list-collector+))
+  @result{} (1 2 3)
+
+@end smalllisp
+
+As with regular vectors, you can reference and set the values of individual @code{stretchy-vector} elements:
+
+@smalllisp
+(let ((vec (stretchy-vector 1 2 3)))
+   (stretchy-vector-ref vec 1))
+  @result{} 2
+
+(let ((vec (stretchy-vector 4 5 6)))
+   (stretchy-vector-set! vec 2 7)
+   (stretchy-vector-ref vec 2))
+  @result{} 7
+@end smalllisp
+
+
+The length of a @code{stretchy-vector} is determined with @code{stretchy-vector-length}:
+
+@smalllisp
+(stretchy-vector-length (stretchy-vector 1 2 3 4 5))
+  @result{} 5
+@end smalllisp
+
+
+A shallow copy of a @code{stretchy-vector} is obtained with @code{stretchy-vector-copy}:
+
+@smalllisp
+(let* ((vec1 (stretchy-vector 1 2 3))
+       (vec2 (stretchy-vector-copy vec1)))
+    (eq? vec1 vec2)
+    @result{} #f
+    (equal? vec2 vec2)
+    @result{} #t
+@end smalllisp
+
+@code{stretchy-vector} also implements the @code{collection},
+@code{mutable}, @code{indexable}, @code{extendable}, @code{enumerable}, and @code{dictionary-enumerable}
+protocols. @xref{collection Examples}. @xref{mutable Examples}.  @xref{indexable Examples}. @xref{extendable Examples}. @xref{enumerable Examples}. @xref{dictionary-enumerable Examples}. 

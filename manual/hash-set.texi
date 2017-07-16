@@ -1,4 +1,4 @@
-@node hash-set,, Implementations, Implementations
+@node hash-set,stretchy-vector, Implementations, Implementations
 @section hash-set
 
 @node hash-set Overview, hash-set API Reference, hash-set, hash-set

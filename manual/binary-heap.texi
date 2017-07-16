@@ -1,0 +1,20 @@
+@node binary-heap, pairing-heap, Implementations, Implementations
+@section binary-heap
+
+@node binary-heap Overview, binary-heap API Reference, binary-heap, binary-heap
+@subsection Overview
+
+A @code{binary-heap} is an implementation of a priority queue featuring contiguous storage and a specified maximum size.
+
+@node binary-heap API Reference, binary-heap Examples, binary-heap Overview, binary-heap
+@subsection API Reference
+
+@c @menu
+@c * binary-heap?::
+@c * make-binary-heap::
+@c * binary-heap: binary-heap constructor. :
+@c * binary-
+@c @end menu
+
+@node binary-heap Examples,binary-heap API Reference, ,binary-heap
+@subsection Examples

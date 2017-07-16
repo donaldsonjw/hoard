@@ -1,0 +1,18 @@
+@node pairing-heap, sorted-dictionary, Implementations, Implementations
+@section pairing-heap
+
+@node pairing-heap Overview, pairing-heap API Reference, pairing-heap, pairing-heap
+@subsection Overview
+
+@node pairing-heap API Reference, pairing-heap Examples, pairing-heap Overview, pairing-heap
+@subsection API Reference
+
+@c @menu
+@c * pairing-heap?::
+@c * make-pairing-heap::
+@c * pairing-heap: pairing-heap constructor. :
+@c * binary-
+@c @end menu
+
+@node pairing-heap Examples,pairing-heap API Reference, ,pairing-heap
+@subsection Examples

@@ -202,6 +202,15 @@
    (test "a contiguous-stack is a mutable-collection"
       (assert-true (collection-mutable? (contiguous-stack :capacity 3))))
 
+   ;;;; extendable tests
+   (test "a contiguous-stack is extendable"
+      (assert-true (collection-extendable? (contiguous-stack :capacity 4))))
+
+   (test "collection-extend! works on contiguous-stack"
+      (let ((stack (contiguous-stack :capacity 4)))
+         (collection-extend! stack 3)
+         (assert-equal? (contiguous-stack-top stack) 3)))
+
    ;;;; enumerable tests
    (test "enumerable-for-each on contiguous-stacks work"
       (let ((count 0))

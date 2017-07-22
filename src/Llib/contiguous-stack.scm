@@ -3,6 +3,7 @@
            hoard/enumerator
            hoard/enumerable
            hoard/collection
+           hoard/extendable
            hoard/mutable-collection
            hoard/exceptions)
    (export
@@ -165,7 +166,13 @@
    #t)
 
 
-;;;; enumerable protocol
+;;;; extendable protocol implementation
+(define-method (collection-extendable? obj::%contiguous-stack)
+   #t)
+
+(define-method (collection-extend! obj::%contiguous-stack item)
+   (contiguous-stack-push! obj item))
+
 ;;;; enumerable protocol implementation
 
 (define-method (enumerable? obj::%contiguous-stack)

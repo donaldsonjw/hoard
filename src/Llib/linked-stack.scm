@@ -2,6 +2,7 @@
    (import hoard/stack
            hoard/exceptions
            hoard/collection
+           hoard/extendable
            hoard/mutable-collection
            hoard/enumerable
            hoard/enumerator)
@@ -110,6 +111,13 @@
 
 (define-method (collection-mutable? obj::%linked-stack)
    #t)
+
+;;;; extendable protocol implementation
+(define-method (collection-extendable? obj::%linked-stack)
+   #t)
+
+(define-method (collection-extend! obj::%linked-stack item)
+   (linked-stack-push! obj item))
 
 ;;;; enumerable protocol implementation
 (define-method (enumerable? obj::%linked-stack)

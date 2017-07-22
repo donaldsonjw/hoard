@@ -169,7 +169,17 @@
    
    (test "a linked-stack is a mutable-collection"
       (assert-true (collection-mutable? (linked-stack))))
-   
+
+
+   ;;;; extendable tests
+   (test "a linked-stack is extendable"
+      (assert-true (collection-extendable? (linked-stack))))
+
+   (test "collection-extend! works on linked-stack"
+      (let ((stack (linked-stack)))
+         (collection-extend! stack 3)
+         (assert-equal? (linked-stack-top stack) 3)))
+
 
    ;;;; enumerable tests
    (test "enumerable-for-each on linked-stacks work"

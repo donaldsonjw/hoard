@@ -205,6 +205,15 @@
    (test "a contiguous-queue is a mutable-collection"
       (assert-true (collection-mutable? (contiguous-queue :capacity 3))))
 
+   ;;;; extendable tests
+   (test "a contiguous-queue is extendable"
+      (assert-true (collection-extendable? (contiguous-queue :capacity 4))))
+
+   (test "collection-extend! works on contiguous-stack"
+      (let ((queue (contiguous-queue :capacity 4)))
+         (collection-extend! queue 3)
+         (assert-equal? (contiguous-queue-first queue) 3)))
+   
    ;;;; enumerable tests
    (test "enumerable-for-each on contiguous-queues work"
       (let ((count 0))

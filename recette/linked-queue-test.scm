@@ -176,7 +176,17 @@
            (queue-enqueue! q2 6)
            (assert-false (equal? (queue-first q1)
                                  (queue-first q2)))))
-   
+
+
+   ;;;; extendable tests
+   (test "a linked-queue is extendable"
+      (assert-true (collection-extendable? (linked-queue))))
+
+   (test "collection-extend! works on contiguous-stack"
+      (let ((queue (linked-queue)))
+         (collection-extend! queue 3)
+         (assert-equal? (linked-queue-first queue) 3)))
+ 
 
    ;;;; enumerable tests
    (test "enumerable-for-each on linked-queues work"

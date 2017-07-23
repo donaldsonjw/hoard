@@ -4,10 +4,182 @@
 @node contiguous-queue Overview, contiguous-queue API Reference, contiguous-queue, contiguous-queue
 @subsection Overview
 
+@code{contiguous-queue} is a contiguous implementation of a queue, a last-in-first-out data structure, with a finite capacity.
 
 @node contiguous-queue API Reference, contiguous-queue Examples, contiguous-queue Overview, contiguous-queue
 @subsection API Reference
 
+@menu
+* Protocols Implemented: Protocols Implemented by contiguous-queue. :
+* contiguous-queue?::
+* make-contiguous-queue::
+* contiguous-queue: contiguous-queue constructor. :
+* contiguous-queue-copy::
+* contiguous-queue-empty?::
+* contiguous-queue-length::
+* contiguous-queue-capacity::
+* contiguous-queue-enqueue!::
+* contiguous-queue-dequeue!::
+* contiguous-queue-first::
+@end menu
+
+@node Protocols Implemented by contiguous-queue, contiguous-queue?, , contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@code{contiguous-queue} implements the @code{queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+
+@node contiguous-queue?, make-contiguous-queue, Protocols Implemented by contiguous-queue, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a contiguous-queue.
+@end deffn
+
+@node make-contiguous-queue, contiguous-queue constructor, contiguous-queue?, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-contiguous-queue :capacity
+@b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the queue. @* @*
+@b{returns} a new @code{contiguous-queue} with a capacity of @code{:capacity}
+@end deffn
+
+
+@node contiguous-queue constructor,contiguous-queue-copy, make-contiguous-queue, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue :capacity . items
+@b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the queue and items be a list of items to initialize the queue with. @* @*
+@b{returns} a new @code{contiguous-queue} with a capacity of @code{:capacity} containing @code{items} enqueued from left-to-right onto the queue. If the number of  @code{items} is greater than @code{:capacity}, @code{&invalid-argument-exeption} is thrown. 
+@end deffn
+
+@node contiguous-queue-copy,contiguous-queue-empty?, contiguous-queue constructor, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-copy queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{returns} a shallow copy of @code{queue}. 
+@end deffn
+
+@node contiguous-queue-empty?,contiguous-queue-length, contiguous-queue-copy, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-empty? queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{returns} a boolean indicating whether or not the queue is empty. 
+@end deffn
+
+@node contiguous-queue-length,contiguous-queue-capacity, contiguous-queue-empty?, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-length queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{returns} the length the queue. 
+@end deffn
+
+@node contiguous-queue-capacity, contiguous-queue-enqueue!, contiguous-queue-empty?, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-capacity queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{returns} the maximum size length of @code{queue}. 
+@end deffn
+
+@node contiguous-queue-enqueue!, contiguous-queue-dequeue!, contiguous-queue-capacity, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-enqueue! queue item
+@b{requires} @code{queue} be a @code{contiguous-queue} and item be an arbitrary object. @* @*
+@b{modifies} @code{queue} by placing item on the end of the queue. @* @*
+@b{returns} @code{#unspecified} or if there is no free capacity, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node contiguous-queue-dequeue!, contiguous-queue-first, contiguous-queue-enqueue!, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-dequeue! queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{modifies} @code{queue} by removing the first item from the queue. @* @*
+@b{returns} the item removed from @code{queue} or if @code{queue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node contiguous-queue-first, , contiguous-queue-dequeue!, contiguous-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} contiguous-queue-first queue
+@b{requires} @code{queue} be a @code{contiguous-queue}. @* @*
+@b{returns} the first item from @code{queue} or if @code{queue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
 
 @node contiguous-queue Examples,contiguous-queue API Reference, ,contiguous-queue
 @subsection Examples
+
+2 procedures are provided for creating a @code{contiguous-queue}: The first creates an empty queue and the other populates the queue with the items passed to it:
+
+@smalllisp
+(enumerable-collect (make-contiguous-queue :capacity 4)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (contiguous-queue :capacity 4 1 2 3)
+   +list-collector+)
+  @result{} (1 2 3)
+@end smalllisp
+
+An item can be placed onto the queue with @code{contiguous-queue-enqueue!}:
+
+@smalllisp
+(let ((queue (contiguous-queue :capacity 4 1 2 3)))
+   (contiguous-queue-enqueue! queue 4)
+   (contiguous-queue-first queue))
+  @result{} 1
+@end smalllisp
+
+The first item of the queue can be non-destructively obtained with @code{contiguous-queue-first}:
+
+@smalllisp
+(let ((queue (contiguous-queue :capacity 4 1 2 3)))
+   (contiguous-queue-first queue))
+  @result{} 1
+@end smalllisp
+
+The first item can be removed from the queue with @code{contiguous-queue-dequeue!}:
+
+@smalllisp
+(let ((queue (contiguous-queue :capacity 4 1 2 3)))
+   (contiguous-queue-dequeue! queue)
+   (contiguous-queue-first queue))
+  @result{} 2
+@end smalllisp
+
+
+To test if a queue is empty, use @code{contiguous-queue-empty?}:
+
+@smalllisp
+(contiguous-queue-empty? (contiguous-queue :capacity 4))
+  @result{} #t
+
+(contiguous-queue-empty? (contiguous-queue :capacity 4 1 2))
+  @result{} #f
+@end smalllisp
+
+
+The size or length of a queue is obtained with @code{contiguous-queue-length}:
+
+@smalllisp
+(contiguous-queue-length (contiguous-queue :capacity 4 1 2))
+  @result{} 2
+@end smalllisp
+
+The capacity or maximum length of a queue is obtained with @code{contiguous-queue-capacity}:
+
+@smalllisp
+(contiguous-queue-capacity (contiguous-queue-capacity :capacity 4 1 2))
+  @result{} 4
+@end smalllisp
+
+To make a shallow copy a queue, use @code{contiguous-queue-copy}:
+
+@smalllisp
+(let* ((queue1 (contiguous-queue :capacity 4 1 2))
+       (queue2 (contiguous-queue-copy queue1)))
+    (eq? queue1 queue2))
+  @result{} #f  
+@end smalllisp
+
+@code{contiguous-queue} also implements the @code{queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue Examples}. @xref{collection Examples}. @xref{extendable Examples}. @xref{mutable Examples}. @xref{enumerable Examples}.

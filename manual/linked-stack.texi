@@ -56,21 +56,21 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @comment node-name, next,          previous, up
 @deffn {procedure} linked-stack-copy stack
 @b{requires} @code{stack} be a @code{linked-stack}. @* @*
-@b{returns} returns a shallow copy of @code{stack}. 
+@b{returns} a shallow copy of @code{stack}. 
 @end deffn
 
 @node linked-stack-empty?,linked-stack-length, linked-stack-copy, linked-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} linked-stack-empty? stack
 @b{requires} @code{stack} be a @code{linked-stack}. @* @*
-@b{returns} returns a boolean indicating whether or not the stack is empty. 
+@b{returns} a boolean indicating whether or not the stack is empty. 
 @end deffn
 
 @node linked-stack-length,linked-stack-push!, linked-stack-empty?, linked-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} linked-stack-length stack
 @b{requires} @code{stack} be a @code{linked-stack}. @* @*
-@b{returns} returns the number of items on the stack (i.e., length) . 
+@b{returns} the number of items on the stack (i.e., length) . 
 @end deffn
 
 @node linked-stack-push!, linked-stack-pop!, linked-stack-length, linked-stack API Reference
@@ -78,7 +78,7 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @deffn {procedure} linked-stack-push! stack item
 @b{requires} @code{stack} be a @code{linked-stack} and item be an arbitrary object. @* @*
 @b{modifies} @code{stack} by pushing item on the top of the stack. @* @*
-@b{returns} returns @code{#unspecified}. 
+@b{returns} @code{#unspecified}. 
 @end deffn
 
 @node linked-stack-pop!, linked-stack-top, linked-stack-push!, linked-stack API Reference
@@ -86,14 +86,14 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @deffn {procedure} linked-stack-pop! stack
 @b{requires} @code{stack} be a @code{linked-stack}. @* @*
 @b{modifies} @code{stack} by removing the item on the top of the stack. @* @*
-@b{returns} returns the item removed from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
+@b{returns} the item removed from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
 @end deffn
 
 @node linked-stack-top, , linked-stack-pop!, linked-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} linked-stack-top stack
 @b{requires} @code{stack} be a @code{linked-stack}. @* @*
-@b{returns} returns the top item from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
+@b{returns} the top item from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
 @end deffn
 
 @node linked-stack Examples,linked-stack API Reference, ,linked-stack

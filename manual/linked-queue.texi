@@ -4,10 +4,167 @@
 @node linked-queue Overview, linked-queue API Reference, linked-queue, linked-queue
 @subsection Overview
 
+@code{linked-queue} is a linked-list based implementation of a queue, a last-in-first-out data structure.
+
 
 @node linked-queue API Reference, linked-queue Examples, linked-queue Overview, linked-queue
 @subsection API Reference
 
+@menu
+* Protocols Implemented: Protocols Implemented by linked-queue. :
+* linked-queue?::
+* make-linked-queue::
+* linked-queue: linked-queue constructor. :
+* linked-queue-copy::
+* linked-queue-empty?::
+* linked-queue-length::
+* linked-queue-enqueue!::
+* linked-queue-dequeue!::
+* linked-queue-first::
+@end menu
+
+@node Protocols Implemented by linked-queue, linked-queue?, , linked-queue API Reference
+@comment node-name, next,          previous, up
+@code{linked-queue} implements the @code{queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+
+@node linked-queue?, make-linked-queue, Protocols Implemented by linked-queue, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a linked-queue.
+@end deffn
+
+@node make-linked-queue, linked-queue constructor, linked-queue?, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-linked-queue
+@b{returns} a new @code{linked-queue}.
+@end deffn
+
+
+@node linked-queue constructor,linked-queue-copy, make-linked-queue, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue . items
+@b{requires}  @code{items} be a list of items to initialize the queue with. @* @*
+@b{returns} a new @code{linked-queue} containing @code{items} enqueued from left-to-right onto the queue.
+@end deffn
+
+@node linked-queue-copy,linked-queue-empty?, linked-queue constructor, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-copy queue
+@b{requires} @code{queue} be a @code{linked-queue}. @* @*
+@b{returns} returns a shallow copy of @code{queue}. 
+@end deffn
+
+@node linked-queue-empty?,linked-queue-length, linked-queue-copy, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-empty? queue
+@b{requires} @code{queue} be a @code{linked-queue}. @* @*
+@b{returns} returns a boolean indicating whether or not the queue is empty. 
+@end deffn
+
+@node linked-queue-length,linked-queue-enqueue!, linked-queue-empty?, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-length queue
+@b{requires} @code{queue} be a @code{linked-queue}. @* @*
+@b{returns} returns the length the queue. 
+@end deffn
+
+
+@node linked-queue-enqueue!, linked-queue-dequeue!, linked-queue-length, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-enqueue! queue item
+@b{requires} @code{queue} be a @code{linked-queue} and item be an arbitrary object. @* @*
+@b{modifies} @code{queue} by placing item on the end of the queue. @* @*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+@node linked-queue-dequeue!, linked-queue-first, linked-queue-enqueue!, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-dequeue! queue
+@b{requires} @code{queue} be a @code{linked-queue}. @* @*
+@b{modifies} @code{queue} by removing the first item from the queue. @* @*
+@b{returns} the item removed from @code{queue} or if @code{queue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node linked-queue-first, , linked-queue-dequeue!, linked-queue API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-queue-first queue
+@b{requires} @code{queue} be a @code{linked-queue}. @* @*
+@b{returns} the first item from @code{queue} or if @code{queue} is empty, throws @code{&invalid-state-exception}.
+@end deffn
 
 @node linked-queue Examples,linked-queue API Reference, ,linked-queue
 @subsection Examples
+
+2 procedures are provided for creating a @code{linked-queue}: The first creates an empty queue and the other populates the queue with the items passed to it:
+
+@smalllisp
+(enumerable-collect (make-linked-queue)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (linked-queue 1 2 3)
+   +list-collector+)
+  @result{} (1 2 3)
+@end smalllisp
+
+An item can be placed onto the queue with @code{linked-queue-enqueue!}:
+
+@smalllisp
+(let ((queue (linked-queue 1 2 3)))
+   (linked-queue-enqueue! queue 4)
+   (linked-queue-first queue))
+  @result{} 1
+@end smalllisp
+
+The first item of the queue can be non-destructively obtained with @code{linked-queue-first}:
+
+@smalllisp
+(let ((queue (linked-queue 1 2 3)))
+   (linked-queue-first queue))
+  @result{} 1
+@end smalllisp
+
+The first item can be removed from the queue with @code{linked-queue-dequeue!}:
+
+@smalllisp
+(let ((queue (linked-queue 1 2 3)))
+   (linked-queue-dequeue! queue)
+   (linked-queue-first queue))
+  @result{} 2
+@end smalllisp
+
+
+To test if a queue is empty, use @code{linked-queue-empty?}:
+
+@smalllisp
+(linked-queue-empty? (linked-queue))
+  @result{} #t
+
+(linked-queue-empty? (linked-queue 1 2))
+  @result{} #f
+@end smalllisp
+
+
+The size or length of a queue is obtained with @code{linked-queue-length}:
+
+@smalllisp
+(linked-queue-length (linked-queue 1 2))
+  @result{} 2
+@end smalllisp
+
+To make a shallow copy a queue, use @code{linked-queue-copy}:
+
+@smalllisp
+(let* ((queue1 (linked-queue 1 2))
+       (queue2 (linked-queue-copy queue1)))
+    (eq? queue1 queue2))
+  @result{} #f  
+@end smalllisp
+
+@code{linked-queue} also implements the @code{queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue Examples}. @xref{collection Examples}. @xref{extendable Examples}. @xref{mutable Examples}. @xref{enumerable Examples}.

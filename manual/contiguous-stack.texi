@@ -57,28 +57,28 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @comment node-name, next,          previous, up
 @deffn {procedure} contiguous-stack-copy stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
-@b{returns} returns a shallow copy of @code{stack}. 
+@b{returns} a shallow copy of @code{stack}. 
 @end deffn
 
 @node contiguous-stack-empty?,contiguous-stack-length, contiguous-stack-copy, contiguous-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} contiguous-stack-empty? stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
-@b{returns} returns a boolean indicating whether or not the stack is empty. 
+@b{returns} a boolean indicating whether or not the stack is empty. 
 @end deffn
 
 @node contiguous-stack-length,contiguous-stack-capacity, contiguous-stack-empty?, contiguous-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} contiguous-stack-length stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
-@b{returns} returns the number of items on the stack (i.e., length) . 
+@b{returns} the number of items on the stack (i.e., length) . 
 @end deffn
 
 @node contiguous-stack-capacity, contiguous-stack-push!, contiguous-stack-empty?, contiguous-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} contiguous-stack-capacity stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
-@b{returns} returns the maximum size (i.e., length) of @code{stack}. 
+@b{returns} the maximum size (i.e., length) of @code{stack}. 
 @end deffn
 
 @node contiguous-stack-push!, contiguous-stack-pop!, contiguous-stack-capacity, contiguous-stack API Reference
@@ -86,7 +86,7 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @deffn {procedure} contiguous-stack-push! stack item
 @b{requires} @code{stack} be a @code{contiguous-stack} and item be an arbitrary object. @* @*
 @b{modifies} @code{stack} by pushing item on the top of the stack. @* @*
-@b{returns} returns @code{#unspecified} or if there is no free capacity, throws @code{&invalid-state-exception}. 
+@b{returns} @code{#unspecified} or if there is no free capacity, throws @code{&invalid-state-exception}. 
 @end deffn
 
 @node contiguous-stack-pop!, contiguous-stack-top, contiguous-stack-push!, contiguous-stack API Reference
@@ -94,14 +94,14 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 @deffn {procedure} contiguous-stack-pop! stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
 @b{modifies} @code{stack} by removing the item on the top of the stack. @* @*
-@b{returns} returns the item removed from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
+@b{returns} the item removed from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
 @end deffn
 
 @node contiguous-stack-top, , contiguous-stack-pop!, contiguous-stack API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} contiguous-stack-top stack
 @b{requires} @code{stack} be a @code{contiguous-stack}. @* @*
-@b{returns} returns the top item from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
+@b{returns} the top item from @code{stack} or if @code{stack} is empty, throws @code{&invalid-state-exception}. 
 @end deffn
 
 @node contiguous-stack Examples,contiguous-stack API Reference, ,contiguous-stack
@@ -122,7 +122,7 @@ protocols. @xref{stack}. @xref{collection}. @xref{extendable}. @xref{mutable}. @
 An item can be pushed onto the stack with @code{contiguous-stack-push!}:
 
 @smalllisp
-(let ((stack (contiguous-stack 4)))
+(let ((stack (contiguous-stack :capacity 4)))
    (contiguous-stack-push! stack 1)
    (contiguous-stack-top stack))
   @result{} 1
@@ -131,7 +131,7 @@ An item can be pushed onto the stack with @code{contiguous-stack-push!}:
 The top item of the stack can be non-destructively obtained with @code{contiguous-stack-top}:
 
 @smalllisp
-(let ((stack (contiguous-stack 4 1 2 3)))
+(let ((stack (contiguous-stack :capacity 4 1 2 3)))
    (contiguous-stack-top stack))
   @result{} 1
 @end smalllisp
@@ -139,7 +139,7 @@ The top item of the stack can be non-destructively obtained with @code{contiguou
 The top item can be removed from the stack with @code{contiguous-stack-pop!}:
 
 @smalllisp
-(let ((stack (contiguous-stack 4 1 2 3)))
+(let ((stack (contiguous-stack :capacity 4 1 2 3)))
    (contiguous-stack-pop! stack)
    (contiguous-stack-top stack))
   @result{} 2
@@ -149,10 +149,10 @@ The top item can be removed from the stack with @code{contiguous-stack-pop!}:
 To test if a stack is empty, use @code{contiguous-stack-empty?}:
 
 @smalllisp
-(contiguous-stack-empty? (contiguous-stack 4))
+(contiguous-stack-empty? (contiguous-stack :capacity 4))
   @result{} #t
 
-(contiguous-stack-empty? (contiguous-stack 4 1 2))
+(contiguous-stack-empty? (contiguous-stack :capacity 4 1 2))
   @result{} #f
 @end smalllisp
 
@@ -160,21 +160,21 @@ To test if a stack is empty, use @code{contiguous-stack-empty?}:
 The size or length of a stack is obtained with @code{contiguous-stack-length}:
 
 @smalllisp
-(contiguous-stack-length (contiguous-stack 4 1 2))
+(contiguous-stack-length (contiguous-stack :capacity 4 1 2))
   @result{} 2
 @end smalllisp
 
 The capacity or maximum length of a stack is obtained with @code{contiguous-stack-capacity}:
 
 @smalllisp
-(contiguous-stack-capacity (contiguous-stack-capacity 4 1 2))
+(contiguous-stack-capacity (contiguous-stack-capacity :capacity 4 1 2))
   @result{} 4
 @end smalllisp
 
 To make a shallow copy a stack, use @code{contiguous-stack-copy}:
 
 @smalllisp
-(let* ((stack1 (contiguous-stack 4 1 2))
+(let* ((stack1 (contiguous-stack :capacity 4 1 2))
        (stack2 (contiguous-stack-copy stack1)))
     (eq? stack1 stack2))
   @result{} #f  

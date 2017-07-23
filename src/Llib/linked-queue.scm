@@ -2,6 +2,7 @@
    (import hoard/exceptions
            hoard/collection
            hoard/mutable-collection
+           hoard/extendable
            hoard/queue
            hoard/enumerable
            hoard/enumerator)
@@ -133,6 +134,14 @@
 
 (define-method (collection-mutable? obj::%linked-queue)
    #t)
+
+;;;; extendable protocol implementation
+(define-method (collection-extendable? obj::%linked-queue)
+   #t)
+
+(define-method (collection-extend! obj::%linked-queue itm)
+   (linked-queue-enqueue! obj itm))
+
 
 ;;;; enumerable protocol implementation
 (define-method (enumerable? obj::%linked-queue)

@@ -1,6 +1,7 @@
 (module hoard/contiguous-queue
    (import hoard/collection
            hoard/mutable-collection
+           hoard/extendable
            hoard/queue
            hoard/enumerator
            hoard/enumerable
@@ -178,7 +179,14 @@
 
 (define-method (collection-mutable? obj::%contiguous-queue)
    #t)
-   
+
+;;;; extendable protocol implementation
+(define-method (collection-extendable? obj::%contiguous-queue)
+   #t)
+
+(define-method (collection-extend! obj::%contiguous-queue itm)
+   (contiguous-queue-enqueue! obj itm))
+
 ;;;; enumerable protocol implementation
 
 (define-method (enumerable? obj::%contiguous-queue)

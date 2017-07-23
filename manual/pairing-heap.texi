@@ -7,12 +7,163 @@
 @node pairing-heap API Reference, pairing-heap Examples, pairing-heap Overview, pairing-heap
 @subsection API Reference
 
-@c @menu
-@c * pairing-heap?::
-@c * make-pairing-heap::
-@c * pairing-heap: pairing-heap constructor. :
-@c * binary-
-@c @end menu
+@menu
+* Protocols Implemented: Protocols Implemented by pairing-heap. :
+* pairing-heap?::
+* make-pairing-heap::
+* pairing-heap: pairing-heap constructor. :
+* pairing-heap-copy::
+* pairing-heap-empty?::
+* pairing-heap-length::
+* pairing-heap-enqueue!::
+* pairing-heap-dequeue!::
+* pairing-heap-first::
+@end menu
+
+@node Protocols Implemented by pairing-heap, pairing-heap?, , pairing-heap API Reference
+@comment node-name, next,          previous, up
+@code{pairing-heap} implements the @code{priority-queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{priority-queue}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+
+@node pairing-heap?, make-pairing-heap, Protocols Implemented by pairing-heap, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a pairing-heap.
+@end deffn
+
+@node make-pairing-heap, pairing-heap constructor, pairing-heap?, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-pairing-heap :comparator
+@b{requires} @code{:comparator} be an object implementing the @code{comparator} protocol. @code{:comparator} must be ordered. @* @* 
+@b{returns} a new @code{pairing-heap}.
+@end deffn
+
+
+@node pairing-heap constructor,pairing-heap-copy, make-pairing-heap, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap :comparator . items
+@b{requires}  @code{:comparator} be an object implementing the @code{comparator} protocol and @code{items} be a list of items to initialize the priority queue with. @code{:comparator} must be ordered. @* @*
+@b{returns} a new @code{pairing-heap} containing @code{items} enqueued from left-to-right onto the priority queue.
+@end deffn
+
+@node pairing-heap-copy,pairing-heap-empty?, pairing-heap constructor, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-copy queue
+@b{requires} @code{queue} be a @code{pairing-heap}. @* @*
+@b{returns} returns a shallow copy of @code{queue}. 
+@end deffn
+
+@node pairing-heap-empty?,pairing-heap-length, pairing-heap-copy, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-empty? pqueue
+@b{requires} @code{pqueue} be a @code{pairing-heap}. @* @*
+@b{returns} returns a boolean indicating whether or not the priority queue is empty. 
+@end deffn
+
+@node pairing-heap-length,pairing-heap-enqueue!, pairing-heap-empty?, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-length pqueue
+@b{requires} @code{pqueue} be a @code{pairing-heap}. @* @*
+@b{returns} returns the length the priority queue. 
+@end deffn
+
+
+@node pairing-heap-enqueue!, pairing-heap-dequeue!, pairing-heap-length, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-enqueue! pqueue item
+@b{requires} @code{pqueue} be a @code{pairing-heap} and item be an arbitrary object. @* @*
+@b{modifies} @code{pqueue} by placing item on the priority queue. @* @*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+@node pairing-heap-dequeue!, pairing-heap-first, pairing-heap-enqueue!, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-dequeue! pqueue
+@b{requires} @code{pqueue} be a @code{pairing-heap}. @* @*
+@b{modifies} @code{pqueue} by removing the highest(or lowest, depending on the comparator) priority item from the priority queue. @* @*
+@b{returns} the item removed from @code{pqueue} or if @code{pqueue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node pairing-heap-first, , pairing-heap-dequeue!, pairing-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} pairing-heap-first pqueue
+@b{requires} @code{pqueue} be a @code{pairing-heap}. @* @*
+@b{returns} the highest(or lowest, depending on the comparator) item from @code{pqueue} or if @code{pqueue} is empty, throws @code{&invalid-state-exception}.
+@end deffn
+
 
 @node pairing-heap Examples,pairing-heap API Reference, ,pairing-heap
 @subsection Examples
+
+2 procedures are provided for creating a @code{pairing-heap}: The first creates an empty queue and the other populates the queue with the items passed to it:
+
+@smalllisp
+(enumerable-collect (make-pairing-heap :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (pairing-heap :comparator +number-comparator+ 1 2 3)
+   +list-collector+)
+  @result{} (1 3 2)
+@end smalllisp
+
+An item can be placed onto the priority queue with @code{pairing-heap-enqueue!}:
+
+@smalllisp
+(let ((pqueue (pairing-heap :comparator +number-comparator+ 1 2 3)))
+   (pairing-heap-enqueue! pqueue 4)
+   (pairing-heap-first pqueue))
+  @result{} 1
+@end smalllisp
+
+The highest(or lowest, depending on the comparator) priority item of the queue can be non-destructively obtained with @code{pairing-heap-first}:
+
+@smalllisp
+(let ((pqueue (pairing-heap :comparator +number-comparator+ 1 2 3)))
+   (pairing-heap-first pqueue))
+  @result{} 1
+@end smalllisp
+
+The highest(or lowest, depending on the comparator) priority item can be removed from the priority queue with @code{pairing-heap-dequeue!}:
+
+@smalllisp
+(let ((pqueue (pairing-heap :comparator +number-comparator+ 1 2 3)))
+   (pairing-heap-dequeue! pqueue)
+   (pairing-heap-first pqueue))
+  @result{} 2
+@end smalllisp
+
+
+To test if a priority queue is empty, use @code{pairing-heap-empty?}:
+
+@smalllisp
+(pairing-heap-empty? (pairing-heap :comparator +number-comparator+))
+  @result{} #t
+
+(pairing-heap-empty? (pairing-heap :comparator +number-comparator+ 1 2))
+  @result{} #f
+@end smalllisp
+
+
+The size or length of a priority queue is obtained with @code{pairing-heap-length}:
+
+@smalllisp
+(pairing-heap-length (pairing-heap :comparator +number-comparator+ 1 2))
+  @result{} 2
+@end smalllisp
+
+To make a shallow copy of a priority queue, use @code{pairing-heap-copy}:
+
+@smalllisp
+(let* ((pqueue1 (pairing-heap :comparator +number-comparator+ 1 2))
+       (pqueue2 (pairing-heap-copy queue1)))
+    (eq? pqueue1 pqueue2))
+  @result{} #f  
+@end smalllisp
+
+@code{pairing-heap} also implements the @code{priority-queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{priority-queue Examples}. @xref{collection Examples}. @xref{extendable Examples}. @xref{mutable Examples}. @xref{enumerable Examples}.

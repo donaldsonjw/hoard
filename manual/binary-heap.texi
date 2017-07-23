@@ -4,17 +4,182 @@
 @node binary-heap Overview, binary-heap API Reference, binary-heap, binary-heap
 @subsection Overview
 
-A @code{binary-heap} is an implementation of a priority queue featuring contiguous storage and a specified maximum size.
+A @code{binary-heap} is an implementation of a priority queue featuring contiguous storage and a specified maximum size or capacity.
 
 @node binary-heap API Reference, binary-heap Examples, binary-heap Overview, binary-heap
 @subsection API Reference
 
-@c @menu
-@c * binary-heap?::
-@c * make-binary-heap::
-@c * binary-heap: binary-heap constructor. :
-@c * binary-
-@c @end menu
+@menu
+* Protocols Implemented: Protocols Implemented by binary-heap. :
+* binary-heap?::
+* make-binary-heap::
+* binary-heap: binary-heap constructor. :
+* binary-heap-copy::
+* binary-heap-empty?::
+* binary-heap-length::
+* binary-heap-capacity::
+* binary-heap-enqueue!::
+* binary-heap-dequeue!::
+* binary-heap-first::
+@end menu
+
+
+@node Protocols Implemented by binary-heap, binary-heap?, , binary-heap API Reference
+@comment node-name, next,          previous, up
+@code{binary-heap} implements the @code{priority-queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{priority-queue}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+
+@node binary-heap?, make-binary-heap, Protocols Implemented by binary-heap, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a binary-heap.
+@end deffn
+
+@node make-binary-heap, binary-heap constructor, binary-heap?, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-binary-heap :capacity :comparator 
+@b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the priority queue and
+@code{:comparator} be an object implementing the @code{comparator} protocol. @code{:comparator} must be ordered.@* @*
+@b{returns} a new @code{binary-heap} with a capacity of @code{:capacity}
+@end deffn
+
+@node binary-heap constructor,binary-heap-copy, make-binary-heap, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap :capacity :comparator . items
+@b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the priority queue, @code{:comparator} be an object implementing the @code{comparator} protocol, and items be a list of items to initialize the queue with. @code{:comparator} must be ordered. @* @*
+@b{returns} a new @code{binary-heap} with a capacity of @code{:capacity} containing @code{items} enqueued on the priorty queue. If the number of  @code{items} is greater than @code{:capacity}, @code{&invalid-argument-exeption} is thrown. 
+@end deffn
+
+@node binary-heap-copy,binary-heap-empty?, binary-heap constructor, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-copy pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{returns} a shallow copy of @code{pqueue}. 
+@end deffn
+
+@node binary-heap-empty?,binary-heap-length, binary-heap-copy, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-empty? pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{returns} a boolean indicating whether or not the priority queue is empty. 
+@end deffn
+
+@node binary-heap-length,binary-heap-capacity, binary-heap-empty?, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-length pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{returns} the length the priority queue. 
+@end deffn
+
+@node binary-heap-capacity, binary-heap-enqueue!, binary-heap-empty?, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-capacity pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{returns} the maximum size or length of @code{queue}. 
+@end deffn
+
+@node binary-heap-enqueue!, binary-heap-dequeue!, binary-heap-capacity, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-enqueue! pqueue item
+@b{requires} @code{pqueue} be a @code{binary-heap} and item be an arbitrary object. @* @*
+@b{modifies} @code{pqueue} by placing item on the priority queue. @* @*
+@b{returns} @code{#unspecified} or if there is no free capacity, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node binary-heap-dequeue!, binary-heap-first, binary-heap-enqueue!, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-dequeue! pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{modifies} @code{pqueue} by removing the highest (or lowest, depending on the comparator) priority item from the priority queue. @* @*
+@b{returns} the item removed from @code{pqueue} or if @code{pqueue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node binary-heap-first, , binary-heap-dequeue!, binary-heap API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} binary-heap-first pqueue
+@b{requires} @code{pqueue} be a @code{binary-heap}. @* @*
+@b{returns} the the highest (or lowest, depending on the comparator) priority item from @code{pqueue} or if @code{pqueue} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
 
 @node binary-heap Examples,binary-heap API Reference, ,binary-heap
 @subsection Examples
+
+2 procedures are provided for creating a @code{binary-heap}: The first creates an empty queue and the other populates the queue with the items passed to it:
+
+@smalllisp
+(enumerable-collect (make-binary-heap :capacity 4 :comparator +number-comparator+)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (binary-heap :capacity 4  :comparator +number-comparator+ 1 2 3)
+   +list-collector+)
+  @result{} (1 2 3)
+@end smalllisp
+
+An item can be placed onto the priority queue with @code{binary-heap-enqueue!}:
+
+@smalllisp
+(let ((pqueue (binary-heap :capacity 4 :comparator +number-comparator+ 1 2 3)))
+   (binary-heap-enqueue! pqueue 4)
+   (binary-heap-first pqueue))
+  @result{} 1
+@end smalllisp
+
+The highest (or lowest, depending on the comparator) priority item of the priority queue can be non-destructively obtained with @code{binary-heap-first}:
+
+@smalllisp
+(let ((pqueue (binary-heap :capacity 4 :comparator +number-comparator+ 1 2 3)))
+   (binary-heap-first pqueue))
+  @result{} 1
+@end smalllisp
+
+The  highest (or lowest, depending on the comparator) priority item can be removed from the priority queue with @code{binary-heap-dequeue!}:
+
+@smalllisp
+(let ((pqueue (binary-heap :capacity 4 :comparator +number-comparator+ 1 2 3)))
+   (binary-heap-dequeue! pqueue)
+   (binary-heap-first pqueue))
+  @result{} 2
+@end smalllisp
+
+
+To test if a priority queue is empty, use @code{binary-heap-empty?}:
+
+@smalllisp
+(binary-heap-empty? (binary-heap :capacity 4 :comparator +number-comparator+))
+  @result{} #t
+
+(binary-heap-empty? (binary-heap :capacity 4 :comparator +number-comparator+ 1 2))
+  @result{} #f
+@end smalllisp
+
+
+The size or length of a priority queue is obtained with @code{binary-heap-length}:
+
+@smalllisp
+(binary-heap-length (binary-heap :capacity 4 :comparator +number-comparator+ 1 2))
+  @result{} 2
+@end smalllisp
+
+The capacity or maximum length of a priority queue is obtained with @code{binary-heap-capacity}:
+
+@smalllisp
+(binary-heap-capacity (binary-heap-capacity :capacity 4 :comparator +number-comparator+ 1 2))
+  @result{} 4
+@end smalllisp
+
+To make a shallow copy of a priority queue, use @code{binary-heap-copy}:
+
+@smalllisp
+(let* ((pqueue1 (binary-heap :capacity 4 :comparator +number-comparator+ 1 2))
+       (pqueue2 (binary-heap-copy queue1)))
+    (eq? queue1 queue2))
+  @result{} #f  
+@end smalllisp
+
+@code{binary-heap} also implements the @code{priority-queue}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{priority-queue Examples}. @xref{collection Examples}. @xref{extendable Examples}. @xref{mutable Examples}. @xref{enumerable Examples}.

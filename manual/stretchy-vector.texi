@@ -48,10 +48,10 @@ protocols. @xref{set}. @xref{collection}. @xref{extendable}. @xref{indexable}.  
 
 @node make-stretchy-vector, stretchy-vector constructor, stretchy-vector?, stretchy-vector API Reference
 @comment node-name, next,          previous, up
-@deffn {procedure} make-stretchy-vector len [fill]
+@deffn {procedure} make-stretchy-vector len [:capacity len] [fill]
 @b{requires} @code{len} be an integer specifying the requested initial vector
-capacity and @code{fill} be an arbitrary value to initialize each element. If not
-provided, @code{fill} defaults to @code{#unspecified}.@*@*
+length, @code{:capacity} the initial capacity, and @code{fill} be an arbitrary value to initialize each element. If not
+provided, @code{fill} defaults to @code{#unspecified} and @code{:capacity} is equal to @code{len}, unless @code{len} is less than the minimal stretchy-vector capacity then it is the minimal stretchy-vector capacity (i.e.,  16).@*@*
 @b{returns} a stretchy-vector with an initial capacity of at least @code{len}. 
 @end deffn
 
@@ -226,8 +226,7 @@ To test whether an object is a @code{stretchy-vector} use the predicate @code{st
 Two procedures are used to create @code{stretchy-vector}s. The first creates an empty vector of a specified size with an optional fill value, and the second allows for the creation of a stretchy vector containing the passed values.
 
 @smalllisp
-(let* ((fill 9) 
-       (vec (make-stretchy-vector 3 9)))
+(let ((vec (make-stretchy-vector 3 9)))
    (enumerable-collect vec +list-collector+))
   @result{} (9 9 9)
 

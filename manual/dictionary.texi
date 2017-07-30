@@ -82,7 +82,7 @@ The @code{dictionary} protocol defines the methods required by a dictionary impl
 @node dictionary-contains?,dictionary-update!, dictionary-remove!, dictionary API Reference
 @comment node-name, next,          previous, up
 @deffn {generic} dictionary-contains? dict key
-@b{requires} @code{dict} implement the dictionary protocol and @code{key} be an arbitrary objects. @*@*
+@b{requires} @code{dict} implement the dictionary protocol and @code{key} be an arbitrary object. @*@*
 @b{returns} a boolean indicating whether or not @code{dict} contains an association with the key @code{key}.
 @end deffn
 

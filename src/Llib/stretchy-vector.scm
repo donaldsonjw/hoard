@@ -25,7 +25,7 @@
       (inline stretchy-vector-capacity svec::%stretchy-vector)
       (inline stretchy-vector-set! svec::%stretchy-vector index val)
       (inline stretchy-vector-ref svec::%stretchy-vector index)
-      (inline make-stretchy-vector len #!optional (fill #unspecified))
+      (inline make-stretchy-vector len #!optional (fill #unspecified) #!key (capacity len))
       (inline stretchy-vector? obj)
       (inline stretchy-vector #!rest elems)
       (inline list->stretchy-vector lst)
@@ -38,21 +38,28 @@
       (inline stretchy-vector-extend! svec::%stretchy-vector item)
       (inline stretchy-vector-remove! svec::%stretchy-vector)
       (inline stretchy-vector-append! sv1::%stretchy-vector sv2::%stretchy-vector)
-      (inline stretchy-vector-append sv1::%stretchy-vector sv2::%stretchy-vector)))
-
-
-
+      (inline stretchy-vector-append sv1::%stretchy-vector sv2::%stretchy-vector))
+   
+   (pragma (stretchy-vector? no-alloc side-effect-free (predicate-of %stretchy-vector))
+           (stretchy-vector-length no-alloc side-effect-free)
+           (stretchy-vector-capacity no-alloc side-effect-free)
+           (stretchy-vector-ref side-effect-free)
+           (stretchy-vector-map side-effect-free)
+           (stretchy-vector-copy side-effect-free)
+           (stretchy-vector-append side-effect-free)))
 
 (define +minimum-stretchy-vector-capacity+ 16)
 
 ;; create a stretchy-vector with an initial size. If fill is
 ;; provided all of the elements are defaulted to this value
-(define-inline (make-stretchy-vector len #!optional (fill #unspecified))
-   (instantiate::%stretchy-vector (vec (make-vector (if (< len +minimum-stretchy-vector-capacity+)
-                                                        +minimum-stretchy-vector-capacity+
-                                                        len)
-                                          (if (pair? fill) (car fill) #unspecified)))
-                                  (length len)))
+(define-inline (make-stretchy-vector len #!optional (fill #unspecified) #!key (capacity len))
+   (let ((cap (if (< capacity +minimum-stretchy-vector-capacity+)
+                  +minimum-stretchy-vector-capacity+
+                  capacity)))
+      (instantiate::%stretchy-vector (vec (if (eq? fill #unspecified)
+                                              (make-vector cap) 
+                                              (make-vector cap fill)))
+                                     (length len))))
 
 (define-inline (stretchy-vector #!rest elems)
    (instantiate::%stretchy-vector (vec (if (> (length elems) 0)

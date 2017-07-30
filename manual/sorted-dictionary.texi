@@ -4,8 +4,225 @@
 @node sorted-dictionary Overview, sorted-dictionary API Reference, sorted-dictionary, sorted-dictionary
 @subsection Overview
 
+@code{sorted-dictionary} is a balanced-tree based implementation of the @code{dictionary} protocol.
+
 @node sorted-dictionary API Reference, sorted-dictionary Examples, sorted-dictionary Overview, sorted-dictionary
 @subsection API Reference
 
+@menu
+* Protocols Implemented: Protocols Implemented by sorted-dictionary. :
+* sorted-dictionary?::
+* make-sorted-dictionary::
+* sorted-dictionary: sorted-dictionary constructor. :
+* sorted-dictionary-get::
+* sorted-dictionary-put!::
+* sorted-dictionary-update!::
+* sorted-dictionary-contains?::
+* sorted-dictionary-remove!::
+* sorted-dictionary-empty?::
+* sorted-dictionary-copy::
+* sorted-dictionary-length::
+@end menu
+
+@node Protocols Implemented by sorted-dictionary, sorted-dictionary?, , sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@code{sorted-dictionary} implements the @code{dictionary}, @code{collection}, @code{extendable}, @code{indexable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{dictionary}. @xref{collection}. @xref{extendable}. @xref{indexable}.  @xref{mutable}. @xref{enumerable}.
+
+@node sorted-dictionary?, make-sorted-dictionary , Protocols Implemented by sorted-dictionary, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a sorted-dictionary.
+@end deffn
+
+@node make-sorted-dictionary, sorted-dictionary constructor, sorted-dictionary?, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-sorted-dictionary :comparator
+@b{requires} @code{:comparator} be an object supporting the @code{comparator} protocol. @code{:comparator} must be ordered.@*@*
+@b{returns} a sorted-dictionary. 
+@end deffn
+
+@node sorted-dictionary constructor, sorted-dictionary-get , make-sorted-dictionary, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary :comparator . list-of-associations
+@b{requires} @code{:comparator} be an object supporting the @code{comparator} protocol and @code{list-of-associations} be a list of @code{association}s. @code{:comparator} must be ordered.@*@*
+@b{returns} a sorted-dictionary. 
+@end deffn
+
+@node sorted-dictionary-get, sorted-dictionary-put!, sorted-dictionary constructor, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-get dict key
+@b{requires} @code{dict} be a @code{sorted-dictionary} and @code{key} be an arbitrary object. @code{key} must be supported by the @code{comparator} used when creating @code{dict} @*@*
+@b{returns} the value associated with @code{key} or @code{#f} if no such association exists.
+@end deffn
+
+@node sorted-dictionary-put!,sorted-dictionary-update!, sorted-dictionary-get, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-put! dict key value
+@b{requires} @code{dict} be a @code{sorted-dictionary} @code{key} and @code{value} be arbitrary objects. @code{key} must be supported by the @code{comparator} used when creating @code{dict}. @*@*
+@b{modifies} @code{dict} so that it contains the association of @code{key} to @code{value}. If an association with @code{key} already exists it is replaced, and if not, a new association is created.@* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node sorted-dictionary-update!, sorted-dictionary-contains? , sorted-dictionary-put!, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-update! dict key value exist-fun 
+@b{requires} @code{dict} be a @code{sorted-dictionary}, @code{key} and @code{value} be arbitrary objects, and @code{exist-fun} which is a procedure excepting a single value and returning an updated value when an association with a key @code{key} already exists. @code{key} must be supported by the @code{comparator} used when creating @code{dict}. @*@*
+@b{modifies} @code{dict} such that if the sorted-dictionary doesn't currently contain an association with a key @code{key}, it contains an association with key @code{key} and value @code{value}, or if an existing association exists updates it so that has the value obtained by applying @code{exist-fun} to its value. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node sorted-dictionary-contains?, sorted-dictionary-remove!, sorted-dictionary-update!, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-contains? dict key
+@b{requires} @code{dict} be a @code{sorted-dictionary} and @code{key} be an arbitrary object. @*@*
+@b{returns} a boolean indicating whether or not @code{dict} contains an association with the key @code{key}.
+@end deffn
+
+@node sorted-dictionary-remove!, sorted-dictionary-empty?, sorted-dictionary-contains?, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-remove! dict key
+@b{requires} @code{dict} be a @code{sorted-dictionary} and @code{key} be an arbitrary object. @code{key} must be supported by the @code{comparator} used when creating @code{dict} @*@*
+@b{modifies} @code{dict} by removing the association with the key @code{key}. @* @*
+@b{returns} @code{#unspecified}
+@end deffn
+
+@node sorted-dictionary-empty?, sorted-dictionary-copy, sorted-dictionary-remove!, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-empty? dict
+@b{requires} @code{dict} be @code{sorted-dictionary}. @*@*
+@b{returns} a boolean indicating whether or not the sorted-dictionary contains any associations.
+@end deffn
+
+@node sorted-dictionary-copy,sorted-dictionary-length, sorted-dictionary-empty?, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-copy dict
+@b{requires} @code{dict} be a @code{sorted-dictionary}. @*@*
+@b{returns} a shallow copy of @code{dict}
+@end deffn
+
+@node sorted-dictionary-length,, sorted-dictionary-copy, sorted-dictionary API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} sorted-dictionary-length dict
+@b{requires} @code{dict} be a @code{sorted-dictionary}.@*@*
+@b{returns} the number of items in @code{dict}.
+@end deffn
+
+
+
 @node sorted-dictionary Examples,sorted-dictionary API Reference, ,sorted-dictionary
 @subsection Examples
+
+To test whether an object is a @code{sorted-dictionary} use the predicate @code{sorted-dictionary?}:
+
+@smalllisp
+(sorted-dictionary? (sorted-dictionary :comparator +string-comparator+))
+  @result{} #t
+
+(sorted-dictionary? (vector))
+  @result{} #f
+@end smalllisp
+
+Two procedures are used to create @code{sorted-dectionary}s. The first creates an empty dictionary, and the second allows for the creation of a dictionary with the provided values. Both require a @code{:comparator} argurment supporting the type of the key. The @code{:comparator} must be ordered.
+
+@smalllisp
+(let ((dict (make-sorted-dictionary :comparator +string-comparator+)))
+   (sorted-dictionary? dict))
+  @result{} #t
+
+(let ((dict (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2))))
+   (sorted-dictionary-length dict))
+  @result{} 2
+@end smalllisp
+
+Checking whether a dictionary is empty is accompished with @code{sorted-dictionary-empty?}:
+
+@smalllisp
+(sorted-dictionary-empty? (sorted-dictionary :comparator +string-comparator+))
+   @result{} #t
+
+(sorted-dictionary-empty? (sorted-dictionary :comparator +string-comparator+ (=> "A" 1)))
+   @result{} #f
+@end smalllisp
+
+
+Associations can be added to a dictionary with @code{sorted-dictionary-put!}:
+
+@smalllisp
+(let ((dict (sorted-dictionary :comparator +string-comparator+)))
+   (sorted-dictionary-put! dict "a" 1)
+   (sorted-dictionary-put! dict "b" 2)
+   (map (lambda (kv) (cons (=>key kv) (=>value kv)))
+      (dictionary-enumerable-collect dict +list-collector+)))
+   @result{} (("a" . 1) ("b" . 2))
+@end smalllisp
+
+
+And removed (assuming the insertions above) with @code{sorted-dictionary-remove!}:
+
+@smalllisp
+
+(sorted-dictionary-remove! dict "a")
+(map (lambda (kv) (cons (=>key kv) (=>value kv)))
+   (dictionary-enumerable-collect dict +list-collector+))
+   @result{} (("b" . 2))
+
+@end smalllisp
+
+The value associated with a given key is easily obtained:
+
+@smalllisp
+(let ((dict (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (sorted-dictionary-get dict "b")
+   @result{} 2
+@end smalllisp
+
+The @code{dictionary-update!} method can be used to update an existing value or insert a new value if an existing association does not exist:
+
+@smalllisp
+(let ((dict (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (sorted-dictionary-update! dict "b" 0 (lambda (x) (+ x 1)))
+   (sorted-dictionary-update! dict "d" 0 (lambda (x) (+ x 1)))
+   (sorted-dictionary-get dict "b")
+   @result{} 3
+   (sorted-dictionary-get dict "d")
+   @result{} 0
+@end smalllisp
+
+To obtain the number of associations in a dictionary, call @code{sorted-dictionary-length}:
+
+@smalllisp
+(let ((dict (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (sorted-dictionary-length dict)
+   @result{} 3
+@end smalllisp
+
+Querying whether an association with a given key is accomplished with @code{sorted-dictionary-contains?}:
+
+@smalllisp
+(let ((dict (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3))))
+   (sorted-dictionary-contains? dict "a")
+   @result{} #t
+
+   (sorted-dictionary-contains? dict "d")
+   @result{} #f
+@end smalllisp
+
+
+Copying a dictionary is accomplished with @code{dictionary-copy}:
+
+@smalllisp
+(let* ((dict1 (sorted-dictionary :comparator +string-comparator+ (=> "a" 1) (=> "b" 2) (=> "c" 3)))
+       (dict2 (sorted-dictionary-copy dict1))) 
+    (eq? dict1 dict2)
+    @result{} #f
+    (and (sorted-dictionary-contains? dict1 "a")
+       (sorted-dictionary-contains? dict2 "a"))
+    @result{} #t
+@end smalllisp
+
+@code{sorted-dictionary} also implements the @code {dictionary}, @code{collection},
+@code{mutable}, @code{indexable}, @code{extendable}, @code{enumerable}, and @code{dictionary-enumerable}
+protocols. @xref{dictionary}. @xref{collection Examples}. @xref{mutable Examples}.  @xref{indexable Examples}. @xref{extendable Examples}. @xref{enumerable Examples}. @xref{dictionary-enumerable Examples}. 

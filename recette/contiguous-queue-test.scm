@@ -8,7 +8,7 @@
 (define-test-suite contiguous-queue-tests
 
    (test "contiguous-queue? works"
-      (assert-true (contiguous-queue? (contiguous-queue :capacity 0)))
+      (assert-true (contiguous-queue? (contiguous-queue :capacity 1)))
       (assert-true (contiguous-queue? (make-contiguous-queue :capacity 1)))
       (assert-false (contiguous-queue? 3))
       (assert-false (contiguous-queue? (vector))))

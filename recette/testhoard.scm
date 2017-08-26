@@ -16,6 +16,7 @@
            longest-alphabetically-ordered-substring
            red-black-tree-test
            linked-queue-test
+           ring-buffer-test
            contiguous-queue-test
            linked-stack-test
            contiguous-stack-test
@@ -26,7 +27,8 @@
            hash-bag-test
            sorted-bag-test
            hash-set-test
-           sorted-set-test)
+           sorted-set-test
+           linked-deque-test)
    (main main)
    (library btest hoard))
 
@@ -63,6 +65,8 @@
    (suite-add-subsuite! hoard-tests sorted-bag-tests)
    (suite-add-subsuite! hoard-tests hash-set-tests)
    (suite-add-subsuite! hoard-tests sorted-set-tests)
+   (suite-add-subsuite! hoard-tests ring-buffer-tests)
+   (suite-add-subsuite! hoard-tests linked-deque-tests)
    (let ((tr (instantiate::terminal-test-runner (suite hoard-tests))))
       (if (test-runner-execute tr #t) 0 -1)))
 

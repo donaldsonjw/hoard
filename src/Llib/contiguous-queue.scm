@@ -1,16 +1,13 @@
 (module hoard/contiguous-queue
    (import hoard/collection
+           hoard/ring-buffer
            hoard/mutable-collection
            hoard/extendable
            hoard/queue
            hoard/enumerator
            hoard/enumerable
            hoard/exceptions)
-   (export (class %contiguous-queue
-              length
-              store
-              (front (default 0))
-              (back (default 0)))
+   (export (class %contiguous-queue::%ring-buffer)
            (class %contiguous-queue-enumerator
               (curr-idx (default #unspecified))
               q::%contiguous-queue)
@@ -30,59 +27,45 @@
    (isa? obj %contiguous-queue))
 
 (define-inline (make-contiguous-queue #!key capacity)
-   (instantiate::%contiguous-queue (length 0)
-                                   (store (make-vector capacity))))
+   (if (and (integer? capacity)
+            (> capacity 0))
+       (instantiate::%contiguous-queue (length 0)
+                                  (store (make-vector capacity)))
+       (raise-invalid-argument-exception :proc "make-contiguous-queue"
+          :msg "capacity must be a positive number"
+          :args capacity)))
 
 (define-inline (contiguous-queue-capacity q::%contiguous-queue)
-   (vector-length (-> q store)))
+   (ring-buffer-capacity q))
 
 (define-inline (contiguous-queue #!key capacity #!rest objs)
-   (if (> (length objs) capacity)
-       (raise-invalid-argument-exception :proc "contiguous queue"
-          :msg "capacity must be equal to or larger than the number of objects used to create the queue"
-          :args objs)
-       (let ((q (instantiate::%contiguous-queue (length 0)
-                                                (store (make-vector capacity)))))
-          (for-each (lambda (v) (contiguous-queue-enqueue! q v)) objs)
-          q)))
+   (cond  ((or (not (number? capacity))
+               (<= capacity 0))
+           (raise-invalid-argument-exception :proc "contiguous-queue"
+              :msg "capacity must be a positivie number"))
+          ((> (length objs) capacity)
+              (raise-invalid-argument-exception :proc "contiguous-queue"
+                                                :msg "capacity must be equal to or larger than the number of objects used to create the contiguous-queue"
+                                                :args objs)) 
+        (else (let ((rb (make-contiguous-queue :capacity capacity)))
+                 (for-each (lambda (v) (ring-buffer-push-back! rb v)) objs)
+                 rb))))
 
 (define-inline (contiguous-queue-empty? q::%contiguous-queue)
-   (= (-> q length) 0))
+   (ring-buffer-empty? q))
 
 (define-inline (contiguous-queue-length q::%contiguous-queue)
-   (-> q length)) 
+   (ring-buffer-length q)) 
 
 (define-inline (contiguous-queue-enqueue! q::%contiguous-queue item)
-   (define (next-index curr capacity)
-      (modulo (+ curr 1) capacity))
-   (if (= (contiguous-queue-length q) (contiguous-queue-capacity q))
-       (raise-invalid-state-exception :proc "contiguous-queue-enqueue!"
-          :msg "cannot enqueue an item on a full queue"
-          :obj q)
-       (begin
-          (vector-set! (-> q store) (-> q back) item)
-          (set! (-> q length) (+ (-> q length) 1))
-          (set! (-> q back) (next-index (-> q back) (contiguous-queue-capacity q))))))
+   (ring-buffer-push-back! q item))
 
 (define-inline (contiguous-queue-dequeue! q::%contiguous-queue)
-   (define (next-index curr capacity)
-      (modulo (+ curr 1) capacity))
-   (if (= (contiguous-queue-length q) 0)
-       (raise-invalid-state-exception :proc "contiguous-queue-dequeue!"
-          :msg "cannot dequeue an item from a full queue"
-          :obj q)
-       (let ((res (vector-ref (-> q store) (-> q front))))
-          (set! (-> q length) (- (-> q length) 1))
-          (set! (-> q front) (next-index (-> q front) (contiguous-queue-capacity q)))
-          res)))
+   (ring-buffer-pop-front! q))
 
 
 (define-inline (contiguous-queue-first q::%contiguous-queue)
-   (if (= (contiguous-queue-length q) 0)
-       (raise-invalid-state-exception :proc "contiguous-queue-first"
-          :msg "cannot obtain the first item from a full queue"
-          :obj q)
-       (vector-ref (-> q store) (-> q front))))
+   (ring-buffer-front q))
 
 (define-inline (contiguous-queue-copy q::%contiguous-queue)
    (instantiate::%contiguous-queue (length (-> q length))

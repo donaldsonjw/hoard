@@ -35,7 +35,10 @@
            hoard/stretchy-vector
            hoard/range
            hoard/queue
+           hoard/deque
            hoard/linked-queue
+           hoard/linked-deque
+           hoard/ring-buffer
            hoard/contiguous-queue
            hoard/stack
            hoard/linked-stack

@@ -10,34 +10,34 @@
       (class %linked-stack
          (length (default 0))
          (items (default '())))
-      (inline linked-stack? obj)
-      (inline make-linked-stack)
-      (inline linked-stack-push! stk::%linked-stack val)
-      (inline linked-stack-pop! stk::%linked-stack)
-      (inline linked-stack-top stk::%linked-stack)
-      (inline linked-stack-empty? stk::%linked-stack)
-      (inline linked-stack #!rest objs)
-      (inline linked-stack-length stk::%linked-stack)
-      (inline linked-stack-copy stk::%linked-stack)))
+      ( linked-stack? obj)
+      ( make-linked-stack)
+      ( linked-stack-push! stk::%linked-stack val)
+      ( linked-stack-pop! stk::%linked-stack)
+      ( linked-stack-top stk::%linked-stack)
+      ( linked-stack-empty? stk::%linked-stack)
+      ( linked-stack #!rest objs)
+      ( linked-stack-length stk::%linked-stack)
+      ( linked-stack-copy stk::%linked-stack)))
 
-(define-inline (linked-stack? obj)
+(define (linked-stack? obj)
    (isa? obj %linked-stack))
 
-(define-inline (make-linked-stack)
+(define (make-linked-stack)
    (instantiate::%linked-stack))
 
-(define-inline (linked-stack #!rest objs)
+(define (linked-stack #!rest objs)
    (instantiate::%linked-stack (items objs)
                                (length (length objs))))
 
-(define-inline (linked-stack-empty? stk::%linked-stack)
+(define (linked-stack-empty? stk::%linked-stack)
    (= (-> stk length) 0))
 
-(define-inline (linked-stack-push! stk::%linked-stack val)
+(define (linked-stack-push! stk::%linked-stack val)
    (set! (-> stk items) (cons val (-> stk items)))
    (set! (-> stk length) (+ (-> stk length) 1)))
 
-(define-inline (linked-stack-pop! stk::%linked-stack)
+(define (linked-stack-pop! stk::%linked-stack)
    (if (not (linked-stack-empty? stk))
        (let ((res (car (-> stk items))))
           (set! (-> stk items) (cdr (-> stk items)))
@@ -47,17 +47,17 @@
           :msg "cannot pop an item off of an empty stack"
           :obj stk)))
 
-(define-inline (linked-stack-top stk::%linked-stack)
+(define (linked-stack-top stk::%linked-stack)
    (if (not (linked-stack-empty? stk))
        (car (-> stk items))
        (raise-invalid-state-exception :proc "linked-stack-top"
           :msg "cannot get the top item of an empty stack"
           :obj stk)))
 
-(define-inline (linked-stack-length stk::%linked-stack)
+(define (linked-stack-length stk::%linked-stack)
    (-> stk length))
 
-(define-inline (linked-stack-copy stk::%linked-stack)
+(define (linked-stack-copy stk::%linked-stack)
    (duplicate::%linked-stack stk))
 
 ;;;; implementation of generic stack protocol

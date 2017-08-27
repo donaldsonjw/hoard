@@ -32,7 +32,7 @@
          (let ((res '()))
             (dictionary-enumerable-for-each (lambda (k v)
                                                (set! res (cons (list k v) res))) str)
-            (assert-equal? res '( (2 #\c) (1 #\b) (0 #\a))))))
+            (assert-equal? res '((2 #\c) (1 #\b) (0 #\a))))))
 
    (test "dictionary-enumerable-map works on hashtables"
       (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))

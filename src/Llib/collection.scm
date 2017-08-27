@@ -80,12 +80,12 @@
           (raise-invalid-argument-exception proc: "collection-size"
                                             args: (list obj)))))
 
-(define-inline (vector-contains? vec itm)
+(define (vector-contains? vec itm)
      (do ((i 0 (+ i 1)))
          ((or (= i (vector-length vec)) (equal? (vector-ref vec i) itm)) (not (= i (vector-length vec))))))
 
 
-(define-inline (coll-string-contains? str itm)
+(define (coll-string-contains? str itm)
   (do ((i 0 (+ i 1)))
       ((or (= i (string-length str)) (equal? (string-ref str i) itm)) (not (= i (string-length str))))))
 
@@ -135,7 +135,7 @@
          (else (raise-invalid-argument-exception proc: "collection->list"
                   args: (list obj)))))
 
-(define-inline (string->vector str)
+(define (string->vector str)
    (let ((res (make-vector (string-length str))))
       (do ((i 0 (+ i 1)))
           ((= i (string-length str)) res)
@@ -172,7 +172,7 @@
                                                  args: (list obj)))))
 
 
-(define-inline (create-list #!key size fill vals)
+(define (create-list #!key size fill vals)
    (if size
        (let ((res (make-list size fill)))
           (when (pair? vals)
@@ -186,7 +186,7 @@
           res)
        (list-copy vals)))
 
-(define-inline (create-vector #!key size fill vals)
+(define (create-vector #!key size fill vals)
    (if size
        (let ((res (make-vector size fill)))
           (when (pair? vals)
@@ -200,7 +200,7 @@
           res)
        (list->vector vals)))
 
-(define-inline (create-string #!key size fill vals)
+(define (create-string #!key size fill vals)
    (if size
        (let ((res (make-string size (if (eq? fill #unspecified) #\space fill))))
           (when (pair? vals)

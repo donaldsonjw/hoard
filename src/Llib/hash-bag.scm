@@ -18,39 +18,39 @@
       (class %hash-bag-enumerator
          (curr (default #unspecified))
          enumer)
-      (inline make-hash-bag #!key (comparator #f))
-      (inline hash-bag #!key (comparator #f) #!rest items)
-      (inline hash-bag-insert! hash-bag::%hash-bag item)
-      (inline hash-bag-delete! hash-bag::%hash-bag item)
-      (inline hash-bag-contains? hash-bag::%hash-bag item)
-      (inline hash-bag-count hash-bag::%hash-bag item)
-      (inline hash-bag-count-set! hash-bag::%hash-bag item count)
-      (inline hash-bag? obj)
+      ( make-hash-bag #!key (comparator #f))
+      ( hash-bag #!key (comparator #f) #!rest items)
+      ( hash-bag-insert! hash-bag::%hash-bag item)
+      ( hash-bag-delete! hash-bag::%hash-bag item)
+      ( hash-bag-contains? hash-bag::%hash-bag item)
+      ( hash-bag-count hash-bag::%hash-bag item)
+      ( hash-bag-count-set! hash-bag::%hash-bag item count)
+      ( hash-bag? obj)
       (hash-bag-length hash-bag::%hash-bag)
-      (inline hash-bag-empty? hash-bag::%hash-bag)
+      ( hash-bag-empty? hash-bag::%hash-bag)
       (make-hash-bag-enumerator bag::%hash-bag)
-      (inline hash-bag-copy hash-bag::%hash-bag)))
+      ( hash-bag-copy hash-bag::%hash-bag)))
 
-(define-inline (hash-bag? obj)
+(define (hash-bag? obj)
    (isa? obj %hash-bag))
 
-(define-inline (make-hash-bag #!key (comparator #f))
+(define (make-hash-bag #!key (comparator #f))
    (instantiate::%hash-bag
       (hash (hashtable :comparator comparator))))
 
 
-(define-inline (hash-bag #!key (comparator #f) #!rest items)
+(define (hash-bag #!key (comparator #f) #!rest items)
    (let ((bag (make-hash-bag :comparator comparator)))
       (for-each (lambda (item)
                    (hash-bag-insert! bag item))
          items)
       bag))
 
-(define-inline (hash-bag-insert! hash-bag::%hash-bag item)
+(define (hash-bag-insert! hash-bag::%hash-bag item)
    (hashtable-update! (-> hash-bag hash) item (lambda (x) (+ x 1)) 1))
 
 
-(define-inline (hash-bag-delete! hash-bag::%hash-bag item)
+(define (hash-bag-delete! hash-bag::%hash-bag item)
    (let ((res (hashtable-get (-> hash-bag hash) item)))
       (if (and res (> res 1))
           (hashtable-update! (-> hash-bag hash) item (lambda (x) (- x 1)) 0)
@@ -59,24 +59,24 @@
 (define (hash-bag-length hash-bag::%hash-bag)
    (enumerable-fold + 0 (-> hash-bag hash)))
 
-(define-inline (hash-bag-contains? hash-bag::%hash-bag item)
+(define (hash-bag-contains? hash-bag::%hash-bag item)
    (hashtable-contains? (-> hash-bag hash) item))
 
 
-(define-inline (hash-bag-count hash-bag::%hash-bag item)
+(define (hash-bag-count hash-bag::%hash-bag item)
    (let ((res (hashtable-get (-> hash-bag hash) item)))
       (if res res 0)))
 
 
-(define-inline (hash-bag-count-set! hash-bag::%hash-bag item count)
+(define (hash-bag-count-set! hash-bag::%hash-bag item count)
    (if (<= count 0)
        (hashtable-remove! (-> hash-bag hash) item)
        (hashtable-put! (-> hash-bag hash) item count)))
 
-(define-inline (hash-bag-empty? hash-bag::%hash-bag)
+(define (hash-bag-empty? hash-bag::%hash-bag)
    (= (hashtable-size (-> hash-bag hash)) 0))
 
-(define-inline (hash-bag-copy hash-bag::%hash-bag)
+(define (hash-bag-copy hash-bag::%hash-bag)
    (duplicate::%hash-bag hash-bag (hash (hashtable-copy (-> hash-bag hash)))))
 
 ;;;; implementation of bag protocol

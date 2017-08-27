@@ -33,7 +33,7 @@
       (make-comparator #!key type? equal? lessthan? hash)))
 
 ;;;; utility functions
-(define-inline (compose f g)
+(define (compose f g)
    (lambda (x) (f (g x))))
 
 ;;;; comparator protocol

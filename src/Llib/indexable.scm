@@ -7,12 +7,12 @@
            (generic collection-ref obj key #!optional (default +collection-unspecified+))
            (generic collection-set! obj key val)
            +collection-unspecified+
-           (inline specified? v)
+           ( specified? v)
            (collection-slice coll keys)))
 
 (define +collection-unspecified+ (vector #unspecified))
 
-(define-inline (specified? v)
+(define (specified? v)
    (not (eq? v +collection-unspecified+)))
 
 ;;; indexable collections
@@ -24,7 +24,7 @@
 
 
 
-(define-inline (make-ref-procedure ref len)
+(define (make-ref-procedure ref len)
    (lambda (obj index #!key default)
       (if (and (integer? index) (<= index (len obj)))
           (ref obj index)
@@ -56,7 +56,7 @@
 
 
 
-(define-inline (make-set!-procedure set len)
+(define (make-set!-procedure set len)
    (lambda (obj index val)
       (if (and (integer? index) (<= index (len obj)))
           (set obj index val)

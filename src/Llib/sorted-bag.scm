@@ -19,24 +19,24 @@
       (class %sorted-bag-enumerator
          (curr (default #unspecified))
          enumer)
-      (inline sorted-bag? obj)
-      (inline make-sorted-bag #!key comparator)
-      (inline sorted-bag #!key comparator #!rest items)
-      (inline sorted-bag-delete! bag::%sorted-bag item)
-      (inline sorted-bag-insert! bag::%sorted-bag item)
+      ( sorted-bag? obj)
+      ( make-sorted-bag #!key comparator)
+      ( sorted-bag #!key comparator #!rest items)
+      ( sorted-bag-delete! bag::%sorted-bag item)
+      ( sorted-bag-insert! bag::%sorted-bag item)
       (sorted-bag-length bag::%sorted-bag)
-      (inline sorted-bag-contains? bag::%sorted-bag item)
-      (inline sorted-bag-empty? bag::%sorted-bag)
-      (inline sorted-bag-count bag::%sorted-bag item)
-      (inline sorted-bag-count-set! bag::%sorted-bag item count)
+      ( sorted-bag-contains? bag::%sorted-bag item)
+      ( sorted-bag-empty? bag::%sorted-bag)
+      ( sorted-bag-count bag::%sorted-bag item)
+      ( sorted-bag-count-set! bag::%sorted-bag item count)
       (make-sorted-bag-enumerator bag::%sorted-bag)
-      (inline sorted-bag-copy bag::%sorted-bag)))
+      ( sorted-bag-copy bag::%sorted-bag)))
 
 
-(define-inline (sorted-bag? obj)
+(define (sorted-bag? obj)
    (isa? obj %sorted-bag))
 
-(define-inline (make-sorted-bag #!key comparator)
+(define (make-sorted-bag #!key comparator)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "make-sorted-bag"
          :args comparator
@@ -44,7 +44,7 @@
    (instantiate::%sorted-bag (comparator (make-association-comparator comparator))))
 
 
-(define-inline (sorted-bag #!key comparator #!rest items)
+(define (sorted-bag #!key comparator #!rest items)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "sorted-bag"
          :args comparator
@@ -53,14 +53,14 @@
       (for-each (lambda (x) (sorted-bag-insert! bag x)) items)
       bag))
 
-(define-inline (sorted-bag-copy bag::%sorted-bag)
+(define (sorted-bag-copy bag::%sorted-bag)
    (duplicate::%sorted-bag bag (root (red-black-node-copy (-> bag root)))))
 
-(define-inline (sorted-bag-insert! bag::%sorted-bag item)
+(define (sorted-bag-insert! bag::%sorted-bag item)
    (sorted-dictionary-update! bag item 1 (lambda (x) (+ x 1))))
 
 
-(define-inline (sorted-bag-delete! bag::%sorted-bag item)
+(define (sorted-bag-delete! bag::%sorted-bag item)
    (let ((res (sorted-dictionary-get bag item)))
       (if (and res (> res 1))
           (sorted-dictionary-update! bag item 0 (lambda (x) (- x 1)))
@@ -69,19 +69,19 @@
 (define (sorted-bag-length bag::%sorted-bag)
    (enumerable-fold (lambda (s x) (+ s 1)) 0 bag))
    
-(define-inline (sorted-bag-contains? bag::%sorted-bag item)
+(define (sorted-bag-contains? bag::%sorted-bag item)
    (sorted-dictionary-contains? bag item))
 
-(define-inline (sorted-bag-empty? bag::%sorted-bag)
+(define (sorted-bag-empty? bag::%sorted-bag)
    (sorted-dictionary-empty? bag))
 
 
 
-(define-inline (sorted-bag-count bag::%sorted-bag item)
+(define (sorted-bag-count bag::%sorted-bag item)
    (let ((res (sorted-dictionary-get bag item)))
       (if res res 0)))
 
-(define-inline (sorted-bag-count-set! bag::%sorted-bag item count)
+(define (sorted-bag-count-set! bag::%sorted-bag item count)
    (if (<= count 0)
        (sorted-dictionary-remove! bag item)
        (sorted-dictionary-put! bag item count)))

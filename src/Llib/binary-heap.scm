@@ -14,24 +14,24 @@
            (class %binary-heap-enumerator
               heap::%binary-heap
               (curr-idx (default #unspecified)))
-           (inline binary-heap? obj)
-           (inline make-binary-heap #!key capacity comparator)
-           (inline binary-heap #!key capacity comparator #!rest vals)
-           (inline binary-heap-enqueue! heap::%binary-heap itm)
-           (inline binary-heap-dequeue! heap::%binary-heap)
-           (inline binary-heap-length heap::%binary-heap)
-           (inline binary-heap-first heap::%binary-heap)
-           (inline binary-heap-capacity heap::%binary-heap)
-           (inline binary-heap-empty? heap::%binary-heap)
-           (inline binary-heap-bubble-down! vec start fin comparator)
-           (inline binary-heap-heapify! vec len comparator)
-           (inline binary-heap-copy heap::%binary-heap)))
+           ( binary-heap? obj)
+           ( make-binary-heap #!key capacity comparator)
+           ( binary-heap #!key capacity comparator #!rest vals)
+           ( binary-heap-enqueue! heap::%binary-heap itm)
+           ( binary-heap-dequeue! heap::%binary-heap)
+           ( binary-heap-length heap::%binary-heap)
+           ( binary-heap-first heap::%binary-heap)
+           ( binary-heap-capacity heap::%binary-heap)
+           ( binary-heap-empty? heap::%binary-heap)
+           ( binary-heap-bubble-down! vec start fin comparator)
+           ( binary-heap-heapify! vec len comparator)
+           ( binary-heap-copy heap::%binary-heap)))
 
 
-(define-inline (binary-heap? obj)
+(define (binary-heap? obj)
    (isa? obj %binary-heap))
 
-(define-inline (make-binary-heap #!key capacity comparator)
+(define (make-binary-heap #!key capacity comparator)
    (when (or (not (integer? capacity))
              (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "make-binary-heap"
@@ -40,7 +40,7 @@
    (instantiate::%binary-heap (store (make-vector capacity))
                               (comparator comparator)))
 
-(define-inline (binary-heap #!key capacity comparator #!rest vals)
+(define (binary-heap #!key capacity comparator #!rest vals)
    (when (or (not (integer? capacity))
              (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "binary-heap"
@@ -56,22 +56,22 @@
       (binary-heap-heapify! (-> res store) (length vals) comparator)
       res))
 
-(define-inline (binary-heap-copy heap::%binary-heap)
+(define (binary-heap-copy heap::%binary-heap)
   (duplicate::%binary-heap
    heap (store (vector-copy (-> heap store) 0 (vector-length (-> heap store)))))) 
 
-(define-inline (binary-heap-heapify! vec len comparator)
+(define (binary-heap-heapify! vec len comparator)
    (do ((i (/fx len 2) (- i 1)))
        ((< i 0))
        (binary-heap-bubble-down! vec i len comparator))) 
    
-(define-inline (binary-heap-empty? heap::%binary-heap)
+(define (binary-heap-empty? heap::%binary-heap)
    (= 0 (-> heap idx)))
 
-(define-inline (binary-heap-length heap::%binary-heap)
+(define (binary-heap-length heap::%binary-heap)
    (-> heap idx))
 
-(define-inline (binary-heap-enqueue! heap::%binary-heap itm)
+(define (binary-heap-enqueue! heap::%binary-heap itm)
    (define (parent-idx idx)
       (/fx (- idx 1) 2))
    (define (bubble-up! vec idx comparator)
@@ -96,7 +96,7 @@
           (set! (-> heap idx) (+ (-> heap idx) 1)))))
 
 
-(define-inline (binary-heap-bubble-down! vec start fin comparator)
+(define (binary-heap-bubble-down! vec start fin comparator)
    (define (left-child-idx idx)
       (+ (* 2 idx) 1))
    (define (right-child-idx idx)
@@ -129,7 +129,7 @@
                       (left-child-idx ci)
                       (right-child-idx ci)))))))
 
-(define-inline (binary-heap-dequeue! heap::%binary-heap)
+(define (binary-heap-dequeue! heap::%binary-heap)
    (if (= (-> heap idx) 0)
        (raise-invalid-state-exception :proc "binary-heap-dequeue!"
           :msg "cannot dequeue an item from an empty heap"
@@ -141,14 +141,14 @@
           (binary-heap-bubble-down! (-> heap store) 0 (-> heap idx) (-> heap comparator))
           res)))
 
-(define-inline (binary-heap-first heap::%binary-heap)
+(define (binary-heap-first heap::%binary-heap)
    (if (= (-> heap idx) 0)
        (raise-invalid-state-exception :proc "binary-heap-first"
           :msg "cannot obtain the first item of an empty heap"
           :obj heap)
        (vector-ref (-> heap store) 0)))
 
-(define-inline (binary-heap-capacity heap::%binary-heap)
+(define (binary-heap-capacity heap::%binary-heap)
    (vector-length (-> heap store)))
 
 ;;;; priority-queue protocol implementation

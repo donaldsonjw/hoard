@@ -6,35 +6,35 @@
          value)
       (class %association-comparator
          key-comparator)
-      (inline => key value)
-      (inline =>key assoc::%association)
-      (inline =>value assoc::%association)
-      (inline pair->association p::pair)
-      (inline association? obj)
+      ( => key value)
+      ( =>key assoc::%association)
+      ( =>value assoc::%association)
+      ( pair->association p::pair)
+      ( association? obj)
       (make-association-comparator comp)
-      (inline =>key! assoc::%association key)
-      (inline =>value! assoc::%association val)))
+      ( =>key! assoc::%association key)
+      ( =>value! assoc::%association val)))
 
-(define-inline (association? obj)
+(define (association? obj)
    (isa? obj %association))
 
-(define-inline (pair->association p::pair)
+(define (pair->association p::pair)
    (=> (car p) (cdr p)))
 
-(define-inline (=> key value)
+(define (=> key value)
    (instantiate::%association (key key)
                               (value value)))
 
-(define-inline (=>key assoc::%association)
+(define (=>key assoc::%association)
    (-> assoc key))
 
-(define-inline (=>value assoc::%association)
+(define (=>value assoc::%association)
    (-> assoc value))
 
-(define-inline (=>key! assoc::%association key)
+(define (=>key! assoc::%association key)
    (set! (-> assoc key) key))
 
-(define-inline (=>value! assoc::%association val)
+(define (=>value! assoc::%association val)
    (set! (-> assoc value) val))
 
 ;;; association comparator implementation

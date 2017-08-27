@@ -33,7 +33,7 @@
       (sorted-dictionary-length dict::%sorted-dictionary)))
 
 ;;; utility procedures for sorted-dictionary implementation
-(define-inline (list-of-associations? loa)
+(define (list-of-associations? loa)
    (and (list? loa)
         (every association? loa)))
 

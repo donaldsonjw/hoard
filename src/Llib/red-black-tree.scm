@@ -26,7 +26,7 @@
               (started (default #f))
               curr::%red-black-node
               nodes)
-           (inline red-black-tree? obj)
+           ( red-black-tree? obj)
            +red-black-node-nil+
            (make-red-black-tree #!key comparator)
            (red-black-tree-size tree::%red-black-tree)
@@ -43,7 +43,7 @@
            (red-black-tree-delete-max! tree::%red-black-tree)
            (make-red-black-tree-in-order-enumerator tree::%red-black-tree)
            (red-black-tree-copy tree::%red-black-tree)
-           (inline red-black-node-copy node::%red-black-node)))
+           ( red-black-node-copy node::%red-black-node)))
 
 (define +red-black-node-nil+ (class-nil %red-black-node))
 
@@ -61,7 +61,7 @@
 (define (red-black-tree-copy tree::%red-black-tree)
    (duplicate::%red-black-tree tree (root (red-black-node-copy (-> tree root)))))
 
-(define-inline (red-black-tree? obj)
+(define (red-black-tree? obj)
    (isa? obj %red-black-tree))
 
 (define (red-black-tree-size tree::%red-black-tree)
@@ -177,21 +177,21 @@
 
 ;;;; node utility methods
 
-(define-inline (red-black-node-copy node::%red-black-node)
+(define (red-black-node-copy node::%red-black-node)
    (if (not (eq? node +red-black-node-nil+))
        (duplicate::%red-black-node node (left (red-black-node-copy (-> node left)))
                                    (right (red-black-node-copy (-> node right))))
        node))
 
-(define-inline (node-red?-set! node::%red-black-node val)
+(define (node-red?-set! node::%red-black-node val)
    (set! (-> node red?) val))
 
-(define-inline (node-size node::%red-black-node)
+(define (node-size node::%red-black-node)
    (if (eq? node +red-black-node-nil+)
        0
        (-> node size)))
 
-(define-inline (node-contains? node::%red-black-node item comparator)
+(define (node-contains? node::%red-black-node item comparator)
    (if (eq? node +red-black-node-nil+)
        #f
        (cond ((comparator<? comparator  item (-> node item))
@@ -201,18 +201,18 @@
              (else
               #t))))
 
-(define-inline (node-find-min node::%red-black-node)
+(define (node-find-min node::%red-black-node)
    (if (not (eq? (-> node left) +red-black-node-nil+))
        (node-find-min (-> node left))
        (-> node item)))
 
-(define-inline (node-find-max node::%red-black-node)
+(define (node-find-max node::%red-black-node)
    (if (not (eq? (-> node right) +red-black-node-nil+))
        (node-find-max (-> node right))
        (-> node item)))
 
 
-(define-inline (node-delete! node::%red-black-node item comparator)
+(define (node-delete! node::%red-black-node item comparator)
    (define (node=? a b)
       (comparator=? comparator a b))
    (bind-exit (return)
@@ -237,7 +237,7 @@
                  (set! (-> node right) (node-delete! (-> node right) item comparator)))))
       (node-balance! node)))
              
-(define-inline (node-delete-min! node::%red-black-node)
+(define (node-delete-min! node::%red-black-node)
    (if (eq? (-> node left) +red-black-node-nil+)
        +red-black-node-nil+
        (begin
@@ -247,7 +247,7 @@
           (set! (-> node left) (node-delete-min! (-> node left)))
           (node-balance! node))))
 
-(define-inline (node-delete-max! node::%red-black-node)
+(define (node-delete-max! node::%red-black-node)
    (when (-> node left red?)
       (set! node (node-rotate-right! node)))
    (if (eq? (-> node right) +red-black-node-nil+)
@@ -259,13 +259,13 @@
           (set! (-> node right) (node-delete-max! (-> node right)))
           (node-balance! node))))
 
-(define-inline (node-min node::%red-black-node)
+(define (node-min node::%red-black-node)
    (if (eq? (-> node left) +red-black-node-nil+)
        node
        (node-min (-> node left))))
    
                  
-(define-inline (node-move-red-right! node::%red-black-node)
+(define (node-move-red-right! node::%red-black-node)
    (node-flip-colors! node)
    (when (-> node left left red?)
       (set! node (node-rotate-right! node))
@@ -273,7 +273,7 @@
    node)
 
 
-(define-inline (node-move-red-left! node::%red-black-node)
+(define (node-move-red-left! node::%red-black-node)
    (node-flip-colors! node)
    (when (-> node right left red?)
       (set! (-> node right) (node-rotate-right! (-> node right)))
@@ -282,7 +282,7 @@
    node)
 
 
-(define-inline (node-balance! node::%red-black-node)
+(define (node-balance! node::%red-black-node)
    (when (and (-> node right red?)
               (not (-> node left red?)))
       (set! node (node-rotate-left! node)))
@@ -302,7 +302,7 @@
  ; 0   3    =>    1   4
  ;    / \        / \   
  ;   2   4      0   2  
-(define-inline (node-rotate-left! node::%red-black-node)
+(define (node-rotate-left! node::%red-black-node)
    (let ((n::%red-black-node (-> node right)))
       (set! (-> node right) (-> n left))
       (set! (-> n left) node)
@@ -318,7 +318,7 @@
 ;   1   4  =>  0   3  
 ;  / \            / \ 
 ; 0   2          2   4                  
-(define-inline (node-rotate-right! node::%red-black-node)
+(define (node-rotate-right! node::%red-black-node)
    (let ((n::%red-black-node (-> node left)))
       (set! (-> node left) (-> n right))
       (set! (-> n right) node)
@@ -329,12 +329,12 @@
       (set! (-> node red?) #t)
       n))
 
-(define-inline (node-flip-colors! node::%red-black-node)
+(define (node-flip-colors! node::%red-black-node)
    (set! (-> node red?)  (not (-> node red?)))
    (set! (-> node left red?) (not (-> node left red?)))
    (set! (-> node right red?) (not (-> node right red?))))
           
-(define-inline (node-insert! node::%red-black-node item comparator #!key exists-fun)
+(define (node-insert! node::%red-black-node item comparator #!key exists-fun)
    (if (eq? node +red-black-node-nil+)
        (instantiate::%red-black-node 
           (item item)
@@ -349,7 +349,7 @@
           (node-balance! node))))
 
 
-(define-inline (node-balanced? node::%red-black-node black-height)
+(define (node-balanced? node::%red-black-node black-height)
    (if (eq? node +red-black-node-nil+)
        (= black-height 0)
        (let ((dec (if (-> node red?) 0 1)))
@@ -381,7 +381,7 @@
    #t)
 
 
-(define-inline (push-left-spine! node::%red-black-node stack)
+(define (push-left-spine! node::%red-black-node stack)
    (let loop ((curr::%red-black-node node))
       (when (not (eq? curr +red-black-node-nil+))
          (stack-push! stack curr)

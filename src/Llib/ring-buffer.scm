@@ -16,25 +16,25 @@
       (class %ring-buffer-enumerator
               (curr-idx (default #unspecified))
               rb::%ring-buffer)
-      (inline make-ring-buffer #!key capacity)
-      (inline ring-buffer #!key capacity #!rest objs)
-      (inline ring-buffer-length rg::%ring-buffer)
-      (inline ring-buffer-capacity rb::%ring-buffer)
-      (inline ring-buffer-front rb::%ring-buffer)
-      (inline ring-buffer-back rb::%ring-buffer)
-      (inline ring-buffer-pop-front! rb::%ring-buffer)
-      (inline ring-buffer-pop-back! rb::%ring-buffer)
-      (inline ring-buffer-empty? rb::%ring-buffer)
-      (inline ring-buffer-push-front! rb::%ring-buffer item)
-      (inline ring-buffer-push-back! rb::%ring-buffer item)
-      (inline ring-buffer? obj)
-      (inline ring-buffer-copy rb::%ring-buffer)))
+      (make-ring-buffer #!key capacity)
+      (ring-buffer #!key capacity #!rest objs)
+      (ring-buffer-length rg::%ring-buffer)
+      (ring-buffer-capacity rb::%ring-buffer)
+      (ring-buffer-front rb::%ring-buffer)
+      (ring-buffer-back rb::%ring-buffer)
+      (ring-buffer-pop-front! rb::%ring-buffer)
+      (ring-buffer-pop-back! rb::%ring-buffer)
+      (ring-buffer-empty? rb::%ring-buffer)
+      (ring-buffer-push-front! rb::%ring-buffer item)
+      (ring-buffer-push-back! rb::%ring-buffer item)
+      (ring-buffer? obj)
+      (ring-buffer-copy rb::%ring-buffer)))
 
 
-(define-inline (ring-buffer? obj)
+(define (ring-buffer? obj)
    (isa? obj %ring-buffer))
 
-(define-inline (make-ring-buffer #!key capacity)
+(define (make-ring-buffer #!key capacity)
    (if (and (integer? capacity)
             (> capacity 0))
        (instantiate::%ring-buffer (length 0)
@@ -43,7 +43,7 @@
           :msg "capacity must be a positive number"
           :args capacity)))
 
-(define-inline (ring-buffer #!key capacity #!rest objs)
+(define (ring-buffer #!key capacity #!rest objs)
    (cond  ((or (not (number? capacity))
                (<= capacity 0))
            (raise-invalid-argument-exception :proc "ring-buffer"
@@ -57,16 +57,16 @@
                  rb))))
 
 
-(define-inline (ring-buffer-capacity rb::%ring-buffer)
+(define (ring-buffer-capacity rb::%ring-buffer)
    (vector-length (-> rb store)))
 
-(define-inline (ring-buffer-length rb::%ring-buffer)
+(define (ring-buffer-length rb::%ring-buffer)
    (-> rb length))
 
-(define-inline (ring-buffer-empty? rb::%ring-buffer)
+(define (ring-buffer-empty? rb::%ring-buffer)
    (= (-> rb length) 0))
 
-(define-inline (ring-buffer-push-back! rb::%ring-buffer item)
+(define (ring-buffer-push-back! rb::%ring-buffer item)
    (define (next-index curr capacity)
       (modulo (+ curr 1) capacity))
    (if (= (ring-buffer-length rb) (ring-buffer-capacity rb))
@@ -78,7 +78,7 @@
           (set! (-> rb length) (+ (-> rb length) 1))
           (set! (-> rb back) (next-index (-> rb back) (ring-buffer-capacity rb))))))
 
-(define-inline (ring-buffer-push-front! rb::%ring-buffer item)
+(define (ring-buffer-push-front! rb::%ring-buffer item)
    (define (prev-index curr capacity)
       (modulo (- curr 1) capacity))
    (if (= (ring-buffer-length rb) (ring-buffer-capacity rb))
@@ -90,13 +90,13 @@
           (set! (-> rb length) (+ (-> rb length) 1))
           (set! (-> rb front) idx))))
 
-(define-inline (ring-buffer-front rb::%ring-buffer)
+(define (ring-buffer-front rb::%ring-buffer)
    (if (ring-buffer-empty? rb)
        (raise-invalid-state-exception :proc "ring-buffer-front"
           :msg "cannot obtain the front item from an empty queue")
        (vector-ref (-> rb store) (-> rb front))))
 
-(define-inline (ring-buffer-back rb::%ring-buffer)
+(define (ring-buffer-back rb::%ring-buffer)
    (define (prev-index curr capacity)
       (modulo (- curr 1) capacity))
    (if (ring-buffer-empty? rb)
@@ -105,7 +105,7 @@
        (vector-ref (-> rb store) (prev-index (-> rb back) (ring-buffer-capacity rb)))))
 
 
-(define-inline (ring-buffer-pop-front! rb::%ring-buffer)
+(define (ring-buffer-pop-front! rb::%ring-buffer)
    (define (next-index curr capacity)
       (modulo (+ curr 1) capacity))
    (if (ring-buffer-empty? rb)
@@ -117,7 +117,7 @@
           res)))
 
 
-(define-inline (ring-buffer-pop-back! rb::%ring-buffer)
+(define (ring-buffer-pop-back! rb::%ring-buffer)
    (define (prev-index curr capacity)
       (modulo (- curr 1) capacity))
    (if (ring-buffer-empty? rb)
@@ -128,7 +128,7 @@
           (set! (-> rb back) (prev-index (-> rb back) (ring-buffer-capacity rb)))
           res)))
 
-(define-inline (ring-buffer-copy rb::%ring-buffer)
+(define (ring-buffer-copy rb::%ring-buffer)
    (instantiate::%ring-buffer (length (-> rb length))
                               (store (vector-copy (-> rb store)
                                         0 (vector-length (-> rb store))))

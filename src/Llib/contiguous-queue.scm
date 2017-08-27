@@ -11,22 +11,22 @@
            (class %contiguous-queue-enumerator
               (curr-idx (default #unspecified))
               q::%contiguous-queue)
-           (inline make-contiguous-queue #!key capacity)
-           (inline contiguous-queue #!key capacity #!rest objs)
-           (inline contiguous-queue-empty? q::%contiguous-queue)
-           (inline contiguous-queue-length q::%contiguous-queue)
-           (inline contiguous-queue-enqueue! q::%contiguous-queue item)
-           (inline contiguous-queue? obj)
-           (inline contiguous-queue-capacity q::%contiguous-queue)
-           (inline contiguous-queue-dequeue! q::%contiguous-queue)
-           (inline contiguous-queue-first q::%contiguous-queue)
-           (inline contiguous-queue-copy q::%contiguous-queue)))
+           ( make-contiguous-queue #!key capacity)
+           ( contiguous-queue #!key capacity #!rest objs)
+           ( contiguous-queue-empty? q::%contiguous-queue)
+           ( contiguous-queue-length q::%contiguous-queue)
+           ( contiguous-queue-enqueue! q::%contiguous-queue item)
+           ( contiguous-queue? obj)
+           ( contiguous-queue-capacity q::%contiguous-queue)
+           ( contiguous-queue-dequeue! q::%contiguous-queue)
+           ( contiguous-queue-first q::%contiguous-queue)
+           ( contiguous-queue-copy q::%contiguous-queue)))
 
 
-(define-inline (contiguous-queue? obj)
+(define (contiguous-queue? obj)
    (isa? obj %contiguous-queue))
 
-(define-inline (make-contiguous-queue #!key capacity)
+(define (make-contiguous-queue #!key capacity)
    (if (and (integer? capacity)
             (> capacity 0))
        (instantiate::%contiguous-queue (length 0)
@@ -35,10 +35,10 @@
           :msg "capacity must be a positive number"
           :args capacity)))
 
-(define-inline (contiguous-queue-capacity q::%contiguous-queue)
+(define (contiguous-queue-capacity q::%contiguous-queue)
    (ring-buffer-capacity q))
 
-(define-inline (contiguous-queue #!key capacity #!rest objs)
+(define (contiguous-queue #!key capacity #!rest objs)
    (cond  ((or (not (number? capacity))
                (<= capacity 0))
            (raise-invalid-argument-exception :proc "contiguous-queue"
@@ -51,23 +51,23 @@
                  (for-each (lambda (v) (ring-buffer-push-back! rb v)) objs)
                  rb))))
 
-(define-inline (contiguous-queue-empty? q::%contiguous-queue)
+(define (contiguous-queue-empty? q::%contiguous-queue)
    (ring-buffer-empty? q))
 
-(define-inline (contiguous-queue-length q::%contiguous-queue)
+(define (contiguous-queue-length q::%contiguous-queue)
    (ring-buffer-length q)) 
 
-(define-inline (contiguous-queue-enqueue! q::%contiguous-queue item)
+(define (contiguous-queue-enqueue! q::%contiguous-queue item)
    (ring-buffer-push-back! q item))
 
-(define-inline (contiguous-queue-dequeue! q::%contiguous-queue)
+(define (contiguous-queue-dequeue! q::%contiguous-queue)
    (ring-buffer-pop-front! q))
 
 
-(define-inline (contiguous-queue-first q::%contiguous-queue)
+(define (contiguous-queue-first q::%contiguous-queue)
    (ring-buffer-front q))
 
-(define-inline (contiguous-queue-copy q::%contiguous-queue)
+(define (contiguous-queue-copy q::%contiguous-queue)
    (instantiate::%contiguous-queue (length (-> q length))
                                    (store (vector-copy (-> q store)
                                              0 (vector-length (-> q store))))

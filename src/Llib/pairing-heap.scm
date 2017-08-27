@@ -18,28 +18,28 @@
       (class %pairing-heap-enumerator
          (started (default #f))
          nodes::pair-nil)
-      (inline make-pairing-heap #!key comparator)
-      (inline pairing-heap #!key comparator #!rest vals)
-      (inline pairing-heap? obj)
-      (inline pairing-heap-empty? heap::%pairing-heap)
-      (inline pairing-heap-enqueue! heap::%pairing-heap itm)
-      (inline singleton-pairing-heap itm comparator)
-      (inline pairing-heap-merge! heap1::%pairing-heap heap2::%pairing-heap)
-      (inline pairing-heap-dequeue! heap::%pairing-heap)
-      (inline pairing-node-dequeue! node::%pairing-node comparator)
-      (inline pairing-node-merge-pairs! subheaps comparator)
-      (inline pairing-node-enqueue! node::%pairing-node itm comparator)
-      (inline pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
-      (inline pairing-heap-first heap::%pairing-heap)
-      (inline pairing-heap-length heap::%pairing-heap)
-      (inline pairing-heap-copy heap::%pairing-heap)
-      (inline pairing-node-copy node::%pairing-node)))
+      ( make-pairing-heap #!key comparator)
+      ( pairing-heap #!key comparator #!rest vals)
+      ( pairing-heap? obj)
+      ( pairing-heap-empty? heap::%pairing-heap)
+      ( pairing-heap-enqueue! heap::%pairing-heap itm)
+      ( singleton-pairing-heap itm comparator)
+      ( pairing-heap-merge! heap1::%pairing-heap heap2::%pairing-heap)
+      ( pairing-heap-dequeue! heap::%pairing-heap)
+      ( pairing-node-dequeue! node::%pairing-node comparator)
+      ( pairing-node-merge-pairs! subheaps comparator)
+      ( pairing-node-enqueue! node::%pairing-node itm comparator)
+      ( pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
+      ( pairing-heap-first heap::%pairing-heap)
+      ( pairing-heap-length heap::%pairing-heap)
+      ( pairing-heap-copy heap::%pairing-heap)
+      ( pairing-node-copy node::%pairing-node)))
 
 
-(define-inline (pairing-heap? obj)
+(define (pairing-heap? obj)
    (isa? obj %pairing-heap))
 
-(define-inline (make-pairing-heap #!key comparator)
+(define (make-pairing-heap #!key comparator)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "make-pairing-heap"
          :msg "comparator must be a comparator object"
@@ -47,7 +47,7 @@
    (instantiate::%pairing-heap (node (class-nil %pairing-node))
                                (comparator comparator)))
 
-(define-inline (pairing-heap #!key comparator #!rest vals)
+(define (pairing-heap #!key comparator #!rest vals)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "pairing-heap"
          :msg "comparator must be a comparator object"
@@ -56,23 +56,23 @@
       (for-each (lambda (itm) (pairing-heap-enqueue! res itm)) vals)
       res))
 
-(define-inline (pairing-heap-length heap::%pairing-heap)
+(define (pairing-heap-length heap::%pairing-heap)
    (-> heap length))
 
-(define-inline (pairing-heap-empty? heap::%pairing-heap)
+(define (pairing-heap-empty? heap::%pairing-heap)
    (eq? (-> heap node) (class-nil %pairing-node)))
 
-(define-inline (pairing-heap-copy heap::%pairing-heap)
+(define (pairing-heap-copy heap::%pairing-heap)
    (duplicate::%pairing-heap heap (node (pairing-node-copy (-> heap node)))))
 
-(define-inline (singleton-pairing-heap itm comparator)
+(define (singleton-pairing-heap itm comparator)
    (instantiate::%pairing-heap (node (instantiate::%pairing-node (elem itm)))
                                (comparator comparator)))
 
-(define-inline (pairing-node-copy node::%pairing-node)
+(define (pairing-node-copy node::%pairing-node)
    (duplicate::%pairing-node node (subheaps (map pairing-node-copy (-> node subheaps)))))
 
-(define-inline (pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
+(define (pairing-node-merge! node1::%pairing-node node2::%pairing-node comparator)
    (cond ((eq? node1 (class-nil %pairing-node))
           node2)
          ((eq? node2 (class-nil %pairing-node))
@@ -84,19 +84,19 @@
           (set! (-> node2 subheaps) (cons node1 (-> node2 subheaps)))
           node2)))
 
-(define-inline (pairing-node-enqueue! node::%pairing-node itm comparator)
+(define (pairing-node-enqueue! node::%pairing-node itm comparator)
    (let ((new-node::%pairing-node (instantiate::%pairing-node (elem itm))))
       (pairing-node-merge! node new-node comparator)))
 
-(define-inline (pairing-heap-enqueue! heap::%pairing-heap itm)
+(define (pairing-heap-enqueue! heap::%pairing-heap itm)
    (set! (-> heap node) (pairing-node-enqueue! (-> heap node) itm (-> heap comparator)))
    (set! (-> heap length) (+ (-> heap length) 1))
    heap)
 
-(define-inline (pairing-heap-first heap::%pairing-heap)
+(define (pairing-heap-first heap::%pairing-heap)
    (-> heap node elem))
 
-(define-inline (pairing-heap-dequeue! heap::%pairing-heap)
+(define (pairing-heap-dequeue! heap::%pairing-heap)
    (if (pairing-heap-empty? heap)
        (raise-invalid-state-exception :proc "pairing-heap-dequeue!"
           :msg "cannot dequeue an item from an empty heap"
@@ -107,7 +107,7 @@
           (set! (-> heap length) (- (-> heap length) 1))
           res)))
 
-(define-inline (pairing-node-merge-pairs! subheaps comparator)
+(define (pairing-node-merge-pairs! subheaps comparator)
    (let ((len (length subheaps)))
       (cond ((= 0 len)
              (class-nil %pairing-node))
@@ -118,10 +118,10 @@
                                      (cadr subheaps) comparator)
                 (pairing-node-merge-pairs! (cddr subheaps) comparator) comparator)))))
 
-(define-inline (pairing-node-dequeue! node::%pairing-node comparator)
+(define (pairing-node-dequeue! node::%pairing-node comparator)
    (values (-> node elem) (pairing-node-merge-pairs! (-> node subheaps) comparator)))
    
-(define-inline (pairing-heap-merge! heap1::%pairing-heap heap2::%pairing-heap)
+(define (pairing-heap-merge! heap1::%pairing-heap heap2::%pairing-heap)
    (set! (-> heap1 node) (pairing-node-merge! (-> heap1 node) (-> heap2 node) (-> heap1 comparator)))
    heap1)
 

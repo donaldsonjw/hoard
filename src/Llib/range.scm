@@ -10,15 +10,15 @@
       (class %range-enumerator
          (curr (default #unspecified))
          range::%range)
-      (inline range-for-each proc::procedure range::%range)
-      (inline range #!key (start 0) end (step 1))
-      (inline range-map proc::procedure range::%range)
-      (inline valid-range-args? start end step)
-      (inline range? obj)))
+      ( range-for-each proc::procedure range::%range)
+      ( range #!key (start 0) end (step 1))
+      ( range-map proc::procedure range::%range)
+      ( valid-range-args? start end step)
+      ( range? obj)))
 
 
 
-(define-inline (valid-range-args? start end step)
+(define (valid-range-args? start end step)
    (and (integer? start)
         (integer? end)
         (integer? step)
@@ -30,7 +30,7 @@
 
 
 
-(define-inline (range #!key (start 0) end (step 1))
+(define (range #!key (start 0) end (step 1))
    (if (valid-range-args? start end step)
        (instantiate::%range (start start)
                             (end end)
@@ -38,7 +38,7 @@
        (raise-invalid-argument-exception proc: "range"
           args: (list start end step))))
 
-(define-inline (range? obj)
+(define (range? obj)
    (isa? obj %range))
 
 ;;;; enumerator protocol
@@ -81,7 +81,7 @@
 
 
 
-(define-inline (range-for-each proc::procedure range::%range)
+(define (range-for-each proc::procedure range::%range)
    (do ((i (-> range start) (+ i (-> range step))))
        ((if (positive? (-> range step))
             (>= i (-> range end))
@@ -89,7 +89,7 @@
        (proc i)))
 
 
-(define-inline (range-map proc::procedure range::%range)
+(define (range-map proc::procedure range::%range)
    (do ((i (-> range start) (+ i (-> range step)))
         (res '() (cons (proc i) res)))
        ((if (positive? (-> range step))

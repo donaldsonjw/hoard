@@ -6,8 +6,8 @@
    (export
       (generic enumerable? obj)
       (generic enumerable-enumerator obj)
-      (inline enum-or-enumer? obj)
-      (inline get-enumer obj)))
+      ( enum-or-enumer? obj)
+      ( get-enumer obj)))
 
 
 
@@ -33,10 +33,10 @@
              args: obj))))
 
 
-(define-inline (enum-or-enumer? obj)
+(define (enum-or-enumer? obj)
    (or (enumerable? obj) (enumerator? obj)))
 
-(define-inline (get-enumer obj)
+(define (get-enumer obj)
    (if (enumerable? obj)
        (enumerable-enumerator obj)
        obj))

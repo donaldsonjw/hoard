@@ -14,12 +14,12 @@
                   #!rest list-of-associations)
            (hashtable-comparator table)
            (hashtable-copy table)
-           (inline hashtable-buckets hash)
+           ( hashtable-buckets hash)
            +hashtable-buckets-index+))
 
 
 
-(define-inline (list-of-associations? loa)
+(define (list-of-associations? loa)
    (and (list? loa)
         (every association? loa)))
 
@@ -62,31 +62,31 @@
 (define +hashtable-max-length-index+ 6)
 (define +hashtable-bucket-expansion-index+ 7)
 
-(define-inline (hashtable-max-bucket-len hash)
+(define (hashtable-max-bucket-len hash)
    (struct-ref hash +hashtable-max-bucket-len-index+))
 
-(define-inline (hashtable-buckets hash)
+(define (hashtable-buckets hash)
    (struct-ref hash +hashtable-buckets-index+))
 
-(define-inline (hashtable-weak hash)
+(define (hashtable-weak hash)
    (struct-ref hash +hashtable-weak-index+))
 
-(define-inline (hashtable-max-length hash)
+(define (hashtable-max-length hash)
    (struct-ref hash +hashtable-max-length-index+))
 
-(define-inline (hashtable-bucket-expansion hash)
+(define (hashtable-bucket-expansion hash)
    (struct-ref hash +hashtable-bucket-expansion-index+))
 
-(define-inline (hashtable-hash-proc hash)
+(define (hashtable-hash-proc hash)
    (let ((res (struct-ref hash +hashtable-hash-index+)))
       (if (procedure? res)
           res
           get-hashnumber)))
 
-(define-inline (buckets-copy buckets)
+(define (buckets-copy buckets)
    (vector-map list-copy buckets))
 
-(define-inline (hashtable-equal-proc hash)
+(define (hashtable-equal-proc hash)
    (let ((res (struct-ref hash +hashtable-equal-index+)))
       (if (procedure? res)
           res

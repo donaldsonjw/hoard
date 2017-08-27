@@ -10,14 +10,14 @@
        (hashtable? obj)))
 
 
-(define-inline (list-extend! lst item)
+(define (list-extend! lst item)
    (let ((cur-car (car lst))
          (cur-cdr (cdr lst)))
       (set-car! lst item)
       (set-cdr! lst (cons cur-car cur-cdr))
       lst))
 
-(define-inline (hashtable-extend! table item)
+(define (hashtable-extend! table item)
    (if (association? item)
        (begin
           (hashtable-put! table (=>key item)

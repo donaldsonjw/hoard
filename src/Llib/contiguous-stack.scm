@@ -14,31 +14,31 @@
          stk::%contiguous-stack
          (curr-idx (default #unspecified)))
       
-      (inline make-contiguous-stack #!key capacity)
-      (inline contiguous-stack? obj)
-      (inline contiguous-stack-capacity stk::%contiguous-stack)
-      (inline contiguous-stack-push! stk::%contiguous-stack item)
-      (inline contiguous-stack #!key capacity #!rest rest)
-      (inline contiguous-stack-pop! stk::%contiguous-stack)
-      (inline contiguous-stack-top stk::%contiguous-stack)
-      (inline contiguous-stack-empty? stk::%contiguous-stack)
-      (inline contiguous-stack-length stk::%contiguous-stack)
-      (inline contiguous-stack-copy stk::%contiguous-stack)))
+      ( make-contiguous-stack #!key capacity)
+      ( contiguous-stack? obj)
+      ( contiguous-stack-capacity stk::%contiguous-stack)
+      ( contiguous-stack-push! stk::%contiguous-stack item)
+      ( contiguous-stack #!key capacity #!rest rest)
+      ( contiguous-stack-pop! stk::%contiguous-stack)
+      ( contiguous-stack-top stk::%contiguous-stack)
+      ( contiguous-stack-empty? stk::%contiguous-stack)
+      ( contiguous-stack-length stk::%contiguous-stack)
+      ( contiguous-stack-copy stk::%contiguous-stack)))
 
 
-(define-inline (contiguous-stack? obj)
+(define (contiguous-stack? obj)
    (isa? obj %contiguous-stack))
 
-(define-inline (make-contiguous-stack #!key capacity)
+(define (make-contiguous-stack #!key capacity)
    (instantiate::%contiguous-stack (store (make-vector capacity))))
 
-(define-inline (contiguous-stack-empty? stk::%contiguous-stack)
+(define (contiguous-stack-empty? stk::%contiguous-stack)
    (= (-> stk top) 0))
 
-(define-inline (contiguous-stack-length stk::%contiguous-stack)
+(define (contiguous-stack-length stk::%contiguous-stack)
    (-> stk top))
 
-(define-inline (contiguous-stack #!key capacity #!rest rest)
+(define (contiguous-stack #!key capacity #!rest rest)
    (if (> (length rest) capacity)
        (raise-invalid-argument-exception :proc "contiguous-stack"
           :msg "capacity must be equal to or larger than the number of objects used to create the stack"
@@ -48,10 +48,10 @@
              (reverse! rest))
           stk)))
 
-(define-inline (contiguous-stack-capacity stk::%contiguous-stack)
+(define (contiguous-stack-capacity stk::%contiguous-stack)
    (vector-length (-> stk store)))
 
-(define-inline (contiguous-stack-push! stk::%contiguous-stack item)
+(define (contiguous-stack-push! stk::%contiguous-stack item)
    (if (>= (-> stk top) (contiguous-stack-capacity stk))
        (raise-invalid-state-exception :proc "contiguous-stack-push!"
           :msg "cannot push an item on a full stack"
@@ -61,7 +61,7 @@
           (set! (-> stk top) (+ (-> stk top) 1)))))
 
 
-(define-inline (contiguous-stack-pop! stk::%contiguous-stack)
+(define (contiguous-stack-pop! stk::%contiguous-stack)
    (if (contiguous-stack-empty? stk)
        (raise-invalid-state-exception :proc "contiguous-stack-pop!"
           :msg "cannot pop an item off of a empty stack"
@@ -70,7 +70,7 @@
           (set! (-> stk top) (- (-> stk top) 1))
           res)))
 
-(define-inline (contiguous-stack-top stk::%contiguous-stack)
+(define (contiguous-stack-top stk::%contiguous-stack)
    (if (contiguous-stack-empty? stk)
        (raise-invalid-state-exception :proc "contiguous-stack-top"
           :msg "cannot retrieve the top item of an empty stack"
@@ -78,7 +78,7 @@
        (vector-ref (-> stk store) (- (-> stk top) 1))))
 
 
-(define-inline (contiguous-stack-copy stk::%contiguous-stack)
+(define (contiguous-stack-copy stk::%contiguous-stack)
    (instantiate::%contiguous-stack (top (-> stk top))
                                    (store (vector-copy (-> stk store)
                                              0 (vector-length (-> stk store))))))

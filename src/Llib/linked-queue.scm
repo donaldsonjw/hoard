@@ -11,37 +11,37 @@
          (size (default 0))
          (first::pair-nil (default '()))
          (last::pair-nil (default '())))
-      (inline linked-queue-length q::%linked-queue)
-      (inline linked-queue-enqueue! q::%linked-queue item)
-      (inline linked-queue-dequeue! q::%linked-queue)
-      (inline linked-queue-first q::%linked-queue)
-      (inline make-linked-queue)
-      (inline linked-queue? q)
-      (inline linked-queue #!rest objs)
-      (inline linked-queue-empty? q::%linked-queue)
-      (inline linked-queue-copy q::%linked-queue)))
+      ( linked-queue-length q::%linked-queue)
+      ( linked-queue-enqueue! q::%linked-queue item)
+      ( linked-queue-dequeue! q::%linked-queue)
+      ( linked-queue-first q::%linked-queue)
+      ( make-linked-queue)
+      ( linked-queue? q)
+      ( linked-queue #!rest objs)
+      ( linked-queue-empty? q::%linked-queue)
+      ( linked-queue-copy q::%linked-queue)))
 
 
-(define-inline (make-linked-queue)
+(define (make-linked-queue)
    (instantiate::%linked-queue))
 
-(define-inline (linked-queue #!rest objs)
+(define (linked-queue #!rest objs)
    (let ((q (make-linked-queue)))
       (for-each (lambda (i) (linked-queue-enqueue! q i)) objs)
       q))
 
-(define-inline (linked-queue? q)
+(define (linked-queue? q)
    (isa? q %linked-queue))
 
-(define-inline (linked-queue-empty? q::%linked-queue)
+(define (linked-queue-empty? q::%linked-queue)
    (and (= (-> q size) 0)
         (eq? (-> q first) '())
         (eq? (-> q last) '())))
 
-(define-inline (linked-queue-length q::%linked-queue)
+(define (linked-queue-length q::%linked-queue)
    (-> q size))
 
-(define-inline (linked-queue-enqueue! q::%linked-queue item)
+(define (linked-queue-enqueue! q::%linked-queue item)
     (let ((new-last (list item)))
        (if (= (-> q size) 0)
            (begin
@@ -52,7 +52,7 @@
               (set! (-> q last) new-last)))
        (set!  (-> q size) (+ (-> q size) 1))))
 
-(define-inline (linked-queue-dequeue! q::%linked-queue)
+(define (linked-queue-dequeue! q::%linked-queue)
    (if (= (-> q size) 0)
        (raise-invalid-state-exception proc: "qeueu-dequeue!"
           :msg "can not dequeue from an empty queue"
@@ -64,14 +64,14 @@
              (set! (-> q last) (-> q first)))
           res)))
 
-(define-inline (linked-queue-first q::%linked-queue)
+(define (linked-queue-first q::%linked-queue)
    (if (= (-> q size) 0)
        (raise-invalid-state-exception proc: "qeueu-first"
           :msg "can not obtain the first item from an empty queue"
           :obj q)
        (car (-> q first))))
 
-(define-inline (linked-queue-copy q::%linked-queue)
+(define (linked-queue-copy q::%linked-queue)
    (define (find-last lst)
       (let loop ((lst lst))
          (if (pair? lst)

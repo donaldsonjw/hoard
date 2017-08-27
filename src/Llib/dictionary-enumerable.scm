@@ -4,8 +4,8 @@
            hoard/dictionary-enumerator)
    (export (generic dictionary-enumerable? obj)
            (generic dictionary-enumerable-enumerator obj)
-           (inline dictionary-enum-or-enumer? obj)
-           (inline get-dictionary-enumer obj)))
+           ( dictionary-enum-or-enumer? obj)
+           ( get-dictionary-enumer obj)))
 
 
 ;;;; dictionary enumerable protocol
@@ -25,11 +25,11 @@
           (raise-unsupported-operation-exception :proc "dictionary-enumerable-enumerator"
              :obj obj))))
 
-(define-inline (dictionary-enum-or-enumer? obj)
+(define (dictionary-enum-or-enumer? obj)
    (or (dictionary-enumerable? obj)
        (dictionary-enumerator? obj)))
 
-(define-inline (get-dictionary-enumer obj)
+(define (get-dictionary-enumer obj)
    (if (dictionary-enumerable? obj)
        (dictionary-enumerable-enumerator obj)
        obj))

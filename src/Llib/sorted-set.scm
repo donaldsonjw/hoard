@@ -13,29 +13,29 @@
    (export
       (class %sorted-set::%red-black-tree)
       (class %sorted-set-enumerator::%red-black-tree-enumerator)
-      (inline sorted-set? obj)
-      (inline make-sorted-set #!key comparator)
-      (inline sorted-set #!key comparator #!rest items)
-      (inline sorted-set-insert! set::%sorted-set item)
-      (inline sorted-set-delete! set::%sorted-set item)
-      (inline sorted-set-contains? set::%sorted-set item)
-      (inline sorted-set-length set::%sorted-set)
-      (inline sorted-set-empty? set::%sorted-set)
-      (inline sorted-set-copy set::%sorted-set)
+      ( sorted-set? obj)
+      ( make-sorted-set #!key comparator)
+      ( sorted-set #!key comparator #!rest items)
+      ( sorted-set-insert! set::%sorted-set item)
+      ( sorted-set-delete! set::%sorted-set item)
+      ( sorted-set-contains? set::%sorted-set item)
+      ( sorted-set-length set::%sorted-set)
+      ( sorted-set-empty? set::%sorted-set)
+      ( sorted-set-copy set::%sorted-set)
       (make-sorted-set-enumerator set::%sorted-set)))
 
 
-(define-inline (sorted-set? obj)
+(define (sorted-set? obj)
    (isa? obj %sorted-set))
 
-(define-inline (make-sorted-set #!key comparator)
+(define (make-sorted-set #!key comparator)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "make-sorted-set"
          :args comparator
          :msg "make-sorted-set must be passed a valid comparator"))
    (instantiate::%sorted-set (comparator comparator)))
 
-(define-inline (sorted-set #!key comparator #!rest items)
+(define (sorted-set #!key comparator #!rest items)
    (when (not (comparator? comparator))
       (raise-invalid-argument-exception :proc "sorted-set"
          :args comparator
@@ -44,22 +44,22 @@
       (for-each (lambda (item) (sorted-set-insert! set item)) items) 
       set))
 
-(define-inline (sorted-set-insert! set::%sorted-set item)
+(define (sorted-set-insert! set::%sorted-set item)
    (red-black-tree-insert! set item))
 
-(define-inline (sorted-set-delete! set::%sorted-set item)
+(define (sorted-set-delete! set::%sorted-set item)
    (red-black-tree-delete! set item))
 
-(define-inline (sorted-set-contains? set::%sorted-set item)
+(define (sorted-set-contains? set::%sorted-set item)
    (red-black-tree-contains? set item))
 
-(define-inline (sorted-set-length set::%sorted-set)
+(define (sorted-set-length set::%sorted-set)
    (red-black-tree-size set))
 
-(define-inline (sorted-set-empty? set::%sorted-set)
+(define (sorted-set-empty? set::%sorted-set)
    (red-black-tree-empty? set))
 
-(define-inline (sorted-set-copy set::%sorted-set)
+(define (sorted-set-copy set::%sorted-set)
    (duplicate::%sorted-set set
       (root (red-black-node-copy (-> set root)))))
 

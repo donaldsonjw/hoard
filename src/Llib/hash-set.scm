@@ -16,46 +16,46 @@
       (class %hash-set-enumerator
          (curr (default #unspecified))
          enumer)
-      (inline make-hash-set #!key (comparator #f))
-      (inline hash-set #!key (comparator #f) #!rest items)
-      (inline hash-set-insert! hash-set::%hash-set item)
-      (inline hash-set-delete! hash-set::%hash-set item)
-      (inline hash-set-contains? hash-set::%hash-set item)
-      (inline hash-set-length hash-set::%hash-set)
-      (inline hash-set-empty? hash-set::%hash-set)
-      (inline hash-set? obj)
-      (inline hash-set-copy hash-set::%hash-set)
+      ( make-hash-set #!key (comparator #f))
+      ( hash-set #!key (comparator #f) #!rest items)
+      ( hash-set-insert! hash-set::%hash-set item)
+      ( hash-set-delete! hash-set::%hash-set item)
+      ( hash-set-contains? hash-set::%hash-set item)
+      ( hash-set-length hash-set::%hash-set)
+      ( hash-set-empty? hash-set::%hash-set)
+      ( hash-set? obj)
+      ( hash-set-copy hash-set::%hash-set)
       (make-hash-set-enumerator set::%hash-set)))
 
 
-(define-inline (make-hash-set #!key (comparator #f))
+(define (make-hash-set #!key (comparator #f))
    (instantiate::%hash-set (hash (hashtable :comparator comparator))))
 
-(define-inline (hash-set #!key (comparator #f) #!rest items)
+(define (hash-set #!key (comparator #f) #!rest items)
    (let ((set (make-hash-set :comparator comparator)))
       (for-each (lambda (item)
                    (hash-set-insert! set item)) items)
       set))
 
-(define-inline (hash-set? obj)
+(define (hash-set? obj)
    (isa? obj %hash-set))
 
-(define-inline (hash-set-insert! hash-set::%hash-set item)
+(define (hash-set-insert! hash-set::%hash-set item)
    (hashtable-put! (-> hash-set hash) item 0))
 
-(define-inline (hash-set-delete! hash-set::%hash-set item)
+(define (hash-set-delete! hash-set::%hash-set item)
    (hashtable-remove! (-> hash-set hash) item))
 
-(define-inline (hash-set-contains? hash-set::%hash-set item)
+(define (hash-set-contains? hash-set::%hash-set item)
    (hashtable-contains? (-> hash-set hash) item))
 
-(define-inline (hash-set-length hash-set::%hash-set)
+(define (hash-set-length hash-set::%hash-set)
    (hashtable-size (-> hash-set hash)))
 
-(define-inline (hash-set-empty? hash-set::%hash-set)
+(define (hash-set-empty? hash-set::%hash-set)
    (= 0 (hashtable-size (-> hash-set hash))))
 
-(define-inline (hash-set-copy hash-set::%hash-set)
+(define (hash-set-copy hash-set::%hash-set)
    (duplicate::%hash-set hash-set (hash (hashtable-copy (-> hash-set hash)))))
 
 

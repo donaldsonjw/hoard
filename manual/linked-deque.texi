@@ -1,0 +1,11 @@
+@node linked-deque, binary-heap, Implementations, Implementations
+@section linked-deque
+
+@node linked-deque Overview, linked-deque API Reference, linked-deque, linked-deque
+@subsection Overview
+
+@node linked-deque API Reference, linked-deque Examples, linked-deque Overview, linked-deque
+@subsection API Reference
+
+@node linked-deque Examples,linked-deque API Reference, ,linked-deque
+@subsection Examples

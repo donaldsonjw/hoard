@@ -1,4 +1,4 @@
-@node stack, priority-queue, queue, Protocols
+@node stack, priority-queue, deque, Protocols
 @section stack
 
 @menu

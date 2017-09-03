@@ -1,4 +1,4 @@
-@node linked-queue, binary-heap, Implementations, Implementations
+@node linked-queue, ring-buffer, Implementations, Implementations
 @section linked-queue
 
 @node linked-queue Overview, linked-queue API Reference, linked-queue, linked-queue

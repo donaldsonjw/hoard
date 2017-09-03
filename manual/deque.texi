@@ -1,0 +1,220 @@
+@node deque, stack, queue, Protocols
+@section deque
+
+@menu
+* deque Overview::
+* deque API Reference::
+* deque Examples::
+@end menu
+
+@node deque Overview, deque API Reference, , deque
+@subsection Overview
+
+The @code{deque} protocol defines the methods required by a deque
+implementation. A deque is a sequential data structure similar to a
+queue but allowing insertion and removal of items from both the front
+and back.
+
+@node deque API Reference, deque Examples, deque Overview, deque
+@subsection API Reference
+
+@menu
+* deque?::
+* deque-copy::
+* deque-empty?::
+* deque-first::
+* deque-last::
+* deque-enqueue!::
+* deque-enqueue-front!::
+* deque-dequeue!::
+* deque-dequeue-back!::
+* deque-length::
+* deque-fixed-capacity?::
+* deque-capacity::
+@end menu
+
+@node deque?,deque-copy, , deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque? object
+@b{returns} a boolean indicating whether or not @code{object} supports the @code{deque} protocol
+@end deffn
+
+@node deque-copy, deque-empty?, deque?, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-copy deque
+@b{requires} @code{deque} implement the deque protocol. @* @*
+@b{returns} a shallow copy of @code{deque}.
+@end deffn
+
+@node deque-empty?, deque-first, deque-copy, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-empty? deque
+@b{requires} @code{deque} implement the deque protocol. @* @*
+@b{returns} a boolean indicating whether or not @code{deque} contains any items.
+@end deffn
+
+@node deque-first, deque-last, deque-empty?, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-first deque
+@b{requires} @code{deque} implement the deque protocol. @* @*
+@b{returns} returns the first item in @code{deque}. If @code{deque} is
+empty, a @code{&invalid-state-exception} is thrown.
+@end deffn
+
+@node deque-last, deque-enqueue!, deque-first, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-last deque
+@b{requires} @code{deque} implement the deque protocol. @* @*
+@b{returns} returns the last item in @code{deque}. If @code{deque} is
+empty, a @code{&invalid-state-exception} is thrown.
+@end deffn
+
+
+@node deque-enqueue!, deque-enqueue-front!, deque-last, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-enqueue! deque item
+@b{requires} @code{deque} implement the deque protocol and @code{item}
+be an arbitrary item @* @*
+@b{returns} returns @code{unspecified}. If @code{deque} has a fixed
+capacity and is full, a @code{&invalid-state-exception} is
+thrown. @*@*
+@b{modifies} @code{deque} by placing @code{item} on the end.
+@end deffn
+
+@node deque-enqueue-front!, deque-dequeue!, deque-enqueue!, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-enqueue-front! deque item
+@b{requires} @code{deque} implement the deque protocol and @code{item}
+be an arbitrary item @* @*
+@b{returns} returns @code{unspecified}. If @code{deque} has a fixed
+capacity and is full, a @code{&invalid-state-exception} is
+thrown. @*@*
+@b{modifies} @code{deque} by placing @code{item} on the front.
+@end deffn
+
+@node deque-dequeue!, deque-dequeue-back!, deque-enqueue-front!, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-dequeue! deque
+@b{requires} @code{deque} implement the deque protocol.@* @*
+@b{returns} returns the first item in @code{deque}. If @code{deque} is
+empty, a @code{&invalid-state-exception} is thrown.@*@*
+@b{modifies} @code{deque} by removing the first item.
+@end deffn
+
+@node deque-dequeue-back!, deque-length, deque-dequeue!, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-dequeue-back! deque
+@b{requires} @code{deque} implement the deque protocol.@* @*
+@b{returns} returns the last item in @code{deque}. If @code{deque} is
+empty, a @code{&invalid-state-exception} is thrown.@*@*
+@b{modifies} @code{deque} by removing the last item.
+@end deffn
+
+@node deque-length, deque-fixed-capacity?, deque-dequeue-back!, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-length deque
+@b{requires} @code{deque} implement the deque protocol.@* @*
+@b{returns} returns the the number of items in @code{deque}
+@end deffn
+
+
+@node deque-fixed-capacity?, deque-capacity, deque-length, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-fixed-capacity? deque
+@b{requires} @code{deque} implement the deque protocol.@* @*
+@b{returns} returns a boolean indicating whether or not @code{deque}
+has a fixed capacity.
+@end deffn
+
+@node deque-capacity, , deque-fixed-capacity?, deque API Reference
+@comment node-name, next,          previous, up
+@deffn {generic} deque-capacity deque
+@b{requires} @code{deque} implement the deque protocol.@* @*
+@b{returns} returns the capacity (i.e., the number of items that it
+can hold) of @code{deque} or @code{unspecified} if it has no fixed capacity.
+@end deffn
+
+@node deque Examples, deque API Reference, ,deque
+@subsection Examples
+
+hoard provides double-linked and contiguous implementations of the
+@code{deque} protocol.
+
+@smalllisp
+(deque? (ring-buffer :capacity 5))
+   @result{} #t     
+(deque? (linked-deque))
+   @result{} #t
+@end smalllisp 
+
+
+You can add items to both the front and back of a deque:
+
+@smalllisp
+(let ((q (linked-deque)))
+   (deque-enqueue! q 2)
+   (deque-enqueue! q 3)
+   (deque-enqueue-front! q 1)
+   (enumerable-collect q +list-collector+))
+   @result{} (1 2 3)
+@end smalllisp
+
+look at the first or last item:
+
+@smalllisp
+(let ((q (linked-deque)))
+   (deque-enqueue! q 1)
+   (deque-enqueue! q 2)
+   (deque-enqueue! q 3)
+   (cons (deque-first q)
+     (deque-last q))     
+   @result{} (1 . 3)
+@end smalllisp
+
+or remove the first and last items:
+
+@smalllisp
+(let ((q (linked-deque)))
+   (deque-enqueue! q 1)
+   (deque-enqueue! q 2)
+   (deque-enqueue! q 3)
+   (list (deque-dequeue! q)
+     (deque-dequeue-back! q)
+     (deque-front q))
+   @result{} (1 3 2)
+@end smalllisp
+
+It is also possible to test to see if a deque is empty:
+
+@smalllisp
+(deque-empty? (linked-deque))
+   @result{} #t
+
+(deque-empty? (linked-deque 1 2 3))
+   @result{} #f
+@end smalllisp
+
+A copy of a deque can be useful:
+
+@smalllisp
+(let* ((q1 (linked-deque 1 2 3))
+       (q2 (deque-copy q1)))
+   (eq? q1 q2))
+   @result{} #f
+@end smalllisp
+
+Some deque implementations have a fixed-capacity:
+
+@smalllisp
+(deque-fixed-capacity? (ring-buffer :capacity 5))
+   @result{} #t
+
+(deque-fixed-capacity? (linked-deque))
+   @result{} #f
+
+(deque-capacity (ring-buffer :capacity 5))
+   @result{} 5
+
+(deque-capacity (linked-deque))
+   @result{} #unspecified
+@end smalllisp

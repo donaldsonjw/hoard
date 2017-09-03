@@ -152,6 +152,7 @@ is described, the api documented, and examples given.
 * bag::
 * set::
 * queue::
+* deque::
 * stack::
 * priority-queue::
 * dictionary::
@@ -180,6 +181,8 @@ is described, the api documented, and examples given.
 @include set.texi
 
 @include queue.texi
+
+@include deque.texi
 
 @include stack.texi
 
@@ -215,6 +218,8 @@ documented here.
 * linked-stack::
 * contiguous-queue::
 * linked-queue::
+* ring-buffer::
+* linked-deque::
 * binary-heap::
 * pairing-heap::
 * sorted-dictionary::
@@ -241,6 +246,10 @@ documented here.
 @include contiguous-queue.texi
 
 @include linked-queue.texi
+
+@include ring-buffer.texi
+
+@include linked-deque.texi
 
 @include binary-heap.texi
 

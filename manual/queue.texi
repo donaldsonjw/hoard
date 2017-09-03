@@ -1,4 +1,4 @@
-@node queue, stack, set, Protocols
+@node queue, deque, set, Protocols
 @section queue
 
 @menu

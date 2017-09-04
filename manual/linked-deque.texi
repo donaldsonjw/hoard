@@ -3,9 +3,193 @@
 
 @node linked-deque Overview, linked-deque API Reference, linked-deque, linked-deque
 @subsection Overview
-
+@code{linked-deque} is a doubly linked list based implementation of the queue and deque ADTs. It supports efficient access, addition, and removal from both the front and back. 
 @node linked-deque API Reference, linked-deque Examples, linked-deque Overview, linked-deque
 @subsection API Reference
 
+@menu
+* Protocols Implemented: Protocols Implemented by linked-deque. :
+* linked-deque?::
+* make-linked-deque::
+* linked-deque: linked-deque constructor. :
+* linked-deque-copy::
+* linked-deque-empty?::
+* linked-deque-length::
+* linked-deque-first::
+* linked-deque-last::
+* linked-deque-dequeue!::
+* linked-deque-dequeue-back!::
+* linked-deque-enqueue-front!::
+* linked-deque-enqueue!::
+@end menu
+
+@node Protocols Implemented by linked-deque, linked-deque?, , linked-deque API Reference
+@comment node-name, next,          previous, up
+@code{linked-deque} implements the @code{queue}, @code{deque}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue}. @xref{deque}. @xref{collection}. @xref{extendable}. @xref{mutable}. @xref{enumerable}.
+
+@node linked-deque?, make-linked-deque, Protocols Implemented by linked-deque, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque? object
+@b{returns} a boolean indicating whether or not 
+@code{object} is a linked-deque.
+@end deffn
+
+@node make-linked-deque, linked-deque constructor, linked-deque?, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} make-linked-deque
+@b{returns} a new @code{linked-deque}.
+@end deffn
+
+@node linked-deque constructor, linked-deque-copy, make-linked-deque, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque . items
+@b{requires} @code{items} be a list of items to initialize the linked-deque with. @* @*
+@b{returns} a new @code{linked-deque} containing @code{items} enqueued from left-to-right.
+@end deffn
+
+@node linked-deque-copy,linked-deque-empty?, linked-deque constructor, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-copy lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{returns} a shallow copy of @code{lq}. 
+@end deffn
+
+@node linked-deque-empty?, linked-deque-length, linked-deque-copy, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-empty? lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{returns} a boolean indicating whether or not the linked-deque is empty. 
+@end deffn
+
+@node linked-deque-length, linked-deque-first, linked-deque-empty?, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} ring-bufer-length lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{returns} the size/length the linked-deque. 
+@end deffn
+
+@node linked-deque-first, linked-deque-last, linked-deque-length, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-first lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{returns} the first item of the ring buffer or if @code{lq} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node linked-deque-last, linked-deque-dequeue!, linked-deque-first, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-last lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{returns} the last item the ring buffer or if @code{lq} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node linked-deque-dequeue!, linked-deque-dequeue-back!, linked-deque-last, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-dequeue! lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{modifies} @code{lq} by removing the first item from the linked-deque. @* @*
+@b{returns} the item removed from the front of the ring buffer or if @code{lq} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node linked-deque-dequeue-back!, linked-deque-enqueue-front!, linked-deque-dequeue!, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-dequeue-back! lq
+@b{requires} @code{lq} be a @code{linked-deque}. @* @*
+@b{modifies} @code{lq} by removing the back item from the linked-deque. @* @*
+@b{returns} the item removed from the back of the ring buffer or if @code{lq} is empty, throws @code{&invalid-state-exception}. 
+@end deffn
+
+@node linked-deque-enqueue-front!, linked-deque-enqueue!, linked-deque-dequeue-back!, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-enqueue-front! lq item
+@b{requires} @code{lq} be a @code{linked-deque} and @code{item} be an alqitrary object. @* @*
+@b{modifies} @code{lq} by enqueueing @code{item} on the front of the linked-deque. @* @*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+@node linked-deque-enqueue!, , linked-deque-dequeue!, linked-deque API Reference
+@comment node-name, next,          previous, up
+@deffn {procedure} linked-deque-enqueue! lq item
+@b{requires} @code{lq} be a @code{linked-deque} and @code{item} be an arbitrary object. @* @*
+@b{modifies} @code{lq} by enqueueing @code{item} on the back of the linked-deque. @* @*
+@b{returns} @code{#unspecified}. 
+@end deffn
+
+
+
 @node linked-deque Examples,linked-deque API Reference, ,linked-deque
 @subsection Examples
+
+2 procedures are provided for creating a @code{linked-deque}: The first creates an empty linked-deque and the other populates the linked-deque with the items passed to it:
+
+@smalllisp
+(enumerable-collect (make-linked-deque)
+   +list-collector+)
+  @result{} ()
+
+(enumerable-collect (linked-deque 1 2 3)
+   +list-collector+)
+  @result{} (1 2 3)
+@end smalllisp
+
+An item can be placed onto the front or back of the linked-deque with @code{linked-deque-enqueue!} and @code{linked-deque-enqueue-front!}:
+
+@smalllisp
+(let ((lq (linked-deque 1 2 3)))
+   (linked-deque-enqueue! lq 4)
+   (linked-deque-enqueue-front! lq 0)
+   (cons (linked-deque-last lq)
+     (linked-deque-first lq)
+  @result{} (4 . 0)
+@end smalllisp
+
+The first and last item of the linked-deque can be non-destructively obtained with @code{linked-deque-first} and @code{linked-deque-last}, respecitvely:
+
+@smalllisp
+(let ((lq (linked-deque 1 2 3)))
+   (cons (linked-deque-first lq)
+     (linked-deque-last lq))
+  @result{} (1 . 3)
+@end smalllisp
+
+The first and last items can be removed from the linked-deque with @code{linked-deque-dequeue!} and @code{linked-deque-dequeue-back!}, respecitvely:
+
+@smalllisp
+(let ((lq (linked-deque 1 2 3)))
+   (cons (linked-deque-dequeue! lq)
+     (linked-deque-dequeue-back! lq))
+  @result{} (1 . 3)
+@end smalllisp
+
+
+To test if a linked-deque is empty, use @code{linked-deque-empty?}:
+
+@smalllisp
+(linked-deque-empty? (linked-deque))
+  @result{} #t
+
+(linked-deque-empty? (linked-deque 1 2))
+  @result{} #f
+@end smalllisp
+
+
+The size or length of a linked-deque is obtained with @code{linked-deque-length}:
+
+@smalllisp
+(linked-deque-length (linked-deque 1 2))
+  @result{} 2
+@end smalllisp
+
+To make a shallow copy a linked-deque, use @code{linked-deque-copy}:
+
+@smalllisp
+(let* ((lq1 (linked-deque 1 2))
+       (lq2 (linked-deque-copy queue1)))
+    (eq? lq1 lq2))
+  @result{} #f  
+@end smalllisp
+
+@code{linked-deque} also implements the @code{queue}, @code{deque}, @code{collection}, @code{extendable},
+@code{mutable}, and @code{enumerable}
+protocols. @xref{queue Examples}. @xref{deque Examples}. @xref{collection Examples}. @xref{extendable Examples}. @xref{mutable Examples}. @xref{enumerable Examples}.

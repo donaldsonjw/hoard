@@ -3,7 +3,7 @@
 
 @node ring-buffer Overview, ring-buffer API Reference, ring-buffer, ring-buffer
 @subsection Overview
- Is a fixed-size data structure supporting the efficient addition and removal of elements from both the front and back. It is commonly used to implement queue and deque ADTs.
+ @code{ring-buffer} is a fixed-size, sequential data structure supporting the efficient access, addition and removal of elements from both the front and back. It is commonly used to implement the queue and deque ADTs.
 @node ring-buffer API Reference, ring-buffer Examples, ring-buffer Overview, ring-buffer
 @subsection API Reference
 @menu
@@ -38,11 +38,11 @@ protocols. @xref{queue}. @xref{deque}. @xref{collection}. @xref{extendable}. @xr
 
 @node make-ring-buffer, ring-buffer constructor, ring-buffer?, ring-buffer API Reference
 @comment node-name, next,          previous, up
-@deffn {procedure} make-ring-bufer :capacity
+@deffn {procedure} make-ring-buffer :capacity
 @b{returns} a new @code{ring-buffer} with a maximum capacity of @code{:capacity}.
 @end deffn
 
-@node ring-buffer constructor, , make-ring-buffer, ring-buffer API Reference
+@node ring-buffer constructor, ring-buffer-copy, make-ring-buffer, ring-buffer API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} ring-buffer :capacity . items
 @b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the ring-buffer and @code{items} be a list of items to initialize the ring-buffer with. @* @*
@@ -107,7 +107,7 @@ protocols. @xref{queue}. @xref{deque}. @xref{collection}. @xref{extendable}. @xr
 @b{returns} the item removed from the back of the ring buffer or if @code{rb} is empty, throws @code{&invalid-state-exception}. 
 @end deffn
 
-@node ring-buffer-push-front!, ring-buffer-push-back!, ring-buffer-back, ring-buffer API Reference
+@node ring-buffer-push-front!, ring-buffer-push-back!, ring-buffer-pop-back!, ring-buffer API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} ring-buffer-push-front! rb item
 @b{requires} @code{rb} be a @code{ring-buffer} and @code{item} be an arbitrary object. @* @*

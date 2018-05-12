@@ -243,4 +243,4 @@
                      (collector-finish coll supp))))
            (raise-invalid-argument-exception proc: "enumerable-collect" args: (list coll obj)
               msg: "either we have an invalid enumerable/enumerator or invalid collector")))))
-      
+

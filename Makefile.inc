@@ -30,6 +30,8 @@ BCOMMONFLAGS = -mkaddlib -fsharing -q \
 
 BSAFEFLAGS = $(BCOMMONFLAGS) -O6 
 
+BPROFILEFLAGS = $(BCOMMONFLAGS) -p -O6
+
 BUNSAFEFLAGS = $(BCOMMONFLAGS) -O6 -unsafe
 
 #C Flags
@@ -49,6 +51,7 @@ BIGLOOSRCS = $(wildcard src/Llib/*.scm)
 TESTSRCS = $(wildcard recette/*.scm)
 HEAPSRC = src/Misc/make_lib.scm
 DOCSRCS = $(wildcard manual/*.texi)
+MACROSRCS = $(wildcard src/Llib/*.sch)
 
 # object files
 _TESTSRCSWOUTDIR = $(foreach src, $(TESTSRCS), $(notdir $(src)))
@@ -56,6 +59,8 @@ _SRCSWOUTDIR = $(foreach src, $(BIGLOOSRCS), $(notdir $(src)))
 _BASEOBJSWOUTDIR = $(_SRCSWOUTDIR:%.scm=%)
 
 SAFEOBJECTS = $(_BASEOBJSWOUTDIR:%=$(OBJDIR)/%_s.o)
+
+PROFILEOBJECTS = $(_BASEOBJSWOUTDIR:%=$(OBJDIR)/%_p.o)
 
 UNSAFEOBJECTS = $(_BASEOBJSWOUTDIR:%=$(OBJDIR)/%_u.o)
 
@@ -83,6 +88,9 @@ TESTCLASSES = $(TESTSRCS:%.scm=%.class)
 
 $(OBJDIR)/%_s.o:src/Llib/%.scm
 	$(BIGLOO)  -c $(BSAFEFLAGS) -o $@ $^
+
+$(OBJDIR)/%_p.o:src/Llib/%.scm
+	$(BIGLOO)  -c $(BPROFILEFLAGS) -o $@ $^
 
 $(OBJDIR)/%_u.o:src/Llib/%.scm
 	$(BIGLOO)  -c $(BUNSAFEFLAGS) -o $@ $^
@@ -133,7 +141,7 @@ manual-pdf : $(DOCSRCS)
 .recettejfile: $(TESTSRCS)
 	$(BGLJFILE) -pbase recette -o $@  -I recette  $(_TESTSRCSWOUTDIR)
 
-.etags: $(BIGLOOSRCS) src/Llib/*.sch $(TESTSRCS)
+.etags: $(BIGLOOSRCS) $(TESTSRCS) $(MACROSRCS)
 	$(BGLTAGS) -o $@ $^
 
 heap: $(DISTDIR)/$(LIBNAME).heap
@@ -161,6 +169,8 @@ $(EUCLASSDIR)/make_lib.class:src/Misc/make_lib.scm
 
 lib: init heap $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so  \
 	       $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a   \
+               $(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).so  \
+	       $(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).a   \
                $(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so \
 	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).so  \
 	       $(DISTDIR)/lib$(LIBNAME)_u-$(VERSION).a   \
@@ -170,8 +180,8 @@ libj: init jheap heap jar_s jar_u jar_es jar_eu
 
 init: $(DISTDIR)/$(LIBNAME).init
 
-$(DISTDIR)/$(LIBNAME).init : $(DISTDIR) src/Llib/*.sch src/Misc/$(LIBNAME).init.in 
-	cat src/Misc/$(LIBNAME).init.in src/Llib/*.sch  > $@
+$(DISTDIR)/$(LIBNAME).init : $(DISTDIR)  src/Misc/$(LIBNAME).init.in $(MACROSRCS)
+	cat $(MACROSRCS) src/Misc/$(LIBNAME).init.in > $@
 
 jar_s: $(SCLASSDIR)  $(DISTDIR) $(SAFECLASSES)
 	$(JAR) -cf $(DISTDIR)/$(LIBNAME)_s-$(VERSION).zip -C $(SCLASSDIR)/../../ .
@@ -193,6 +203,14 @@ $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).so: $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
 $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a : $(OBJDIR) $(DISTDIR) $(SAFEOBJECTS)
 	$(AR) qcv $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a $(SAFEOBJECTS);\
 	$(RANLIB) $(DISTDIR)/lib$(LIBNAME)_s-$(VERSION).a
+
+$(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).so: $(OBJDIR) $(DISTDIR) $(PROFILEOBJECTS)
+	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).so $(PROFILEOBJECTS) -lc -lm
+
+$(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).a : $(OBJDIR) $(DISTDIR) $(PROFILEOBJECTS)
+	$(AR) qcv $(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).a $(PROFILEOBJECTS);\
+	$(RANLIB) $(DISTDIR)/lib$(LIBNAME)_p-$(VERSION).a
+
 
 $(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so : $(OBJDIR) $(DISTDIR) $(ESAFEOBJECTS)
 	$(LD) -G -o $(DISTDIR)/lib$(LIBNAME)_es-$(VERSION).so $(ESAFEOBJECTS) -lc -lm
@@ -236,7 +254,7 @@ $(EUCLASSDIR):
 
 
 check-syntax: .afile
-	$(BIGLOO) -afile .afile -syntax-check ${CHK_SOURCES}
+	$(BIGLOO) $(BCOMMONFLAGS) -afile .afile -syntax-check ${CHK_SOURCES}
 
 
 install: all

@@ -28,7 +28,9 @@
       (ring-buffer-push-front! rb::%ring-buffer item)
       (ring-buffer-push-back! rb::%ring-buffer item)
       (ring-buffer? obj)
-      (ring-buffer-copy rb::%ring-buffer)))
+      (ring-buffer-copy rb::%ring-buffer)
+      (ring-buffer-ref rb::%ring-buffer index::long)
+      (ring-buffer-grow! rb::%ring-buffer new-capacity)))
 
 
 (define (ring-buffer? obj)
@@ -50,12 +52,31 @@
               :msg "capacity must be a positivie number"))
           ((> (length objs) capacity)
               (raise-invalid-argument-exception :proc "ring-buffer"
-                                                :msg "capacity must be equal to or larger than the number of objects used to create the ring buffer"
-                                                :args objs)) 
+                 :msg "capacity must be equal to or larger than the number of objects used to create the ring buffer"
+                 :args objs)) 
         (else (let ((rb (make-ring-buffer :capacity capacity)))
                  (for-each (lambda (v) (ring-buffer-push-back! rb v)) objs)
                  rb))))
 
+(define (ring-buffer-grow! rb::%ring-buffer new-capacity)
+   (if (> new-capacity (ring-buffer-capacity rb))
+       (let ((curr-store (-> rb store))
+             (new-store (make-vector new-capacity)))
+          (do ((i 0 (+ i 1)))
+              ((= i (ring-buffer-length rb)))
+              (vector-set! new-store i (ring-buffer-ref rb i)))
+          (set! (-> rb front) 0)
+          (set! (-> rb back) (ring-buffer-length rb))
+          (set! (-> rb store) new-store))))
+
+(define (ring-buffer-ref rb::%ring-buffer index::long)
+   (if (< index (-> rb length))
+       (let ((real-index (modulofx (+ (-> rb front) index)
+                            (ring-buffer-capacity rb))))
+          (vector-ref (-> rb store) real-index))
+       (raise-invalid-argument-exception :proc "ring-buffer-ref"
+          :msg "invalid index"
+          :args index)))
 
 (define (ring-buffer-capacity rb::%ring-buffer)
    (vector-length (-> rb store)))

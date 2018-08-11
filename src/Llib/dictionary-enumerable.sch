@@ -3,84 +3,96 @@
 (define-syntax dictionary-enumerable-for-each
    (syntax-rules ()
       ((_ proc dict)
-       (if (dictionary-enum-or-enumer? dict)
-           (let ((enumer (get-dictionary-enumer dict)))
+       (let ((p proc)
+             (d dict))
+          (if (dictionary-enum-or-enumer? d)
+           (let ((enumer (get-dictionary-enumer d)))
               (let loop ((cont (dictionary-enumerator-move-next! enumer)))
                  (when cont
-                    (proc (dictionary-enumerator-key enumer)
+                    (p (dictionary-enumerator-key enumer)
                        (dictionary-enumerator-value enumer))
                     (loop (dictionary-enumerator-move-next! enumer)))))
            (raise-invalid-argument-exception :proc "dictionary-enumerable-for-each"
-              :args dict
-              :msg "agument is not a dictiontary-enumberator or dictionary-enumerable")))))
+              :args d
+              :msg "agument is not a dictiontary-enumberator or dictionary-enumerable"))))))
 
 (define-syntax dictionary-enumerable-map
    (syntax-rules ()
       ((_ proc1 dict)
-       (if (dictionary-enum-or-enumer? dict)
-           (instantiate::%dictionary-map-enumerator (enumer (get-dictionary-enumer dict))
-                                                    (proc proc1))
-           (raise-invalid-argument-exception :proc "dictionary-enumerable-map" :args dict
-              :msg "argument is not a dictionary-enumerator or dictionary-enumerable")))))
+       (let ((p proc1)
+             (d dict))
+          (if (dictionary-enum-or-enumer? d)
+           (instantiate::%dictionary-map-enumerator (enumer (get-dictionary-enumer d))
+                                                    (proc p))
+           (raise-invalid-argument-exception :proc "dictionary-enumerable-map" :args d
+              :msg "argument is not a dictionary-enumerator or dictionary-enumerable"))))))
 
 (define-syntax dictionary-enumerable-filter
    (syntax-rules ()
       ((_ predicate dict)
-       (if (dictionary-enum-or-enumer? dict)
-           (instantiate::%dictionary-filter-enumerator (pred predicate)
-                                                       (enumer (get-dictionary-enumer dict)))
-           (raise-invalid-argument-exception proc: "dictionary-enumerable-filter" args: dict
-              msg: "argument is not a dictionary-enumerator or dictionary-enumerable")))))
+       (let ((p predicate)
+             (d dict))
+          (if (dictionary-enum-or-enumer? d)
+              (instantiate::%dictionary-filter-enumerator (pred p)
+                                                          (enumer (get-dictionary-enumer d)))
+              (raise-invalid-argument-exception proc: "dictionary-enumerable-filter" args: d
+                 msg: "argument is not a dictionary-enumerator or dictionary-enumerable"))))))
 
 (define-syntax dictionary-enumerable-fold
    (syntax-rules ()
       ((_ proc seed dict)
-       (if (dictionary-enum-or-enumer? dict)
-           (let ((enumer (get-dictionary-enumer dict)))
-              (let loop ((cont (dictionary-enumerator-move-next! enumer))
-                         (s seed))
-                 (if cont
-                     (let ((ns (proc s (dictionary-enumerator-key enumer)
-                                  (dictionary-enumerator-value enumer))))
-                        (loop (dictionary-enumerator-move-next! enumer)
-                           ns))
-                     s)))
-           (raise-invalid-argument-exception :proc "dictionary-enumerable-fold" :args dict
-              :msg "argument is not a dictionary-enumerator or dictionary-enumerable")))))
+       (let ((p proc)
+             (d dict))
+          (if (dictionary-enum-or-enumer? d)
+              (let ((enumer (get-dictionary-enumer d)))
+                 (let loop ((cont (dictionary-enumerator-move-next! enumer))
+                            (s seed))
+                    (if cont
+                        (let ((ns (proc s (dictionary-enumerator-key enumer)
+                                     (dictionary-enumerator-value enumer))))
+                           (loop (dictionary-enumerator-move-next! enumer)
+                              ns))
+                        s)))
+              (raise-invalid-argument-exception :proc "dictionary-enumerable-fold" :args d
+                 :msg "argument is not a dictionary-enumerator or dictionary-enumerable"))))))
 
 (define-syntax dictionary-enumerable-any?
    (syntax-rules ()
       ((_ pred dict)
-       (bind-exit (return)
-          (if (dictionary-enum-or-enumer? dict)
-              (let ((enumer (get-dictionary-enumer dict)))
+       (let ((p pred)
+             (d dict))
+          (bind-exit (return)
+          (if (dictionary-enum-or-enumer? d)
+              (let ((enumer (get-dictionary-enumer d)))
                  (let loop ((cont (dictionary-enumerator-move-next! enumer)))
                     (if cont
-                        (let ((res (pred (dictionary-enumerator-key enumer)
+                        (let ((res (p (dictionary-enumerator-key enumer)
                                       (dictionary-enumerator-value enumer))))
                            (if (not res)
                                (loop (dictionary-enumerator-move-next! enumer))
                                (return res)))
                         #f)))
-              (raise-invalid-argument-exception :proc "dictionary-enumerable-any?" :args dict
-                 :msg "argument is not a dictionary-enumerator or dictionary-enumerable"))))))
+              (raise-invalid-argument-exception :proc "dictionary-enumerable-any?" :args d
+                 :msg "argument is not a dictionary-enumerator or dictionary-enumerable")))))))
 
 (define-syntax dictionary-enumerable-every?
    (syntax-rules ()
       ((_ pred dict)
-       (bind-exit (return)
-          (if (dictionary-enum-or-enumer? dict)
-              (let ((enumer (get-dictionary-enumer dict)))
+       (let ((p pred)
+             (d dict))
+          (bind-exit (return)
+          (if (dictionary-enum-or-enumer? d)
+              (let ((enumer (get-dictionary-enumer d)))
                  (let loop ((cont (dictionary-enumerator-move-next! enumer)))
                     (if cont
-                        (let ((res (pred (dictionary-enumerator-key enumer)
+                        (let ((res (p (dictionary-enumerator-key enumer)
                                       (dictionary-enumerator-value enumer))))
                            (if (not res)
                                (return res)
                                (loop (dictionary-enumerator-move-next! enumer))))
                         #t)))
-              (raise-invalid-argument-exception :proc "dictionary-enumerable-every?" :args dict
-                 :msg "argument is not a dictionary-enumerator or dictionary-enumerable"))))))
+              (raise-invalid-argument-exception :proc "dictionary-enumerable-every?" :args d
+                 :msg "argument is not a dictionary-enumerator or dictionary-enumerable")))))))
 
 (define-syntax dictionary-enumerable-append
    (syntax-rules ()
@@ -97,18 +109,20 @@
 (define-syntax dictionary-enumerable-collect
    (syntax-rules ()
       ((_ obj coll)
-       (if (and (collector? coll)
-                (dictionary-enum-or-enumer? obj))
-           (let ((enumer (get-dictionary-enumer obj)))
+       (let ((o obj)
+             (c coll))
+          (if (and (collector? c)
+                (dictionary-enum-or-enumer? o))
+           (let ((enumer (get-dictionary-enumer o)))
               (let loop ((cont (dictionary-enumerator-move-next! enumer))
-                         (supp (collector-supplier coll)))
+                         (supp (collector-supplier c)))
                  (if cont
-                     (let ((newsupp (collector-accumulate coll supp (dictionary-enumerator-current enumer))))
+                     (let ((newsupp (collector-accumulate c supp (dictionary-enumerator-current enumer))))
                         (loop (dictionary-enumerator-move-next! enumer)
                            newsupp))
-                     (collector-finish coll supp))))
-           (raise-invalid-argument-exception proc: "dictionary-enumerable-collect" args: (list coll obj)
-              msg: "either we have an invalid enumerable/enumerator or invalid collector")))))
+                     (collector-finish c supp))))
+           (raise-invalid-argument-exception proc: "dictionary-enumerable-collect" args: (list c o)
+              msg: "either we have an invalid enumerable/enumerator or invalid collector"))))))
 
 
 

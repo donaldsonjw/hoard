@@ -1,6 +1,6 @@
 (module hoard/hash-bag
    (include "enumerable.sch")
-   (include "dictionary-enumerable.sch")
+   (include "dictionary_enumerable.sch")
    (import hoard/collection
            hoard/exceptions
            hoard/bag

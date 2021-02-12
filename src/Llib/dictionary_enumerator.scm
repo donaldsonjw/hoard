@@ -12,6 +12,7 @@
               pred)
            (class %dictionary-append-enumerator
               enumers)
+           (class %alist-enumerator::%list-enumerator)
            (generic dictionary-enumerator-move-next! obj)
            (generic dictionary-enumerator-current obj)
            (generic dictionary-enumerator-key obj)
@@ -20,8 +21,13 @@
            (generic dictionary-enumerator? obj)
            (dictionary-enumerator->list enumer)
            (dictionary-enumerator->vector enumer)
-           (dictionary-enumerator->hashtable enumer)))
+           (dictionary-enumerator->hashtable enumer)
+           (alist? obj)))
 
+;;; are we looking at a list being used as an alist
+(define (alist? obj)
+   (and (pair-or-null? obj)
+        (every pair? obj)))
 
 
 ;;;; dictionary enumerator protocol
@@ -64,6 +70,27 @@
 (define-method (dictionary-enumerator-value enumerator::%hashtable-enumerator)
    (enumerator-current enumerator))
 
+;;;; alist implementation
+
+(define-method (dictionary-enumerator? enumerator::%alist-enumerator)
+   #t)
+
+(define-method (dictionary-enumerator-copy enumerator::%alist-enumerator)
+   (duplicate::%alist-enumerator enumerator))
+
+(define-method (dictionary-enumerator-move-next! enumerator::%alist-enumerator)
+    (enumerator-move-next! enumerator))
+
+(define-method (dictionary-enumerator-current enumerator::%alist-enumerator)
+   (let ((curr (enumerator-current enumerator)))
+      (=> (car curr) (cdr curr))))
+
+(define-method (dictionary-enumerator-key enumerator::%alist-enumerator)
+   (let ((curr (enumerator-current enumerator)))
+      (car curr)))
+
+(define-method (dictionary-enumerator-value enumerator::%alist-enumerator)
+   (cdr (enumerator-current enumerator)))
 
 ;;;; vector implementation
 (define-method (dictionary-enumerator? enumerator::%vector-enumerator)

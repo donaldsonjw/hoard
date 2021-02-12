@@ -126,6 +126,48 @@
          (assert-equal? (dictionary-enumerator-value enumer2) #\a)))
 
 
+      (test "dictionary-enumerator for an alist throws an exception if enumerator-move-next is not called before enumerator-current"
+      (let ((enum (collection-enumerator (list))))
+         (assert-exception-thrown (dictionary-enumerator-current enum)
+            &error)))
+   
+   (test "dictionary-enumerator for alist immediately returns false on empty alist"
+      (let ((enum (collection-enumerator '())))
+         (assert-false (dictionary-enumerator-move-next! enum))))
+
+   (test "dictionary-enumerator for '((a . 1) (b . 2) (c . 3))  returns 3 items"
+      (let ((enum (collection-enumerator '((a . 1) (b . 2) (c . 3)))))
+         (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! enum))
+                                   (res '()))
+                           (if cont
+                               (let ((t (dictionary-enumerator-value enum))) 
+                                  (loop (dictionary-enumerator-move-next! enum)
+                                     (cons t res)))
+                               (reverse! res))) (list 1 2 3))))
+
+   (test "dictionary-enumerator enumerates over keys correctly '((a . 1) (b . 2) (c . 3))"
+      (let ((enum (collection-enumerator '((a . 1) (b . 2) (c . 3)))))
+         (assert-equal? (let loop ((cont (dictionary-enumerator-move-next! enum))
+                                   (res '()))
+                           (if cont
+                               (let ((t (dictionary-enumerator-key enum))) 
+                                  (loop (dictionary-enumerator-move-next! enum)
+                                     (cons t res)))
+                               (reverse! res))) (list 'a 'b 'c))))
+
+   (test "dictionary-enumerator-copy works for alist-enumerators"
+      (let* ((alist '((a . 1) (b . 2) (c . 3)))
+             (enumer1 (dictionary-enumerator alist))
+             (enumer2 (dictionary-enumerator-copy enumer1)))
+         (dictionary-enumerator-move-next! enumer1)
+         (dictionary-enumerator-move-next! enumer1)
+         (assert-equal? (dictionary-enumerator-key enumer1) 'b)
+         (assert-equal? (dictionary-enumerator-value enumer1) 2)
+         (dictionary-enumerator-move-next! enumer2)
+         (assert-equal? (dictionary-enumerator-key enumer2) 'a)
+         (assert-equal? (dictionary-enumerator-value enumer2) 1)))
+
+
    (test "dictionary-enumerator->hashtable works"
       (let* ((dict (hashtable (=> 'a 1) (=> 'b 2) (=> 'c 3)))
              (res (dictionary-enumerator->hashtable

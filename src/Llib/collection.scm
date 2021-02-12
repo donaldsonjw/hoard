@@ -54,7 +54,9 @@
                  
 
 (define-generic (collection-enumerator obj)
-   (cond ((list? obj)
+   (cond ((alist? obj)
+          (instantiate::%alist-enumerator (curr obj)))
+         ((list? obj)
           (instantiate::%list-enumerator (curr obj)))
          ((vector? obj)
           (instantiate::%vector-enumerator (vec obj)))

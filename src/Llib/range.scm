@@ -10,11 +10,11 @@
       (class %range-enumerator
          (curr (default #unspecified))
          range::%range)
-      ( range-for-each proc::procedure range::%range)
-      ( range #!key (start 0) end (step 1))
-      ( range-map proc::procedure range::%range)
-      ( valid-range-args? start end step)
-      ( range? obj)))
+      (range-for-each proc::procedure range::%range)
+      (range #!key (start 0) end (step 1))
+      (range-map proc::procedure range::%range)
+      (valid-range-args? start end step)
+      (range? obj)))
 
 
 

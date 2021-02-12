@@ -8,7 +8,9 @@
 
    (test "dictionary? works"
       (assert-true (dictionary? (create-hashtable)))
-      (assert-false (dictionary? (list))))
+      (assert-true (dictionary? (list)))
+      (assert-true (dictionary? '((a . 2))))
+      (assert-false (dictionary? '(3))))
 
    (test "dictionary-get and dictionary-put!  works"
       (let ((dict (create-hashtable)))

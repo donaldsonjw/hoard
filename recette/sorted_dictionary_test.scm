@@ -119,7 +119,7 @@
    ;;; dictionary tests
    (test "dictionary? works"
       (assert-true (dictionary? (sorted-dictionary :comparator +string-comparator+)))
-      (assert-false (dictionary? (list))))
+      (assert-false (dictionary? (list 1))))
 
    (test "dictionary-get and dictionary-put!  works"
       (let ((dict (sorted-dictionary :comparator +char-comparator+)))

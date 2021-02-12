@@ -23,7 +23,8 @@
       
       (class %map-enumerator
          enumers
-         proc)
+         proc
+         (curr (default 'map-enumerator-undefined)))
       (class %filter-enumerator
          enumer
          pred)
@@ -106,8 +107,6 @@
           :obj enumerator)
        (vector-ref (-> enumerator vec) (-> enumerator curr-index))))
    
-  
-
 ;;; string-enumerator implementation
 (define-method (enumerator? enumerator::%string-enumerator)
    #t)
@@ -213,13 +212,18 @@
       (enumers (map enumerator-copy (-> enumerator enumers)))))
 
 (define-method (enumerator-move-next! enumerator::%map-enumerator)
-   (every enumerator-move-next! (-> enumerator enumers)))
-
+   (and-let* ((next (every enumerator-move-next! (-> enumerator enumers))))
+      (set! (-> enumerator curr)
+         (apply (-> enumerator proc)
+            (map enumerator-current (-> enumerator enumers))))
+      next))
 
 (define-method (enumerator-current enumerator::%map-enumerator)
-   (let ((vals (map enumerator-current (-> enumerator enumers))))
-      (apply (-> enumerator proc) vals)))
-
+   (if (eq? (-> enumerator curr) 'map-enumerator-undefined)
+       (raise-invalid-state-exception :proc "enumerator-current"
+          :msg "invalid state; enumerator-move-next must be called before enumerator-current"
+          :obj enumerator)
+       (-> enumerator curr)))
 
 ;;;; filter-enumerator implementation
 (define-method (enumerator? enumerator::%filter-enumerator)

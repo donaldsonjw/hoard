@@ -28,11 +28,11 @@ BHEAPFLAGS = -I src/Llib -unsafe -q -mkaddheap -mkaddlib \
 BCOMMONFLAGS = -mkaddlib -fsharing -q \
                -copt '$(CCOMMONFLAGS)' -I src/Llib
 
-BSAFEFLAGS = $(BCOMMONFLAGS) -O6 
+BSAFEFLAGS = $(BCOMMONFLAGS) -O6 -freturn-goto -cg
 
 BPROFILEFLAGS = $(BCOMMONFLAGS) -p -O6
 
-BUNSAFEFLAGS = $(BCOMMONFLAGS) -O6 -unsafe
+BUNSAFEFLAGS = $(BCOMMONFLAGS) -O6 -unsafe -freturn-goto -cg
 
 #C Flags
 CCOMMONFLAGS = -fPIC

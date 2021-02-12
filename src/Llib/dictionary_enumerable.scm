@@ -12,7 +12,8 @@
 (define-generic (dictionary-enumerable? obj)
    (or (hashtable? obj)
        (vector? obj)
-       (string? obj)))
+       (string? obj)
+       (alist? obj)))
 
 (define-generic (dictionary-enumerable-enumerator obj)
    (cond ((hashtable? obj)
@@ -21,6 +22,8 @@
           (instantiate::%vector-enumerator (vec obj)))
          ((string? obj)
           (instantiate::%string-enumerator (str obj)))
+         ((alist? obj)
+          (instantiate::%alist-enumerator (curr obj)))
          (else
           (raise-unsupported-operation-exception :proc "dictionary-enumerable-enumerator"
              :obj obj))))

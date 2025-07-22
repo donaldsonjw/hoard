@@ -1,4 +1,3 @@
-
 ;;;; Copyright(c) 2016 Joseph Donaldson(donaldsonjw@yahoo.com) 
 ;;;; This file is part of btest.
 ;;;;
@@ -16,10 +15,8 @@
 ;;;;     License along with collections.  If not, see
 ;;;;     <http://www.gnu.org/licenses/>.
 
-
-
 (declare-library! 'hoard 
-   :version "0.5"
+   :version "@VERSION@"
    :srfi '(hoard)
    :basename "hoard"
    :module-eval 'hoard_make_lib)

@@ -26,6 +26,7 @@ RANLIB = ranlib
 INSTALL = install
 RM = rm -rf
 SED = sed
+MAKEINFO = makeinfo
 
 BIGLOO_VERSION = $(shell $(BIGLOO) -eval "(print (bigloo-config 'release-number)) (exit 0)" -q)
 
@@ -620,6 +621,18 @@ $(JFILE): $(SCM_SRC)
 
 check-syntax: $(AFILE) release_libs 
 	$(BIGLOO) -c $(BFLAGS_s) $(BLFLAGS_s) -syntax-check ${CHK_SOURCES}
+
+DOCSRCS = $(wildcard manual/*.texi)
+
+manual: manual-html manual-pdf
+
+manual-html : $(DOCSRCS)
+	(cd manual; \
+	$(MAKEINFO) --html hoard.texi)
+
+manual-pdf : $(DOCSRCS)
+	(cd manual; \
+	$(MAKEINFO) --pdf hoard.texi)
 
 install: all
 	@echo "installing..."

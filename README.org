@@ -1,0 +1,90 @@
+* hoard Readme
+:PROPERTIES:
+:CUSTOM_ID: hoard-readme
+:END:
+** Description
+:PROPERTIES:
+:CUSTOM_ID: description
+:END:
+hoard's aim is to be a collections framework for Bigloo. It provides a
+number of protocols (i.e., collections of generic methods) that define
+the interfaces required by commmon collection types and multiple
+implementations of each protocol.
+
+It currently defines the following protocols:
+** Protocols
+:PROPERTIES:
+:CUSTOM_ID: protocols
+:END:
+- collection
+- indexable
+- extendable
+- mutable
+- enumerator
+- enumerable
+- collector
+- comparator
+- bag
+- set
+- queue
+- stack
+- priority-queue
+- dictionary
+- dictionary-enumerator
+- dictionary-enumerable
+
+And it currently provides the following concrete collection
+implementations and supporting data types:
+
+** Implementations and Supporting Data Types
+:PROPERTIES:
+:CUSTOM_ID: implementations-and-supporting-data-types
+:END:
+- association
+- range
+- sorted-bag
+- hash-bag
+- sorted-set
+- hash-set
+- stretchy-vector
+- linked-queue
+- contiguous-queue
+- linked-stack
+- continguous-stack
+- binary-heap
+- pairing-heap
+- sorted-dictionary
+
+
+** Building
+Both the Bigloo native and jvm backends are supported. To build, execute 
+   #+begin_src shell
+  ./configure --prefix<installation path prefix>; make 
+#+end_src 
+where =<installation path prefix>= is the desired installation path
+prefix (e.g, =/usr/local=). You usually want the path prefix to match
+that used by Bigloo itself.
+
+** Installation 
+  To install the library, execute:
+#+begin_src shell
+  make install
+#+end_src 
+
+** Tests
+To run the tests execute:
+
+  #+begin_src shell
+  make test
+#+end_src
+
+** Documentation
+:PROPERTIES:
+:CUSTOM_ID: documentation
+:END:
+The current documentation is incomplete but can be found in the
+[[https://github.com/donaldsonjw/hoard/raw/master/manual/hoard.pdf][manual]].
+The protocols are mostly documented but work remains for the concrete
+implementation documentation. There are also number of tests included
+which can provide examples of using the library (To run the tests, you
+will need to install [[https://github.com/donaldsonjw/btest][btest]]).

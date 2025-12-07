@@ -14,16 +14,16 @@
          stk::%contiguous-stack
          (curr-idx (default #unspecified)))
       
-      ( make-contiguous-stack #!key capacity)
-      ( contiguous-stack? obj)
-      ( contiguous-stack-capacity stk::%contiguous-stack)
-      ( contiguous-stack-push! stk::%contiguous-stack item)
-      ( contiguous-stack #!key capacity #!rest rest)
-      ( contiguous-stack-pop! stk::%contiguous-stack)
-      ( contiguous-stack-top stk::%contiguous-stack)
-      ( contiguous-stack-empty? stk::%contiguous-stack)
-      ( contiguous-stack-length stk::%contiguous-stack)
-      ( contiguous-stack-copy stk::%contiguous-stack)))
+      (make-contiguous-stack #!key capacity)
+      (contiguous-stack? obj)
+      (contiguous-stack-capacity stk::%contiguous-stack)
+      (contiguous-stack-push! stk::%contiguous-stack item)
+      (contiguous-stack #!key capacity #!rest rest)
+      (contiguous-stack-pop! stk::%contiguous-stack)
+      (contiguous-stack-top stk::%contiguous-stack)
+      (contiguous-stack-empty? stk::%contiguous-stack)
+      (contiguous-stack-length stk::%contiguous-stack)
+      (contiguous-stack-copy stk::%contiguous-stack)))
 
 
 (define (contiguous-stack? obj)

@@ -14,7 +14,7 @@
                   #!rest list-of-associations)
            (hashtable-comparator table)
            (hashtable-copy table)
-           ( hashtable-buckets hash)
+           (hashtable-buckets hash)
            +hashtable-buckets-index+))
 
 

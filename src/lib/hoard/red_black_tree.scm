@@ -26,7 +26,11 @@
               (started (default #f))
               curr::%red-black-node
               nodes)
-           ( red-black-tree? obj)
+           (class %red-black-tree-reverse-enumerator
+              (started (default #f))
+              curr::%red-black-node
+              nodes)
+           (red-black-tree? obj)
            +red-black-node-nil+
            (make-red-black-tree #!key comparator)
            (red-black-tree-size tree::%red-black-tree)
@@ -42,8 +46,9 @@
            (red-black-tree-find-max tree::%red-black-tree)
            (red-black-tree-delete-max! tree::%red-black-tree)
            (make-red-black-tree-in-order-enumerator tree::%red-black-tree)
+           (make-red-black-tree-reverse-order-enumerator tree::%red-black-tree)
            (red-black-tree-copy tree::%red-black-tree)
-           ( red-black-node-copy node::%red-black-node)))
+           (red-black-node-copy node::%red-black-node)))
 
 (define +red-black-node-nil+ (class-nil %red-black-node))
 
@@ -386,7 +391,7 @@
       (when (not (eq? curr +red-black-node-nil+))
          (stack-push! stack curr)
          (loop (-> curr left))))) 
-          
+
 (define-method (enumerator-move-next! enumerator::%red-black-tree-enumerator)
    (cond ((and (eq? #f (-> enumerator started))
                (not (stack-empty? (-> enumerator nodes))))
@@ -415,4 +420,46 @@
        (-> enumerator curr item)))
 
 
+;;;; red-black-tree-enumerator implementation
+(define (make-red-black-tree-reverse-order-enumerator tree::%red-black-tree)
+   (let ((stack (linked-stack)))
+      (when (not (red-black-tree-empty? tree))
+         (stack-push! stack (-> tree root)))
+      (instantiate::%red-black-tree-reverse-enumerator (curr +red-black-node-nil+) (nodes stack))))
+
+(define-method (enumerator? enumerator::%red-black-tree-reverse-enumerator)
+   #t)
+
+
+(define (push-right-spine! node::%red-black-node stack)
+   (let loop ((curr::%red-black-node node))
+      (when (not (eq? curr +red-black-node-nil+))
+         (stack-push! stack curr)
+         (loop (-> curr right))))) 
+
+(define-method (enumerator-move-next! enumerator::%red-black-tree-reverse-enumerator)
+   (cond ((and (eq? #f (-> enumerator started))
+               (not (stack-empty? (-> enumerator nodes))))
+          (set! (-> enumerator started) #t)
+          (push-right-spine! (stack-pop! (-> enumerator nodes)) (-> enumerator nodes))
+          (set! (-> enumerator curr) (stack-pop! (-> enumerator nodes)))
+          (push-right-spine! (-> enumerator curr left) (-> enumerator nodes))
+          #t)
+         ((not (stack-empty? (-> enumerator nodes)))
+          (set! (-> enumerator curr) (stack-pop! (-> enumerator nodes)))
+          (push-right-spine! (-> enumerator curr left) (-> enumerator nodes))
+          #t)
+         (else
+          #f)))
+
+(define-method (enumerator-copy enumerator::%red-black-tree-reverse-enumerator)
+   (duplicate::%red-black-tree-reverse-enumerator enumerator
+      (nodes (stack-copy (-> enumerator nodes)))))
        
+
+(define-method (enumerator-current enumerator::%red-black-tree-reverse-enumerator)
+   (if (not (-> enumerator started))
+       (raise-invalid-state-exception :proc "enumerator-current"
+          :msg "invalid state; enumerator-move-next! must be called before enumerator-current"
+          :obj enumerator)
+       (-> enumerator curr item)))

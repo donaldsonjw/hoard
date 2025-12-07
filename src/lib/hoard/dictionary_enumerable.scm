@@ -4,8 +4,8 @@
            hoard/dictionary-enumerator)
    (export (generic dictionary-enumerable? obj)
            (generic dictionary-enumerable-enumerator obj)
-           ( dictionary-enum-or-enumer? obj)
-           ( get-dictionary-enumer obj)))
+           (dictionary-enum-or-enumer? obj)
+           (get-dictionary-enumer obj)))
 
 
 ;;;; dictionary enumerable protocol

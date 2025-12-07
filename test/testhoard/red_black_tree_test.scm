@@ -153,6 +153,33 @@
          (assert-equal? (enumerator->list enumer) '(1 2 3 4))
          (assert-equal? (enumerator->list cln) '(1 2 3 4))))
 
+   ;;;; red-black-tree-reverse-enumerator tests
+   (test "red-black-tree-reverse-order-enumerator throws an exception if enumerator-move-next is not called before enumerator-current"
+      (let ((rbt-enum (make-red-black-tree-reverse-order-enumerator (red-black-tree :comparator +number-comparator+ 1 2 3 4))))
+         (assert-exception-thrown (enumerator-current rbt-enum)
+            &error)))
+     
+   (test "red-black-tree-in-order-enumerator immediately returns false when empty"
+       (let ((rbt-enum (make-red-black-tree-reverse-order-enumerator (red-black-tree :comparator +number-comparator+))))
+          (assert-false (enumerator-move-next! rbt-enum))))
+
+   (test "red-black-tree-reverse-order-enumerator for (red-black-tree :comparator +number-comparator+ 1 8 2 7 3 6 4 )  return 8 items"
+      (let ((rbt (red-black-tree :comparator +number-comparator+ 1 8 2 7 3 6 4 5)))
+         (let ((enum (make-red-black-tree-reverse-order-enumerator rbt)))
+            (assert-equal? (let loop ((cont (enumerator-move-next! enum))
+                                      (res '()))
+                              (if cont
+                                  (let ((t (enumerator-current enum))) 
+                                     (loop (enumerator-move-next! enum)
+                                        (cons t res)))
+                                  res)) (list 1 2 3 4 5 6 7 8)))))
+   
+   (test "cloning enumerators works correctly on red-black-tree-in-order-enumerators"
+      (let* ((rbt (red-black-tree :comparator +number-comparator+ 1 4 2 3))
+             (enumer (make-red-black-tree-reverse-order-enumerator rbt))
+             (cln (enumerator-copy enumer)))
+         (assert-equal? (enumerator->list enumer) '(4 3 2 1))
+         (assert-equal? (enumerator->list cln) '(4 3 2 1))))
 
     )
 

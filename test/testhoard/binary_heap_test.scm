@@ -36,8 +36,7 @@
          (assert-equal? (binary-heap-dequeue! heap) 2)
          (assert-equal? (binary-heap-dequeue! heap) 3)
          (assert-equal? (binary-heap-dequeue! heap) 4)
-         (assert-equal? (binary-heap-dequeue! heap) 5)
-         ))
+         (assert-equal? (binary-heap-dequeue! heap) 5)))
 
    (test "binary-heap-first works"
       (let ((heap (binary-heap :capacity 4 :comparator +number-comparator+ 3 2 5 8)))
@@ -57,11 +56,6 @@
          (binary-heap-dequeue! heap)
          (assert-equal? (binary-heap-length heap) 0)))
    
-   (test "binary-heap-enqueue! throws an exception inqueueing into a full heap"
-      (let ((heap (binary-heap :capacity 1 :comparator +number-comparator+ 1)))
-         (assert-exception-thrown (binary-heap-enqueue! heap 2)
-            &invalid-state-exception)))
-
    (test "binary-heap-dequeue! throws an exception when deqeueing into a empty heap"
       (let ((heap (binary-heap :capacity 1 :comparator +number-comparator+)))
          (assert-exception-thrown (binary-heap-dequeue! heap)

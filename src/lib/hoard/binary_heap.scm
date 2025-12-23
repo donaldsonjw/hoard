@@ -1,5 +1,6 @@
 (module hoard/binary-heap
    (import hoard/priority-queue
+           hoard/stretchy-vector
            hoard/extendable
            hoard/collection
            hoard/mutable-collection
@@ -15,8 +16,8 @@
               heap::%binary-heap
               (curr-idx (default #unspecified)))
            (binary-heap? obj)
-           (make-binary-heap #!key capacity comparator)
-           (binary-heap #!key capacity comparator #!rest vals)
+           (make-binary-heap #!key (capacity 16) comparator)
+           (binary-heap #!key (capacity 16) comparator #!rest vals)
            (binary-heap-enqueue! heap::%binary-heap itm)
            (binary-heap-dequeue! heap::%binary-heap)
            (binary-heap-length heap::%binary-heap)
@@ -31,34 +32,34 @@
 (define (binary-heap? obj)
    (isa? obj %binary-heap))
 
-(define (make-binary-heap #!key capacity comparator)
+(define (make-binary-heap #!key (capacity 16) comparator)
    (when (or (not (integer? capacity))
              (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "make-binary-heap"
          :msg "capacity must be an integer and comparator a comparator object"
          :args (list :capacity capacity :comparator comparator)))
-   (instantiate::%binary-heap (store (make-vector capacity))
+   (instantiate::%binary-heap (store (make-stretchy-vector capacity))
                               (comparator comparator)))
 
-(define (binary-heap #!key capacity comparator #!rest vals)
+(define (binary-heap #!key (capacity 16) comparator #!rest vals)
    (when (or (not (integer? capacity))
              (not (comparator? comparator)))
       (raise-invalid-argument-exception :proc "binary-heap"
          :msg "capacity must be an integer and comparator a comparator object"
          :args (list :capacity capacity :comparator comparator)))   
-   (let ((res::%binary-heap (instantiate::%binary-heap (store (make-vector capacity))
+   (let ((res::%binary-heap (instantiate::%binary-heap (store (make-stretchy-vector capacity))
                                                        (comparator comparator))))
       (do ((i 0 (+ i 1))
            (lst vals (cdr lst)))
           ((null? lst))
-          (vector-set! (-> res store) i (car lst)))
+          (stretchy-vector-set! (-> res store) i (car lst)))
       (set! (-> res idx) (length vals))
       (binary-heap-heapify! (-> res store) (length vals) comparator)
       res))
 
 (define (binary-heap-copy heap::%binary-heap)
   (duplicate::%binary-heap
-   heap (store (vector-copy (-> heap store) 0 (vector-length (-> heap store)))))) 
+   heap (store (stretchy-vector-copy (-> heap store) :start 0 :length (stretchy-vector-length (-> heap store)))))) 
 
 (define (binary-heap-heapify! vec len comparator)
    (do ((i (/fx len 2) (- i 1)))
@@ -78,22 +79,17 @@
       (let loop ((i idx)
                  (p (parent-idx idx)))
          (if (or (= i 0)
-                 (comparator<? comparator (vector-ref vec p)
-                    (vector-ref vec i)))
+                 (comparator<? comparator (stretchy-vector-ref vec p)
+                    (stretchy-vector-ref vec i)))
              #unspecified
              (begin
-                (let ((temp (vector-ref vec i)))
-                   (vector-set! vec i (vector-ref vec p))
-                   (vector-set! vec p temp)
+                (let ((temp (stretchy-vector-ref vec i)))
+                   (stretchy-vector-set! vec i (stretchy-vector-ref vec p))
+                   (stretchy-vector-set! vec p temp)
                    (loop p (parent-idx p)))))))
-   (if (= (-> heap idx) (vector-length (-> heap store)))
-       (raise-invalid-state-exception :proc "binary-heap-enqueue!"
-          :msg "cannot enqueue an item on a full heap"
-          :obj heap)
-       (begin
-          (vector-set! (-> heap store) (-> heap idx) itm)
-          (bubble-up! (-> heap store) (-> heap idx) (-> heap comparator))
-          (set! (-> heap idx) (+ (-> heap idx) 1)))))
+   (stretchy-vector-set! (-> heap store) (-> heap idx) itm)
+   (bubble-up! (-> heap store) (-> heap idx) (-> heap comparator))
+   (set! (-> heap idx) (+ (-> heap idx) 1)))
 
 
 (define (binary-heap-bubble-down! vec start fin comparator)
@@ -105,26 +101,26 @@
               (l (left-child-idx 0))
               (r (right-child-idx 0)))
       (let ((gtl  (and (< l fin)
-                       (comparator<? comparator (vector-ref vec l)
-                          (vector-ref vec i))))
+                       (comparator<? comparator (stretchy-vector-ref vec l)
+                          (stretchy-vector-ref vec i))))
             (gtr  (and (< r fin)
-                       (comparator<? comparator (vector-ref vec r)
-                          (vector-ref vec i)))))
+                       (comparator<? comparator (stretchy-vector-ref vec r)
+                          (stretchy-vector-ref vec i)))))
          (if (or (>=  i fin)
                  (not (or gtl
                           gtr)))
              #unspecified
-             (let ((temp (vector-ref vec i))
+             (let ((temp (stretchy-vector-ref vec i))
                    (ci (cond ((and gtl (not gtr))
                               l)
                              ((and gtr (not gtl))
                               r)
                              (else
-                              (if (comparator<? comparator (vector-ref vec l)
-                                     (vector-ref vec r))
+                              (if (comparator<? comparator (stretchy-vector-ref vec l)
+                                     (stretchy-vector-ref vec r))
                                   l r)))))
-                (vector-set! vec i (vector-ref vec ci))
-                   (vector-set! vec ci temp)
+                (stretchy-vector-set! vec i (stretchy-vector-ref vec ci))
+                   (stretchy-vector-set! vec ci temp)
                    (loop ci
                       (left-child-idx ci)
                       (right-child-idx ci)))))))
@@ -134,9 +130,9 @@
        (raise-invalid-state-exception :proc "binary-heap-dequeue!"
           :msg "cannot dequeue an item from an empty heap"
           :obj heap)
-       (let ((res (vector-ref (-> heap store) 0)))
-          (vector-set! (-> heap store) 0
-             (vector-ref (-> heap store) (- (-> heap idx) 1)))
+       (let ((res (stretchy-vector-ref (-> heap store) 0)))
+          (stretchy-vector-set! (-> heap store) 0
+             (stretchy-vector-ref (-> heap store) (- (-> heap idx) 1)))
           (set! (-> heap idx) (- (-> heap idx) 1))
           (binary-heap-bubble-down! (-> heap store) 0 (-> heap idx) (-> heap comparator))
           res)))
@@ -146,10 +142,10 @@
        (raise-invalid-state-exception :proc "binary-heap-first"
           :msg "cannot obtain the first item of an empty heap"
           :obj heap)
-       (vector-ref (-> heap store) 0)))
+       (stretchy-vector-ref (-> heap store) 0)))
 
 (define (binary-heap-capacity heap::%binary-heap)
-   (vector-length (-> heap store)))
+   (stretchy-vector-length (-> heap store)))
 
 ;;;; priority-queue protocol implementation
 (define-method (priority-queue? obj::%binary-heap)
@@ -205,7 +201,7 @@
        (raise-invalid-state-exception :proc "enumerator-current"
           :msg "invalid state; enumerator-move-next must be called before enumerator-current"
           :obj enumerator)
-       (vector-ref (-> enumerator heap store) (-> enumerator curr-idx))))
+       (stretchy-vector-ref (-> enumerator heap store) (-> enumerator curr-idx))))
 
 ;;;; collection protocol implementation
 (define-method (collection? obj::%binary-heap)

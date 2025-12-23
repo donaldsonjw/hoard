@@ -41,16 +41,16 @@ protocols. @xref{priority-queue}. @xref{collection}. @xref{extendable}. @xref{mu
 @node make-binary-heap, binary-heap constructor, binary-heap?, binary-heap API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} make-binary-heap :capacity :comparator 
-@b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the priority queue and
+@b{requires} @code{:capacity} be a positive integer specifying the initial capacity of the priority queue and
 @code{:comparator} be an object implementing the @code{comparator} protocol. @code{:comparator} must be ordered.@* @*
-@b{returns} a new @code{binary-heap} with a capacity of @code{:capacity}
+@b{returns} a new @code{binary-heap} with an initial capacity of @code{:capacity}
 @end deffn
 
 @node binary-heap constructor,binary-heap-copy, make-binary-heap, binary-heap API Reference
 @comment node-name, next,          previous, up
 @deffn {procedure} binary-heap :capacity :comparator . items
 @b{requires} @code{:capacity} be a positive integer specifying the maximum capacity of the priority queue, @code{:comparator} be an object implementing the @code{comparator} protocol, and items be a list of items to initialize the queue with. @code{:comparator} must be ordered. @* @*
-@b{returns} a new @code{binary-heap} with a capacity of @code{:capacity} containing @code{items} enqueued on the priorty queue. If the number of  @code{items} is greater than @code{:capacity}, @code{&invalid-argument-exeption} is thrown. 
+@b{returns} a new @code{binary-heap} with an initial capacity of @code{:capacity} containing @code{items} enqueued on the priorty queue. If the number of  @code{items} is greater than @code{:capacity}, the binary-heap will be expanded to accomodate. 
 @end deffn
 
 @node binary-heap-copy,binary-heap-empty?, binary-heap constructor, binary-heap API Reference

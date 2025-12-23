@@ -37,6 +37,18 @@
 
 (define (main args)
 
+   (let* ((h1 (binary-heap :capacity 6 :comparator +number-comparator+ 9 3 8 5))
+            (h2 (binary-heap-copy h1)))
+         (equal? (binary-heap-length h1)
+            (binary-heap-length h2))
+         (equal? (binary-heap-first h1)
+            (binary-heap-first h2))
+         (binary-heap-dequeue! h1)
+         (equal? (binary-heap-first h1)
+            (binary-heap-first h2))
+         (equal? (binary-heap-length h1)
+            (binary-heap-length h2)))
+   
    (suite-add-subsuite! hoard-tests collection-tests)
    (suite-add-subsuite! hoard-tests mutable-collection-tests)
    (suite-add-subsuite! hoard-tests enumerator-tests)

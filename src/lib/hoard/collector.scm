@@ -15,7 +15,8 @@
       +list-collector+
       +stretchy-vector-collector+
       +sum-collector+
-      +vector-collector+))
+      +vector-collector+
+      (make-collector #!key supplier accumulate finish combine)))
 
 ;;;; collector protocol, heavily influenced by the Collector interface in Java 8
 
